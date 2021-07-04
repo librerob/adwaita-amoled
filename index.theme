@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Adwaita-dark-amoled
+Comment=Adwaita-dark amoled theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Adwaita-dark-amoled
+MetacityTheme=Adwaita-dark-amoled
+IconTheme=ubuntu-Adwaita
+CursorTheme=DMZ-White
+ButtonLayout=close,minimize,maximize:
+X-Ubuntu-UseOverlayScrollbars=true
