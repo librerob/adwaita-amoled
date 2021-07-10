@@ -1,4 +1,3 @@
-@import url("resource:///org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
 headerbar  { color: #ffffff; background-color: #010101; background-image: none }
 /*************************** Check and Radio buttons * */
 * { padding: 0; -GtkToolButton-icon-spacing: 4; -GtkTextView-error-underline-color: #ff0000; -GtkScrolledWindow-scrollbar-spacing: 0; -GtkToolItemGroup-expander-size: 11; -GtkWidget-text-handle-width: 20; -GtkWidget-text-handle-height: 24; -GtkDialog-button-spacing: 4; -GtkDialog-action-area-border: 0; outline-color: alpha(currentColor,0.3); outline-style: dashed; outline-offset: -3px; outline-width: 1px; -gtk-outline-radius: 3px; -gtk-secondary-caret-color: #0110cf; }
@@ -2037,3 +2036,5 @@ read if you used those and something break with a version upgrade you're on your
 @define-color content_view_bg #0f0f0f;
 /* Very contrasty background for text views (@theme_text_color foreground) */
 @define-color text_view_bg #0f0f0f;
+@import url("resource:///org/gtk/libgtk/theme/Adwaita/drawing.css");
+@import url("resource:///org/gtk/libgtk/theme/Adwaita/common.css");
