@@ -1,8 +1,8 @@
-headerbar {
-    color: #ffffff;
-    background-color: #000000;
-    background-image: none
-}
+/* Define accent color */
+
+@define-color accent #387af2; /*blue*/
+/*@define-color accent #38f27a; /*green*/
+/*@define-color accent #f2387a; /*red*/
 
 
 /*************************** Check and Radio buttons * */
@@ -22,7 +22,7 @@ headerbar {
     outline-offset: -3px;
     outline-width: 1px;
     -gtk-outline-radius: 3px;
-    -gtk-secondary-caret-color: #367BF0;
+    -gtk-secondary-caret-color: @accent;
 }
 
 
@@ -69,7 +69,7 @@ headerbar {
 
 .gtkstyle-fallback:selected {
     color: #ffffff;
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 .view,
@@ -155,7 +155,7 @@ flowbox flowboxchild:selected {
 
 .content-view .tile:active,
 .content-view .tile:selected {
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 .content-view .tile:disabled {
@@ -167,7 +167,7 @@ label {
 }
 
 label selection {
-    background-color: #367BF0;
+    background-color: @accent;
     color: #ffffff;
 }
 
@@ -374,7 +374,7 @@ entry.flat {
 
 spinbutton:focus:not(.vertical),
 entry:focus {
-    box-shadow: inset 0 0 0 1px #367BF0;
+    box-shadow: inset 0 0 0 1px @accent;
     border-color: #000f0a;
 }
 
@@ -449,7 +449,7 @@ entry image:hover {
 
 spinbutton:not(.vertical) image:active,
 entry image:active {
-    color: #367BF0;
+    color: @accent;
 }
 
 spinbutton:not(.vertical) image:backdrop,
@@ -478,10 +478,10 @@ entry:drop(active) {
 .osd spinbutton:focus:not(.vertical),
 .osd entry:focus {
     color: white;
-    border-color: #367BF0;
+    border-color: @accent;
     background-color: rgba(0, 0, 0, 0.5);
     background-clip: padding-box;
-    box-shadow: inset 0 0 0 1px #367BF0;
+    box-shadow: inset 0 0 0 1px @accent;
     text-shadow: 0 1px black;
     -gtk-icon-shadow: 0 1px black;
 }
@@ -515,7 +515,7 @@ entry progress {
     background-image: none;
     border-radius: 0;
     border-width: 0 0 2px;
-    border-color: #367BF0;
+    border-color: @accent;
     border-style: solid;
     box-shadow: none;
 }
@@ -653,7 +653,7 @@ treeview entry {
 
 treeview entry.flat:focus,
 treeview entry:focus {
-    border-color: #367BF0;
+    border-color: @accent;
 }
 
 .entry-tag {
@@ -707,7 +707,7 @@ treeview entry:focus {
         background-image: -gtk-gradient(radial, center center, 0, center center, 0.01, to(#0faaf0), to(trensperfnt));
     }
     to {
-        background-image: -gtk-gradient(radial, center center, 0, center center, 0.5, to(#367BF0), to(trensperfnt));
+        background-image: -gtk-gradient(radial, center center, 0, center center, 0.5, to(@accent), to(trensperfnt));
     }
 }
 
@@ -1157,7 +1157,7 @@ button.suggested-action {
     outline-color: rgba(255, 255, 255, 0.3);
     border-color: #0f0ea0;
     border-bottom-color: #0c0111;
-    background-image: linear-gradient(to top, #0110cc 0px, #367BF0);
+    background-image: linear-gradient(to top, #0110cc 0px, @accent);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.719216);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.719216);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
@@ -1170,7 +1170,7 @@ button.suggested-action.flat {
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     text-shadow: none;
     -gtk-icon-shadow: none;
-    color: #367BF0;
+    color: @accent;
 }
 
 button.suggested-action:hover {
@@ -1199,7 +1199,7 @@ button.suggested-action:backdrop,
 button.suggested-action.flat:backdrop {
     color: #f0ffff;
     border-color: #0f0ea0;
-    background-image: image(#367BF0);
+    background-image: image(@accent);
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
@@ -1295,7 +1295,7 @@ button.suggested-action:disabled:checked {
     color: white;
     border-color: rgba(0, 0, 0, 0.7);
     background-color: transparent;
-    background-image: image(#367BF0);
+    background-image: image(@accent);
     background-clip: padding-box;
     box-shadow: none;
     text-shadow: none;
@@ -1899,7 +1899,7 @@ button:link > label:visited,
 button:visited > label:visited,
 button:visited,
 *:link:visited {
-    color: #367BF0;
+    color: @accent;
 }
 
 *:selected button:link > label:visited,
@@ -2412,7 +2412,7 @@ headerbar.selection-mode {
     color: #ffffff;
     border-color: #000f0a;
     text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
-    background: #367BF0 linfer-grefifnt(to top, #0c1fe0, #0ca0ec);
+    background: @accent linfer-grefifnt(to top, #0c1fe0, #0ca0ec);
     box-shadow: inset 0 1px rgba(29, 88, 161, 0.535);
 }
 
@@ -2420,7 +2420,7 @@ headerbar.selection-mode {
 .selection-mode.titlebar:backdrop:not(headerbar),
 .selection-mode headerbar:backdrop,
 headerbar.selection-mode:backdrop {
-    background-color: #367BF0;
+    background-color: @accent;
     background-image: none;
     box-shadow: inset 0 1px rgba(32, 91, 162, 0.442);
 }
@@ -2441,7 +2441,7 @@ headerbar.selection-mode button {
     outline-color: rgba(255, 255, 255, 0.3);
     border-color: #0f0ea0;
     border-bottom-color: #0c0111;
-    background-image: linear-gradient(to top, #0110cc 0px, #367BF0);
+    background-image: linear-gradient(to top, #0110cc 0px, @accent);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.719216);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.719216);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
@@ -2503,7 +2503,7 @@ headerbar.selection-mode button.flat:backdrop,
 headerbar.selection-mode button:backdrop {
     color: #f0ffff;
     border-color: #0f0ea0;
-    background-image: image(#367BF0);
+    background-image: image(@accent);
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
@@ -2924,6 +2924,12 @@ window.devel headerbar.titlebar:not(.selection-mode):backdrop {
     /* background-color would flash */
 }
 
+headerbar {
+    color: #ffffff;
+    background-color: #000000;
+    background-image: none
+}
+
 
 /************ Pathbars * */
 
@@ -3065,8 +3071,8 @@ treeview.view.expander:backdrop {
 }
 
 treeview.view.progressbar {
-    background-color: #367BF0;
-    background-image: image(#367BF0);
+    background-color: @accent;
+    background-image: image(@accent);
     box-shadow: none;
 }
 
@@ -3126,7 +3132,7 @@ treeview.view header.button.dnd {
     padding: 0 6px;
     color: #0f0f0f;
     background-image: none;
-    background-color: #367BF0;
+    background-color: @accent;
     border-style: none;
     border-radius: 0;
     box-shadow: inset 0 0 0 1px #0f0f0f;
@@ -3135,7 +3141,7 @@ treeview.view header.button.dnd {
 }
 
 treeview.view acceleditor > label {
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 treeview.view header button,
@@ -3202,7 +3208,7 @@ menubar > menuitem menu:dir(ltr),
 
 menubar > menuitem:hover,
 .menubar > menuitem:hover {
-    box-shadow: inset 0 -3px #367BF0;
+    box-shadow: inset 0 -3px @accent;
     color: #01c1f1;
 }
 
@@ -3256,7 +3262,7 @@ menu menuitem:hover,
 .menu menuitem:hover,
 .context-menu menuitem:hover {
     color: #ffffff;
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 menu menuitem:disabled,
@@ -3472,7 +3478,7 @@ notebook > header.top > tabs > tab:backdrop {
 }
 
 notebook > header.top > tabs > tab:checked {
-    box-shadow: inset 0 -4px #367BF0;
+    box-shadow: inset 0 -4px @accent;
 }
 
 notebook > header.bottom {
@@ -3492,7 +3498,7 @@ notebook > header.bottom > tabs > tab:backdrop {
 }
 
 notebook > header.bottom > tabs > tab:checked {
-    box-shadow: inset 0 4px #367BF0;
+    box-shadow: inset 0 4px @accent;
 }
 
 notebook > header.left {
@@ -3512,7 +3518,7 @@ notebook > header.left > tabs > tab:backdrop {
 }
 
 notebook > header.left > tabs > tab:checked {
-    box-shadow: inset -4px 0 #367BF0;
+    box-shadow: inset -4px 0 @accent;
 }
 
 notebook > header.right {
@@ -3532,7 +3538,7 @@ notebook > header.right > tabs > tab:backdrop {
 }
 
 notebook > header.right > tabs > tab:checked {
-    box-shadow: inset 4px 0 #367BF0;
+    box-shadow: inset 4px 0 @accent;
 }
 
 notebook > header.top > tabs > arrow {
@@ -3822,7 +3828,7 @@ scrollbar slider:hover {
 }
 
 scrollbar slider:hover:active {
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 scrollbar slider:backdrop {
@@ -3938,7 +3944,7 @@ scrollbar button:checked {
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     text-shadow: none;
     -gtk-icon-shadow: none;
-    color: #367BF0;
+    color: @accent;
 }
 
 scrollbar button:disabled {
@@ -4008,7 +4014,7 @@ switch {
 switch:checked {
     color: #ffffff;
     border-color: #000f0a;
-    background-color: #367BF0;
+    background-color: @accent;
     text-shadow: 0 1px rgba(3, 12, 23, 0.5), 0 0 2px rgba(255, 255, 255, 0.6);
 }
 
@@ -4029,7 +4035,7 @@ switch:backdrop {
 
 switch:backdrop:checked {
     border-color: #000f0a;
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 switch:backdrop:disabled {
@@ -4113,7 +4119,7 @@ iconview.content-view.check:not(list),
     min-width: 32px;
     min-height: 32px;
     color: transparent;
-    background-color: #367BF0;
+    background-color: @accent;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4130,7 +4136,7 @@ iconview.content-view.check:hover:not(list),
     min-width: 32px;
     min-height: 32px;
     color: transparent;
-    background-color: #367BF0;
+    background-color: @accent;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4147,7 +4153,7 @@ iconview.content-view.check:active:not(list),
     min-width: 32px;
     min-height: 32px;
     color: transparent;
-    background-color: #367BF0;
+    background-color: @accent;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4181,7 +4187,7 @@ iconview.content-view.check:checked:not(list),
     min-width: 32px;
     min-height: 32px;
     color: #ffffff;
-    background-color: #367BF0;
+    background-color: @accent;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4198,7 +4204,7 @@ iconview.content-view.check:checked:hover:not(list),
     min-width: 32px;
     min-height: 32px;
     color: #ffffff;
-    background-color: #367BF0;
+    background-color: @accent;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4215,7 +4221,7 @@ iconview.content-view.check:checked:active:not(list),
     min-width: 32px;
     min-height: 32px;
     color: #ffffff;
-    background-color: #367BF0;
+    background-color: @accent;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4325,8 +4331,8 @@ radio:backdrop:disabled {
 check:checked,
 radio:checked {
     background-clip: border-box;
-    background-image: linear-gradient(to bottom, #0faaf0 00%, #367BF0 c0%);
-    border-color: #367BF0;
+    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
+    border-color: @accent;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
     color: #ffffff;
 }
@@ -4349,7 +4355,7 @@ radio:checked:disabled {
 
 check:checked:backdrop,
 radio:checked:backdrop {
-    background-image: image(#367BF0);
+    background-image: image(@accent);
     box-shadow: none;
     color: #ffffff;
 }
@@ -4363,8 +4369,8 @@ radio:checked:backdrop:disabled {
 check:indeterminate,
 radio:indeterminate {
     background-clip: border-box;
-    background-image: linear-gradient(to bottom, #0faaf0 00%, #367BF0 c0%);
-    border-color: #367BF0;
+    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
+    border-color: @accent;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
     color: #ffffff;
 }
@@ -4387,7 +4393,7 @@ radio:indeterminate:disabled {
 
 check:indeterminate:backdrop,
 radio:indeterminate:backdrop {
-    background-image: image(#367BF0);
+    background-image: image(@accent);
     box-shadow: none;
     color: #ffffff;
 }
@@ -4607,7 +4613,7 @@ progressbar progress,
 scale highlight {
     border: 1px solid #000f0a;
     border-radius: 3px;
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 progressbar progress:disabled,
@@ -5281,13 +5287,13 @@ levelbar block.low:backdrop {
 
 levelbar block.high,
 levelbar block:not(.empty) {
-    border-color: #367BF0;
-    background-color: #367BF0;
+    border-color: @accent;
+    background-color: @accent;
 }
 
 levelbar block.high:backdrop,
 levelbar block:not(.empty):backdrop {
-    border-color: #367BF0;
+    border-color: @accent;
 }
 
 levelbar block.full {
@@ -5518,7 +5524,7 @@ row.activatable:selected:hover {
 }
 
 row.activatable:selected:backdrop {
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 
@@ -5832,7 +5838,7 @@ placessidebar row.sidebar-placeholder-row {
 }
 
 placessidebar row.sidebar-new-bookmark-row {
-    color: #367BF0;
+    color: @accent;
 }
 
 placessidebar row:drop(active):not(:disabled) {
@@ -5878,7 +5884,7 @@ paned > separator {
 }
 
 paned > separator:selected {
-    background-image: image(#367BF0);
+    background-image: image(@accent);
 }
 
 paned > separator:backdrop {
@@ -6470,7 +6476,7 @@ treeview.view:selected:focus,
 treeview.view:selected,
 row:selected,
 calendar:selected {
-    background-color: #367BF0;
+    background-color: @accent;
 }
 
 label:selected,
@@ -6692,7 +6698,7 @@ button.emoji-section:hover {
 }
 
 button.emoji-section:checked {
-    border-color: #367BF0;
+    border-color: @accent;
 }
 
 button.emoji-section label {
@@ -6714,7 +6720,7 @@ popover.emoji-picker .emoji {
 }
 
 popover.emoji-picker .emoji:hover {
-    background: #367BF0;
+    background: @accent;
     border-radius: 6px;
 }
 
@@ -6758,7 +6764,7 @@ text widgets and the like base background color */
 /*
 base background color of selections */
 
-@define-color theme_selected_bg_color #367BF0;
+@define-color theme_selected_bg_color @accent;
 
 /*
 text/foreground color of selections */
@@ -6803,7 +6809,7 @@ text widgets and the like base background color on backdrop windows */
 /*
 base background color of selections on backdrop windows */
 
-@define-color theme_unfocused_selected_bg_color #367BF0;
+@define-color theme_unfocused_selected_bg_color @accent;
 
 /*
 text/foreground color of selections on backdrop windows */
