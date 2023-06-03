@@ -4294,13 +4294,14 @@ check,
 radio {
     background-clip: padding-box;
     background-image: linear-gradient(to bottom, #101010 00%, #000000 c0%);
-    border-color: #0a0a0a;
+    border-color: #e0e0e0;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
     color: #ffffff;
 }
 
 check:hover,
 radio:hover {
+	border-color: #ffffff;
     background-image: linear-gradient(to bottom, #1f1f1f 00%, #0f0f0f c0%);
 }
 
@@ -4333,12 +4334,13 @@ radio:checked {
     background-clip: border-box;
     background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
     border-color: @accent;
+	background-color: @accent;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
-    color: #ffffff;
 }
 
 check:checked:hover,
 radio:checked:hover {
+	border-color: #ffffff;
     background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
 }
 
@@ -4355,6 +4357,7 @@ radio:checked:disabled {
 
 check:checked:backdrop,
 radio:checked:backdrop {
+	border-color: #000000;
     background-image: image(@accent);
     box-shadow: none;
     color: #ffffff;
@@ -4406,7 +4409,99 @@ radio:indeterminate:backdrop:disabled {
 
 check:backdrop,
 radio:backdrop {
+	border-color: #a0a0a0;
     transition: 200ms ease-out;
+}
+
+check:focus,
+radio:focus {
+    background-clip: padding-box;
+    background-image: image(#000000);
+    border-color: #e0e0e0;
+    box-shadow: 0 1px rgba(0, 0, 0, 0.05);
+    color: #ffffff;
+}
+
+check:focus:hover,
+radio:focus:hover {
+	border-color: #ffffff;
+    background-image: linear-gradient(to bottom, #1f1f1f 00%, #0f0f0f c0%);
+}
+
+check:focus:active,
+radio:focus:active {
+    box-shadow: inset 0 1px 1px 0px black;
+}
+
+check:focus:disabled,
+radio:focus:disabled {
+    box-shadow: none;
+    color: rgba(238, 238, 236, 0.7);
+}
+
+check:focus:backdrop,
+radio:focus:backdrop {
+	border-color: #000000;
+    background-image: image(#000000);
+    box-shadow: none;
+}
+
+check:focus:backdrop:disabled,
+radio:focus:backdrop:disabled {
+    box-shadow: none;
+    color: rgba(238, 238, 236, 0.7);
+}
+
+check:focus:checked,
+radio:focus:checked {
+    background-clip: border-box;
+    background-image: image(@accent);
+    border-color: #e0e0e0;
+	background-color: @accent;
+    box-shadow: 0 1px rgba(0, 0, 0, 0.05);
+}
+
+check:checked:hover:focus,
+radio:checked:hover:focus {
+	border-color: #ffffff;
+    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
+}
+
+check:checked:active:focus,
+radio:checked:active:focus {
+    box-shadow: inset 0 1px 1px 0px black;
+}
+
+check:checked:disabled:focus,
+radio:checked:disabled:focus {
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+check:indeterminate:focus,
+radio:indeterminate:focus {
+    background-clip: border-box;
+    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
+    border-color: #000000;
+    box-shadow: 0 1px rgba(0, 0, 0, 0.05);
+    color: #ffffff;
+}
+
+check:indeterminate:hover:focus,
+radio:indeterminate:hover:focus {
+	#border-color: #ffffff;
+    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
+}
+
+check:indeterminate:active:focus,
+radio:indeterminate:active:focus {
+    box-shadow: inset 0 1px 1px 0px black;
+}
+
+check:indeterminate:disabled:focus,
+radio:indeterminate:disabled:focus {
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .osd check,
