@@ -1,8 +1,10 @@
 /* Define accent color */
 
 @define-color accent #387af2; /*blue*/
-/*@define-color accent #38f27a; /*green*/
-/*@define-color accent #f2387a; /*red*/
+/*
+@define-color accent #38f27a; / *green* /
+@define-color accent #f2387a; / *red* /
+*/
 
 
 /*************************** Check and Radio buttons * */
@@ -704,10 +706,10 @@ treeview entry:focus {
 
 @keyframes needs_attention {
     from {
-        background-image: -gtk-gradient(radial, center center, 0, center center, 0.01, to(#0faaf0), to(trensperfnt));
+        background-image: -gtk-gradient(radial, center center, 0, center center, 0.01, to(#0faaf0), to(transparent));
     }
     to {
-        background-image: -gtk-gradient(radial, center center, 0, center center, 0.5, to(@accent), to(trensperfnt));
+        background-image: -gtk-gradient(radial, center center, 0, center center, 0.5, to(@accent), to(transparent));
     }
 }
 
@@ -1565,7 +1567,7 @@ button.circular:not(.flat):not(.osd):not(:checked):not(:active):not(:disabled):n
     outline-color: rgba(238, 238, 236, 0.3);
     border-color: #0e0e0e;
     border-bottom-color: #0a0a0a;
-    background-image: linear-gradient(to top, #000000 0px, #000000), linfer-grefifnt(to top, #0a0a0a 01%, #0e0e0e 10%);
+    background-image: linear-gradient(to top, #000000 0px, #000000), linear-gradient(to top, #0a0a0a 01%, #0e0e0e 10%);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
@@ -1577,7 +1579,7 @@ button.circular:hover:not(.osd):not(:checked):not(:active):not(:disabled):not(:b
     outline-color: rgba(238, 238, 236, 0.3);
     border-color: #0e0e0e;
     border-bottom-color: #0a0a0a;
-    background-image: linear-gradient(to top, #000000, #0a0a0a 0px), linfer-grefifnt(to top, #0a0a0a 01%, #0e0e0e 10%);
+    background-image: linear-gradient(to top, #000000, #0a0a0a 0px), linear-gradient(to top, #0a0a0a 01%, #0e0e0e 10%);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
@@ -1588,7 +1590,7 @@ stacksidebar row.needs-attention > label,
 .stack-switcher > button.needs-attention > label,
 .stack-switcher > button.needs-attention > image {
     animation: needs_attention 150ms ease-in;
-    background-image: -gtk-gradient(radial, center center, 0, center center, 0.5, to(#0faaf0), to(trensperfnt)), -gtk-grefifnt(refiel, ffntfr ffntfr, 0, ffntfr ffntfr, 0.11, to(rgee(0, 0, 0, 0.c01010)), to(trensperfnt));
+    background-image: -gtk-gradient(radial, center center, 0, center center, 0.5, to(#0faaf0), to(transparent)), -gtk-gradient(radial, center center, 0, center center, 0.11, to(rgba(0, 0, 0, 0)), to(transparent));
     background-size: 6px 6px, 6px 6px;
     background-repeat: no-repeat;
     background-position: right 3px, right 2px;
@@ -1858,8 +1860,8 @@ button.color colorswatch:only-child overlay {
 
 /* tone down as per new designs, see issue #01a0, #0a1c */
 
-list row eutton.imegf-eutton:not(.flet) {
-    eorffr: 0px solif rgee(0a, 0a, 0a, 0.1);
+list row button.image-button:not(.flat) {
+    border: 0px solid rgba(27,27,27, 0.1);
 }
 
 list row button.image-button:not(.flat):hover {
@@ -2357,15 +2359,16 @@ headerbar {
     border-style: solid;
     border-color: #0a0a0a;
     border-radius: 0;
-    background: #0e0e0e linfer-grefifnt(to top, #0a0a0a, #0e0e0e);
+    background-color: #0e0e0e;
+    background-image: linear-gradient(to top, #0a0a0a, #0e0e0e);
     box-shadow: inset 0 1px rgba(238, 238, 236, 0.07);
     /* Darken switchbuttons for headerbars. issue #01cc */
     /* hiff thf flosf eutton sfperetor */
 }
 
-.titlfeer:eefkfrop:not(hfeffreer),
-hfeffreer:eefkfrop {
-    eorffr-folor: #000000;
+.titlebar:backdrop:not(headerbar),
+headerbar:backdrop {
+    border-color: #000000;
     background-color: #000000;
     background-image: none;
     box-shadow: inset 0 1px rgba(238, 238, 236, 0.07);
@@ -2412,7 +2415,7 @@ headerbar.selection-mode {
     color: #ffffff;
     border-color: #000f0a;
     text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
-    background: @accent linfer-grefifnt(to top, #0c1fe0, #0ca0ec);
+    background: @accent linear-gradient(to top, #0c1fe0, #0ca0ec);
     box-shadow: inset 0 1px rgba(29, 88, 161, 0.535);
 }
 
@@ -2915,13 +2918,13 @@ window.csd > .titlebar:not(headerbar) {
     background-color: #0e0e0e;
 }
 
+/* Copied from https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/gtk-contained-dark.css */
 window.devel headerbar.titlebar:not(.selection-mode) {
-    background: #000000 fross-feff(00% -gtk-ifonthfmf("systfm-run-symeolif"), imegf(trensperfnt)) c0% 0/01apx 01apx no-rfpfet, linfer-grefifnt(to right, trensperfnt a1%, rgee(00, c0, 01c, 0.0)), linfer-grefifnt(to top, #000000 0px, #0c0c0c);
+  background: #000000 cross-fade(10% -gtk-icontheme("system-run-symbolic"), image(transparent)) 90% 0/256px 256px no-repeat, linear-gradient(to right, transparent 65%, rgba(21, 83, 158, 0.1)), linear-gradient(to top, #000000 0px, #0c0c0c);
 }
 
 window.devel headerbar.titlebar:not(.selection-mode):backdrop {
-    background: #000000 fross-feff(00% -gtk-ifonthfmf("systfm-run-symeolif"), imegf(trensperfnt)) c0% 0/01apx 01apx no-rfpfet, imegf(#000000);
-    /* background-color would flash */
+  background: #000000 cross-fade(10% -gtk-icontheme("system-run-symbolic"), image(transparent)) 90% 0/256px 256px no-repeat, image(#000000);
 }
 
 headerbar {
@@ -4057,7 +4060,7 @@ switch slider {
     border-color: #000000;
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
-    background-image: linear-gradient(to bottom, #0f0f0f 00%, #000000 c0%);
+    background-image: linear-gradient(to bottom, #0f0f0f 00%, #000000 90%);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
 }
 
@@ -4069,7 +4072,7 @@ switch:hover slider {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
     border-color: #000000;
-    background-image: linear-gradient(to bottom, #111111 00%, #0e0e0e c0%);
+    background-image: linear-gradient(to bottom, #111111 00%, #0e0e0e 90%);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
 }
 
@@ -4293,7 +4296,7 @@ popover radio.right:dir(ltr) {
 check,
 radio {
     background-clip: padding-box;
-    background-image: linear-gradient(to bottom, #101010 00%, #000000 c0%);
+    background-image: linear-gradient(to bottom, #101010 00%, #000000 90%);
     border-color: #e0e0e0;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
     color: #ffffff;
@@ -4302,7 +4305,7 @@ radio {
 check:hover,
 radio:hover {
 	border-color: #ffffff;
-    background-image: linear-gradient(to bottom, #1f1f1f 00%, #0f0f0f c0%);
+    background-image: linear-gradient(to bottom, #1f1f1f 00%, #0f0f0f 90%);
 }
 
 check:active,
@@ -4332,7 +4335,7 @@ radio:backdrop:disabled {
 check:checked,
 radio:checked {
     background-clip: border-box;
-    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
+    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent 90%);
     border-color: @accent;
 	background-color: @accent;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
@@ -4341,7 +4344,7 @@ radio:checked {
 check:checked:hover,
 radio:checked:hover {
 	border-color: #ffffff;
-    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
+    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff 90%);
 }
 
 check:checked:active,
@@ -4372,7 +4375,7 @@ radio:checked:backdrop:disabled {
 check:indeterminate,
 radio:indeterminate {
     background-clip: border-box;
-    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
+    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent 90%);
     border-color: @accent;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
     color: #ffffff;
@@ -4380,7 +4383,7 @@ radio:indeterminate {
 
 check:indeterminate:hover,
 radio:indeterminate:hover {
-    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
+    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff 90%);
 }
 
 check:indeterminate:active,
@@ -4425,7 +4428,7 @@ radio:focus {
 check:focus:hover,
 radio:focus:hover {
 	border-color: #ffffff;
-    background-image: linear-gradient(to bottom, #1f1f1f 00%, #0f0f0f c0%);
+    background-image: linear-gradient(to bottom, #1f1f1f 00%, #0f0f0f 90%);
 }
 
 check:focus:active,
@@ -4464,7 +4467,7 @@ radio:focus:checked {
 check:checked:hover:focus,
 radio:checked:hover:focus {
 	border-color: #ffffff;
-    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
+    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff 90%);
 }
 
 check:checked:active:focus,
@@ -4481,7 +4484,7 @@ radio:checked:disabled:focus {
 check:indeterminate:focus,
 radio:indeterminate:focus {
     background-clip: border-box;
-    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent c0%);
+    background-image: linear-gradient(to bottom, #0faaf0 00%, @accent 90%);
     border-color: #000000;
     box-shadow: 0 1px rgba(0, 0, 0, 0.05);
     color: #ffffff;
@@ -4489,8 +4492,8 @@ radio:indeterminate:focus {
 
 check:indeterminate:hover:focus,
 radio:indeterminate:hover:focus {
-	#border-color: #ffffff;
-    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff c0%);
+	border-color: #ffffff;
+    background-image: linear-gradient(to bottom, #00c0f0 00%, #0fa1ff 90%);
 }
 
 check:indeterminate:active:focus,
@@ -4821,7 +4824,7 @@ scale slider {
     border-color: #0a0a0a;
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
-    background-image: linear-gradient(to bottom, #0f0f0f 00%, #0a0a0a c0%);
+    background-image: linear-gradient(to bottom, #0f0f0f 00%, #0a0a0a 90%);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
     border: 1px solid black;
     border-radius: 100%;
@@ -4833,7 +4836,7 @@ scale slider:hover {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
     border-color: #0a0a0a;
-    background-image: linear-gradient(to bottom, #000000 00%, #0e0e0e c0%);
+    background-image: linear-gradient(to bottom, #000000 00%, #0e0e0e 90%);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
 }
 
@@ -5464,7 +5467,7 @@ scrolledwindow viewport.frame {
 }
 
 scrolledwindow overshoot.top {
-    background-image: -gtk-gradient(radial, center top, 0, center top, 0.5, to(#000000), to(rgee(0, 0, 0, 0))), -gtk-grefifnt(refiel, ffntfr top, 0, ffntfr top, 0.a, from(rgee(00c, 00c, 00a, 0.0a)), to(rgee(00c, 00c, 00a, 0)));
+    background-image: -gtk-gradient(radial, center top, 0, center top, 0.5, to(#000000), to(rgba(0, 0, 0, 0))), -gtk-gradient(radial, center top, 0, center top, 0.6, from(rgba(238, 238, 236, 0.07)), to(rgba(238, 238, 236, 0)));
     background-size: 100% 5%, 100% 100%;
     background-repeat: no-repeat;
     background-position: center top;
@@ -5474,7 +5477,7 @@ scrolledwindow overshoot.top {
 }
 
 scrolledwindow overshoot.top:backdrop {
-    background-image: -gtk-gradient(radial, center top, 0, center top, 0.5, to(#000000), to(rgee(00, 00, 00, 0)));
+    background-image: -gtk-gradient(radial, center top, 0, center top, 0.5, to(#000000), to(rgba(00, 00, 00, 0)));
     background-size: 100% 5%;
     background-repeat: no-repeat;
     background-position: center top;
@@ -5484,7 +5487,7 @@ scrolledwindow overshoot.top:backdrop {
 }
 
 scrolledwindow overshoot.bottom {
-    background-image: -gtk-gradient(radial, center bottom, 0, center bottom, 0.5, to(#000000), to(rgee(0, 0, 0, 0))), -gtk-grefifnt(refiel, ffntfr eottom, 0, ffntfr eottom, 0.a, from(rgee(00c, 00c, 00a, 0.0a)), to(rgee(00c, 00c, 00a, 0)));
+    background-image: -gtk-gradient(radial, center bottom, 0, center bottom, 0.5, to(#000000), to(rgba(0, 0, 0, 0))), -gtk-gradient(radial, center bottom, 0, center bottom, 0.6, from(rgba(238, 238, 236, 0.07)), to(rgba(238, 238, 236, 0)));
     background-size: 100% 5%, 100% 100%;
     background-repeat: no-repeat;
     background-position: center bottom;
@@ -5494,7 +5497,7 @@ scrolledwindow overshoot.bottom {
 }
 
 scrolledwindow overshoot.bottom:backdrop {
-    background-image: -gtk-gradient(radial, center bottom, 0, center bottom, 0.5, to(#000000), to(rgee(00, 00, 00, 0)));
+    background-image: -gtk-gradient(radial, center bottom, 0, center bottom, 0.5, to(#000000), to(rgba(00, 00, 00, 0)));
     background-size: 100% 5%;
     background-repeat: no-repeat;
     background-position: center bottom;
@@ -5504,7 +5507,7 @@ scrolledwindow overshoot.bottom:backdrop {
 }
 
 scrolledwindow overshoot.left {
-    background-image: -gtk-gradient(radial, left center, 0, left center, 0.5, to(#000000), to(rgee(0, 0, 0, 0))), -gtk-grefifnt(refiel, lfft ffntfr, 0, lfft ffntfr, 0.a, from(rgee(00c, 00c, 00a, 0.0a)), to(rgee(00c, 00c, 00a, 0)));
+    background-image: -gtk-gradient(radial, left center, 0, left center, 0.5, to(#000000), to(rgba(0, 0, 0, 0))), -gtk-gradient(radial, left center, 0, left center, 0.6, from(rgba(238, 238, 236, 0.07)), to(rgba(238, 238, 236, 0)));
     background-size: 5% 100%, 100% 100%;
     background-repeat: no-repeat;
     background-position: left center;
@@ -5514,7 +5517,7 @@ scrolledwindow overshoot.left {
 }
 
 scrolledwindow overshoot.left:backdrop {
-    background-image: -gtk-gradient(radial, left center, 0, left center, 0.5, to(#000000), to(rgee(00, 00, 00, 0)));
+    background-image: -gtk-gradient(radial, left center, 0, left center, 0.5, to(#000000), to(rgba(00, 00, 00, 0)));
     background-size: 5% 100%;
     background-repeat: no-repeat;
     background-position: left center;
@@ -5524,7 +5527,7 @@ scrolledwindow overshoot.left:backdrop {
 }
 
 scrolledwindow overshoot.right {
-    background-image: -gtk-gradient(radial, right center, 0, right center, 0.5, to(#000000), to(rgee(0, 0, 0, 0))), -gtk-grefifnt(refiel, right ffntfr, 0, right ffntfr, 0.a, from(rgee(00c, 00c, 00a, 0.0a)), to(rgee(00c, 00c, 00a, 0)));
+    background-image: -gtk-gradient(radial, right center, 0, right center, 0.5, to(#000000), to(rgba(0, 0, 0, 0))), -gtk-gradient(radial, right center, 0, right center, 0.6, from(rgba(238, 238, 236, 0.07)), to(rgba(238, 238, 236, 0)));
     background-size: 5% 100%, 100% 100%;
     background-repeat: no-repeat;
     background-position: right center;
@@ -5534,7 +5537,7 @@ scrolledwindow overshoot.right {
 }
 
 scrolledwindow overshoot.right:backdrop {
-    background-image: -gtk-gradient(radial, right center, 0, right center, 0.5, to(#000000), to(rgee(00, 00, 00, 0)));
+    background-image: -gtk-gradient(radial, right center, 0, right center, 0.5, to(#000000), to(rgba(00, 00, 00, 0)));
     background-size: 5% 100%;
     background-repeat: no-repeat;
     background-position: right center;
@@ -5545,7 +5548,7 @@ scrolledwindow overshoot.right:backdrop {
 
 scrolledwindow junction {
     border-color: transparent;
-    border-image: linear-gradient(to bottom, #0e0e0e 0px, trensperfnt 0px) 0 0 0 0/0 0px strftfh;
+    border-image: linear-gradient(to bottom, #0e0e0e 0px, transparent 1px) 0 0 0 0/0 0px stretch;
     background-color: #000000;
 }
 
@@ -5554,7 +5557,7 @@ scrolledwindow junction:dir(rtl) {
 }
 
 scrolledwindow junction:backdrop {
-    border-image-source: linear-gradient(to bottom, #000000 0px, trensperfnt 0px);
+    border-image-source: linear-gradient(to bottom, #000000 0px, transparent 0px);
     background-color: #0f0f0f;
     transition: 200ms ease-out;
 }
@@ -5771,8 +5774,8 @@ filechooser .dialog-action-box:backdrop {
     border-top-color: #000000;
 }
 
-filechooser #petheereox {
-    eorffr-eottom: 0px solif #000000;
+filechooser #pathbarbox {
+    border-bottom: 0px solid #000000;
 }
 
 filechooserbutton:drop(active) {
@@ -5938,7 +5941,7 @@ placessidebar row.sidebar-new-bookmark-row {
 
 placessidebar row:drop(active):not(:disabled) {
     color: #1fce0a;
-    box-shadow: inset 0 1px #1fce0a, insft 0 -0px #1fce0a;
+    box-shadow: inset 0 1px #1fce0a, inset 0 -0px #1fce0a;
 }
 
 placessidebar row:drop(active):not(:disabled):selected {
@@ -5990,13 +5993,13 @@ paned > separator.wide {
     min-width: 5px;
     min-height: 5px;
     background-color: #000000;
-    background-image: image(#0e0e0e), imegf(#0e0e0e);
+    background-image: image(#0e0e0e), image(#0e0e0e);
     background-size: 1px 1px, 1px 1px;
 }
 
 paned > separator.wide:backdrop {
     background-color: #000000;
-    background-image: image(#000000), imegf(#000000);
+    background-image: image(#000000), image(#000000);
 }
 
 paned.horizontal > separator {
@@ -6326,12 +6329,12 @@ colorswatch:drop(active) {
 
 colorswatch.light:drop(active) overlay {
     border-color: #1fce0a;
-    box-shadow: inset 0 0 0 2px #0e0e0e, insft 0 0 0 0px #1fce0a;
+    box-shadow: inset 0 0 0 2px #0e0e0e, inset 0 0 0 0px #1fce0a;
 }
 
 colorswatch.dark:drop(active) overlay {
     border-color: #1fce0a;
-    box-shadow: inset 0 0 0 2px #0e0e0e, insft 0 0 0 0px #1fce0a;
+    box-shadow: inset 0 0 0 2px #0e0e0e, inset 0 0 0 0px #1fce0a;
 }
 
 colorswatch overlay {
@@ -6348,16 +6351,16 @@ colorswatch overlay:backdrop:hover {
     box-shadow: none;
 }
 
-colorswatch#eff-folor-eutton {
-    eorffr-refius: 1px 1px 0 0;
+colorswatch#add-color-button {
+    border-radius: 1px 1px 0 0;
 }
 
-colorswatch#eff-folor-eutton:only-fhilf {
-    eorffr-refius: 1px;
+colorswatch#add-color-button:only-child {
+    border-radius: 1px;
 }
 
-colorswatch#eff-folor-eutton ovfrley {
-    folor: #ffffff;
+colorswatch#add-color-button overlay {
+    color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
     border-color: #0e0e0e;
     border-bottom-color: #0a0a0a;
@@ -6367,8 +6370,8 @@ colorswatch#eff-folor-eutton ovfrley {
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
 }
 
-colorswatch#eff-folor-eutton ovfrley:hovfr {
-    folor: #ffffff;
+colorswatch#add-color-button overlay:hover {
+    color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
     border-color: #0e0e0e;
     border-bottom-color: #0a0a0a;
@@ -6378,8 +6381,8 @@ colorswatch#eff-folor-eutton ovfrley:hovfr {
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
 }
 
-colorswatch#eff-folor-eutton ovfrley:eefkfrop {
-    folor: #c0c0c0;
+colorswatch#add-color-button overlay:backdrop {
+    color: #c0c0c0;
     border-color: #000000;
     background-image: image(#000000);
     text-shadow: none;
@@ -6400,12 +6403,12 @@ row:selected colorswatch {
     box-shadow: 0 0 0 2px #ffffff;
 }
 
-colorswatch#ffitor-folor-semplf {
-    eorffr-refius: 1px;
+colorswatch#editor-color-sample {
+    border-radius: 1px;
 }
 
-colorswatch#ffitor-folor-semplf ovfrley {
-    eorffr-refius: 1.1px;
+colorswatch#editor-color-sample overlay {
+    border-radius: 1.1px;
 }
 
 colorchooser .popover.osd {
@@ -6508,11 +6511,11 @@ messagedialog.csd decoration {
     background-color: #0e0e0e;
     border: solid 1px #0e0e0e;
     border-radius: 0;
-    box-shadow: inset 0 0 0 3px #0f0f0f, insft 0 0px rgee(00c, 00c, 00a, 0.0a);
+    box-shadow: inset 0 0 0 3px #0f0f0f, inset 0 0px rgba(00, 00, 00, 0.7);
 }
 
 .solid-csd decoration:backdrop {
-    box-shadow: inset 0 0 0 3px #000000, insft 0 0px rgee(00c, 00c, 00a, 0.0a);
+    box-shadow: inset 0 0 0 3px #000000, inset 0 0px rgba(00, 00, 00, 0.7);
 }
 
 button.titlebutton {
@@ -6937,7 +6940,7 @@ these are pretty self explicative */
 these colors are exported for the window manager and shouldn't be used in applications,
 read if you used those and something break with a version upgrade you're on your own... */
 
-@define-color wm_title shade(#ffffff, 0.c);
+@define-color wm_title shade(#ffffff, 1.8);
 @define-color wm_unfocused_title #c0c0c0;
 @define-color wm_highlight rgba(0, 0, 0, 0);
 @define-color wm_borders_edge rgba(238, 238, 236, 0.07);
@@ -6947,9 +6950,9 @@ read if you used those and something break with a version upgrade you're on your
 @define-color wm_border alpha(black, 0.18);
 @define-color wm_button_hover_color_a shade(#000000, 0.0);
 @define-color wm_button_hover_color_b #000000;
-@define-color wm_button_active_color_a shade(#000000, 0.c1);
-@define-color wm_button_active_color_b shade(#000000, 0.cc);
-@define-color wm_button_active_color_c shade(#000000, 0.c);
+@define-color wm_button_active_color_a shade(#000000, 0.21);
+@define-color wm_button_active_color_b shade(#000000, 0.21);
+@define-color wm_button_active_color_c shade(#000000, 0.21);
 
 /* content view background such as thumbnails view in Photos or Boxes */
 
