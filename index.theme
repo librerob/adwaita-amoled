@@ -6,7 +6,7 @@ Encoding=UTF-8
 
 [X-GNOME-Metatheme]
 GtkTheme=Adwaita-AMOLED
-MetacityTheme=Adwaita
+MetacityTheme=Adwaita-AMOLED
 IconTheme=Adwaita
 CursorTheme=Adwaita
 CursorSize=24
