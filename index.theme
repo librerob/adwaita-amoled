@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Adwaita-AMOLED
+Comment=AMOLED-optimised dark GTK theme based on Adwaita Dark
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Adwaita-AMOLED
+MetacityTheme=Adwaita
+IconTheme=Adwaita
+CursorTheme=Adwaita
+CursorSize=24
+ButtonLayout=close:minimize,maximize,menu

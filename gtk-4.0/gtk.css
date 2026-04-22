@@ -1,0 +1,6 @@
+/* Adwaita-AMOLED — GTK4 / libadwaita color overrides
+ * These override libadwaita's named color tokens for AMOLED displays.
+ * Not all apps will use these — apps calling adw_init() still use libadwaita's
+ * own theming, but this brings background colors closer to true AMOLED black.
+ */
+@import url("gtk-dark.css");
