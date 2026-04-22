@@ -6826,3 +6826,6 @@ read if you used those and something break with a version upgrade you're on your
 /* Very contrasty background for text views (@theme_text_color foreground) */
 
 @define-color text_view_bg #0f0f0f;
+
+/* ── XFCE4 panel overrides ─────────────────────────────────────── */
+@import url("xfce4-panel.css");

@@ -1,0 +1,200 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Adwaita-AMOLED — XFCE4 Panel & Window Buttons
+   Drop into: gtk-3.0/xfce4-panel.css
+   Then add to gtk-3.0/gtk-dark.css (end of file):
+       @import url("xfce4-panel.css");
+   ─────────────────────────────────────────────
+   Color tokens (mirrors gtk-dark.css palette):
+     base    #000000   card     #0f0f0f
+     hover   #1a1a1a   active   #161616
+     border  #2a2a2a   subtle   #1e1e1e
+     accent  #387af2   text     #ffffff
+     dim     #888888
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ── Panel strip ──────────────────────────────────────────────────── */
+
+.xfce4-panel.background {
+  background-color: #000000;
+  color: #ffffff;
+  border-top: 1px solid #1e1e1e;
+}
+
+.xfce4-panel.background frame,
+.xfce4-panel.background > box {
+  background-color: transparent;
+}
+
+
+/* ── Tasklist: shared reset ───────────────────────────────────────── */
+/*
+   Kill every visual decoration GTK normally applies to toggle buttons,
+   so we start from a clean slate for all three states below.
+*/
+
+.tasklist button,
+.tasklist button:focus,
+.tasklist button:focus-visible {
+  background-image: none;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  box-shadow: none;
+  outline: none;
+  padding: 3px 8px;
+  margin: 3px 1px;
+  min-width: 0;
+  color: #888888;
+  transition:
+    background-color 120ms ease,
+    box-shadow       120ms ease,
+    color            120ms ease;
+}
+
+/* Strip label inside the button as well */
+.tasklist button label {
+  color: inherit;
+  font-size: inherit;
+}
+
+
+/* ── STATE 1: UNFOCUSED  (window open, not active) ────────────────── */
+/*
+   Near-invisible. A 1 px whisper at the bottom confirms it's open
+   without competing with focused state.
+*/
+
+.tasklist button:not(:checked):not(:hover):not(:active) {
+  background-color: transparent;
+  color: #888888;
+  box-shadow: inset 0 -1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+
+/* ── STATE 2: HOVER (any non-pressed state) ───────────────────────── */
+/*
+   Slight surface lift + half-strength accent tick so hover reads
+   as "about to focus" without looking like it's already focused.
+*/
+
+.tasklist button:hover:not(:checked) {
+  background-color: #1a1a1a;
+  color: #d4d4d4;
+  box-shadow: inset 0 -2px 0 0 rgba(56, 122, 242, 0.45);
+}
+
+
+/* ── STATE 3: FOCUSED  (active/checked window) ────────────────────── */
+/*
+   Clearly elevated: darker card surface + full-weight accent underline.
+   No solid bright block. Icon stays perfectly visible.
+*/
+
+.tasklist button:checked,
+.tasklist button.active {
+  background-color: #161616;
+  color: #ffffff;
+  box-shadow: inset 0 -2px 0 0 #387af2;
+}
+
+.tasklist button:checked:hover,
+.tasklist button.active:hover {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  box-shadow: inset 0 -2px 0 0 #4a8cf5;
+}
+
+
+/* ── STATE 4: PRESS FEEDBACK ──────────────────────────────────────── */
+
+.tasklist button:active,
+.tasklist button:checked:active {
+  background-color: #0d0d0d;
+  box-shadow: inset 0 -2px 0 0 #2d6be0;
+}
+
+
+/* ── Panel launcher buttons (app launchers, not window buttons) ───── */
+
+.launcher button,
+.launcher button:focus {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  border-radius: 4px;
+  padding: 3px;
+  margin: 3px 1px;
+  transition: background-color 120ms ease;
+}
+
+.launcher button:hover {
+  background-color: #1a1a1a;
+}
+
+.launcher button:active {
+  background-color: #0f0f0f;
+}
+
+
+/* ── Workspace / pager buttons ────────────────────────────────────── */
+
+.wnck-pager,
+PagerPlugin button,
+.workspace-switcher button {
+  background-color: transparent;
+  color: #888888;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 2px 5px;
+  margin: 3px 1px;
+  font-size: 0.75em;
+  transition: background-color 100ms ease, color 100ms ease;
+}
+
+.wnck-pager:hover,
+PagerPlugin button:hover,
+.workspace-switcher button:hover {
+  background-color: #1a1a1a;
+  color: #d4d4d4;
+}
+
+.wnck-pager:checked,
+PagerPlugin button:checked,
+.workspace-switcher button:checked {
+  background-color: #161616;
+  color: #ffffff;
+  border-color: #2a2a2a;
+}
+
+
+/* ── System tray / notification area ─────────────────────────────── */
+
+StatusNotifierPlugin button,
+SystemTrayPlugin button,
+.xfce4-panel notification-plug button {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  padding: 3px;
+  border-radius: 4px;
+  transition: background-color 120ms ease;
+}
+
+StatusNotifierPlugin button:hover,
+SystemTrayPlugin button:hover {
+  background-color: #1a1a1a;
+}
+
+
+/* ── Clock / generic panel label widgets ─────────────────────────── */
+
+.xfce4-panel label {
+  color: #c0c0c0;
+}
+
+.xfce4-panel label:hover {
+  color: #ffffff;
+}
