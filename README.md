@@ -53,6 +53,15 @@ gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-AMOLED"
 
 ```
 
+```bash
+# If you use flatpak apps, run:
+sudo flatpak override --filesystem=xdg-config/gtk-3.0 && sudo flatpak override --filesystem=xdg-config/gtk-4.0
+
+```
+
+**Important note to Firefox users:**
+For Firefox to be able to use these themes you'll need to open `about:config` and set  `widget.gtk.libadwaita-colors.enabled` to `false`.
+
 ---
 
 ## GTK4 & libadwaita
