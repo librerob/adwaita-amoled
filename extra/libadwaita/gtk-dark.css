@@ -1,12 +1,3 @@
-/* Adwaita-AMOLED — libadwaita user override
- *
- * INSTALL: cp this file to ~/.config/gtk-4.0/gtk.css
- * This forces AMOLED colors in ALL libadwaita/GTK4 apps for the current user,
- * regardless of which system theme is active.
- *
- * Works with: GNOME Files, Settings, Software, Calendar, Contacts,
- *             and any app using libadwaita >= 1.0 or GTK4.
- */
 /* Adwaita-AMOLED — GTK4 / libadwaita AMOLED color overrides
  *
  * Drop this file into ~/.config/gtk-4.0/gtk.css for per-user libadwaita theming.

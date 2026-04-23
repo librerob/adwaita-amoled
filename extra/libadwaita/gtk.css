@@ -1,0 +1,4 @@
+/* Adwaita-AMOLED — GTK4 entry point
+ * For ~/.config/gtk-4.0/gtk.css, use the contents of gtk-dark.css directly.
+ */
+@import url("gtk-dark.css");
