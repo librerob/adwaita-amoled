@@ -1,0 +1,74 @@
+# -----------------------------------------------------------------------------
+# Colors — Adwaita-AMOLED
+# -----------------------------------------------------------------------------
+[colors]
+draw_bold_text_with_bright_colors = true
+
+[colors.primary]
+background = '#000000'      # surface_bg — pure AMOLED black
+foreground = '#ffffff'      # primary text color
+
+[colors.cursor]
+cursor = '#387af2'          # @accent — primary blue
+text   = '#000000'          # background color behind cursor text
+
+[colors.vi_mode_cursor]
+cursor = '#387af2'          # @accent
+text   = '#000000'
+
+[colors.selection]
+background = '#1a1a1a'      # surface_hover — matches selected row background
+text       = '#ffffff'      # selected text color
+
+[colors.search.matches]
+background = '#0f0f0f'      # surface_card
+foreground = '#387af2'      # @accent
+
+[colors.search.focused_match]
+background = '#387af2'      # @accent — active selection uses accent
+foreground = '#ffffff'      # white text on accent background
+
+[colors.footer_bar]
+background = '#000000'      # surface_bg
+foreground = '#c0c0c0'      # disabled/backdrop text color
+
+# Normal colors — mapped from the theme's UI elements
+[colors.normal]
+black   = '#000000'         # pure black
+red     = '#ff0000'         # error_color from theme
+green   = '#0aeea0'         # success_color
+yellow  = '#f1ac00'         # warning_color
+blue    = '#387af2'         # @accent — primary blue
+magenta = '#c678dd'         # kept from your original (no explicit magenta in theme)
+cyan    = '#0faaf0'         # focus ring / outline blue
+white   = '#ffffff'         # pure white
+
+# Bright colors — increased brightness for bold text
+[colors.bright]
+black   = '#1a1a1a'         # surface_hover
+red     = '#ff4444'         # brighter error
+green   = '#4affc4'         # brighter success
+yellow  = '#ffcc44'         # brighter warning
+blue    = '#4a8cf5'         # @accent_hover
+magenta = '#e599ff'         # brighter magenta
+cyan    = '#44ddff'         # brighter cyan
+white   = '#fafafa'         # backdrop text color (slightly off-white)
+
+# Dim colors — used by apps that request dim/faint attributes
+[colors.dim]
+black   = '#0f0f0f'         # surface_card — subtle background
+red     = '#aa0000'         # dimmed error
+green   = '#00aa70'         # dimmed success
+yellow  = '#aa7800'         # dimmed warning
+blue    = '#2d6be0'         # @accent_active
+magenta = '#8a55aa'         # dimmed magenta
+cyan    = '#0a88aa'         # dimmed cyan
+white   = '#c0c0c0'         # disabled/backdrop text
+
+# -----------------------------------------------------------------------------
+# Bell
+# -----------------------------------------------------------------------------
+[bell]
+animation = "EaseOutExpo"
+duration = 0
+color = "#387af2"           # @accent — matches theme's accent color
