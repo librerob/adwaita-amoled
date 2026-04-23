@@ -28,9 +28,9 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 ## Features
 
 - True AMOLED base (`#000000`) with layered depth
-- Clear visual hierarchy across all widget states — unfocused, hover, active
+- Clear visual hierarchy across all widget states, unfocused, hover, active
 - Correct GTK3 widget rendering: checkboxes show ✓, radio buttons show ●, indeterminate states work
-- Refined XFCE panel with accent underline focus indicator — no flat white blocks
+- Refined XFCE panel with accent underline focus indicator, no flat white blocks
 - Complete GTK2 theme via the murrine engine, fully styled across all widget classes
 - GTK4 + libadwaita color overrides included
 - Cinnamon shell theme, Openbox theme, and Metacity window decorations included
@@ -80,6 +80,23 @@ cp ~/.themes/Adwaita-AMOLED/extra/qt6ct/colors/Adwaita-AMOLED.conf ~/.config/qt6
 ```
 
 Then open `qt5ct` / `qt6ct`, go to **Appearance → Color scheme**, and select **Adwaita-AMOLED**.
+
+---
+
+## Extras (Rofi / Alacritty / Qt)
+
+Additional themes are included in the `extra/` folder:
+
+- **Qt5ct / Qt6ct** → full color schemes (see setup above)
+- **Rofi** → matching launcher theme
+- **Alacritty** → terminal color scheme aligned with the palette
+
+Apply them manually depending on your setup:
+
+- Rofi: pass the theme with `-theme` or set it in your config
+- Alacritty: import or merge the provided YAML into your config
+
+All extras follow the same AMOLED palette and accent system as the GTK theme.
 
 ---
 
