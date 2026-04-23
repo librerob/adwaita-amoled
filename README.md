@@ -24,7 +24,7 @@ For consistent styling in modern apps:
 
 ```bash
 mkdir -p ~/.config/gtk-4.0/
-cp ~/.themes/Adwaita-AMOLED/extra/gtk-4.0-user-override.css ~/.config/gtk-4.0/gtk.css
+cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/ ~/.config/gtk-4.0/
 ```
 
 ## Notes
