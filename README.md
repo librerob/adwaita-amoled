@@ -1,3 +1,29 @@
+<p align="center">
+  <img src="./extra/logo/logo.png" alt="Adwaita AMOLED Logo" width="320">
+</p>
+
+<h1 align="center">Adwaita AMOLED</h1>
+
+<p align="center">
+A true black, AMOLED-optimized take on the classic Adwaita design.
+</p>
+
+<p align="center">
+<img src="https://img.shields.io/badge/GTK2-✓-black">
+<img src="https://img.shields.io/badge/GTK3-✓-black">
+<img src="https://img.shields.io/badge/GTK4-✓-black">
+<img src="https://img.shields.io/badge/libadwaita-✓-black">
+<img src="https://img.shields.io/badge/XFCE-✓-black">
+<img src="https://img.shields.io/badge/Cinnamon-✓-black">
+<img src="https://img.shields.io/badge/Openbox-✓-black">
+<img src="https://img.shields.io/badge/Qt5ct-✓-black">
+<img src="https://img.shields.io/badge/Qt6ct-✓-black">
+</p>
+
+
+---
+
+
 # Adwaita AMOLED
 
 A clean, modern AMOLED variant of Adwaita, rebuilt for consistency, clarity, and full-stack GTK support.
