@@ -1179,7 +1179,7 @@ button.suggested-action.flat {
 button.suggested-action:hover {
     color: white;
     outline-color: rgba(255, 255, 255, 0.3);
-    border-color: #0f0ea0;
+    border-color: @accent_hover;
     border-bottom-color: #0c0111;
     background-image: linear-gradient(to top, #0110cc 0%, #0a11e0 100%);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.671216);
@@ -1191,7 +1191,7 @@ button.suggested-action:active,
 button.suggested-action:checked {
     color: white;
     outline-color: rgba(255, 255, 255, 0.3);
-    border-color: #0f0ea0;
+    border-color: @accent_active;
     background-image: image(#000fa1);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     text-shadow: none;
@@ -1201,7 +1201,7 @@ button.suggested-action:checked {
 button.suggested-action:backdrop,
 button.suggested-action.flat:backdrop {
     color: #f0ffff;
-    border-color: #0f0ea0;
+    border-color: @accent;
     background-image: image(@accent);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1213,7 +1213,7 @@ button.suggested-action:backdrop:checked,
 button.suggested-action.flat:backdrop:active,
 button.suggested-action.flat:backdrop:checked {
     color: #f0fef1;
-    border-color: #0f0ea0;
+    border-color: @accent_active;
     background-image: image(#0a11af);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -1233,7 +1233,7 @@ button.suggested-action:backdrop:disabled:checked,
 button.suggested-action.flat:backdrop:disabled:active,
 button.suggested-action.flat:backdrop:disabled:checked {
     color: #acc1ee;
-    border-color: #0f0ea0;
+    border-color: @accent_active;
     background-image: image(#0a11af);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -1262,7 +1262,7 @@ button.suggested-action:disabled {
 button.suggested-action:disabled:active,
 button.suggested-action:disabled:checked {
     color: #e0e0fa;
-    border-color: #0f0ea0;
+    border-color: @accent_active;
     background-image: image(#010fa0);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -1891,7 +1891,7 @@ button:visited > label,
 button:link,
 button:visited,
 *:link {
-    color: #01c1f1;
+    color: @accent;
 }
 
 button:link > label:visited,
@@ -1913,7 +1913,7 @@ button:visited > label:hover,
 button:hover:link,
 button:hover:visited,
 *:link:hover {
-    color: #a0cffe;
+    color: @accent_hover;
 }
 
 *:selected button:link > label:hover,
@@ -1929,7 +1929,7 @@ button:visited > label:active,
 button:active:link,
 button:active:visited,
 *:link:active {
-    color: #01c1f1;
+    color: @accent_active;
 }
 
 *:selected button:link > label:active,
@@ -2387,7 +2387,7 @@ headerbar.selection-mode {
     color: #ffffff;
     border-color: #000f0a;
     text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
-    background: @accent linear-gradient(to top, #0c1fe0 0%, #0ca0ec 100%);
+    background: @accent linear-gradient(to top, @accent_active 0%, @accent_hover 100%);
     box-shadow: inset 0 1px rgba(29, 88, 161, 0.535);
 }
 
@@ -2440,7 +2440,7 @@ headerbar.selection-mode button.flat {
 headerbar.selection-mode button:hover {
     color: #ffffff;
     outline-color: rgba(255, 255, 255, 0.3);
-    border-color: #0f0ea0;
+    border-color: @accent_hover;
     border-bottom-color: #0c0111;
     background-image: linear-gradient(to top, #0110cc 0%, #0a11e0 100%);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.671216);
@@ -2462,7 +2462,7 @@ headerbar.selection-mode button.toggle:checked,
 headerbar.selection-mode button.toggle:active {
     color: #ffffff;
     outline-color: rgba(255, 255, 255, 0.3);
-    border-color: #0f0ea0;
+    border-color: @accent_active;
     background-image: image(#000fa1);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     text-shadow: none;
@@ -2570,7 +2570,7 @@ headerbar.selection-mode button:disabled {
 headerbar.selection-mode button:disabled:active,
 headerbar.selection-mode button:disabled:checked {
     color: #e0e0fa;
-    border-color: #0f0ea0;
+    border-color: @accent_active;
     background-image: image(#010fa0);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -3048,7 +3048,7 @@ treeview.view.trough {
 
 treeview.view.trough:selected:focus,
 treeview.view.trough:selected {
-    background-color: #0f0ea0;
+    background-color: mix(@accent, black, 0.5);
 }
 
 treeview.view header button {
@@ -3160,7 +3160,7 @@ menubar > menuitem menu:dir(ltr),
 menubar > menuitem:hover,
 .menubar > menuitem:hover {
     box-shadow: inset 0 -3px @accent;
-    color: #01c1f1;
+    color: @accent;
 }
 
 menubar > menuitem:disabled,
@@ -3783,7 +3783,7 @@ scrollbar slider:hover:active {
 }
 
 scrollbar slider:backdrop {
-    background-color: #1e1e1c;
+    background-color: #3a3a3a;
 }
 
 scrollbar slider:disabled {
@@ -4773,6 +4773,7 @@ scale highlight:disabled {
 progressbar progress:backdrop,
 scale highlight:backdrop {
     border-color: #000f0a;
+    background-color: alpha(@accent, 0.7);
 }
 
 progressbar progress:backdrop:disabled,
@@ -6191,7 +6192,7 @@ infobar.info *:link,
 infobar.question *:link,
 infobar.warning *:link,
 infobar.error *:link {
-    color: #01c1f1;
+    color: @accent_hover;
 }
 
 
