@@ -1,16 +1,3 @@
-/* Adwaita-AMOLED — GTK4 / libadwaita AMOLED color overrides
- *
- * Drop this file into ~/.config/gtk-4.0/gtk.css for per-user libadwaita theming.
- * Extract the theme to ~/.themes/Adwaita-AMOLED/ for system-level GTK4 theming.
- *
- * These override libadwaita's named color tokens.
- * Reference: https://gnome.pages.gitlab.gnome.org/libadwaita/doc/named-colors.html
- *
- * NOTE: Apps that call adw_init() use libadwaita's internal color system.
- * These overrides work via the GTK CSS provider mechanism and are respected
- * by libadwaita when the theme is active or when this file is in ~/.config/gtk-4.0/
- */
-
 /* ── AMOLED depth palette ──────────────────────────────────────────────────── */
 @define-color surface_bg      #000000;
 @define-color surface_card    #0f0f0f;
@@ -117,3 +104,198 @@
 @define-color warning_color           #e5a50a;
 @define-color error_color             #e01b24;
 @define-color success_color           #26a269;
+
+/* ────────────────────────────────────────────────────────────────────────────
+   COMPLETE GTK4 STYLING RULES
+   ──────────────────────────────────────────────────────────────────────────── */
+
+.background {
+    background-color: @window_bg_color;
+    color: @window_fg_color;
+}
+
+.background:backdrop {
+    background-color: @headerbar_backdrop_color;
+    color: alpha(@window_fg_color, 0.7);
+}
+
+/* Base widget styling for common elements */
+entry,
+spinbutton,
+textview text {
+    background-color: @theme_base_color;
+    color: @theme_text_color;
+}
+
+entry:disabled,
+spinbutton:disabled,
+textview text:disabled {
+    background-color: @insensitive_bg_color;
+    color: @insensitive_fg_color;
+}
+
+button {
+    background-color: @theme_base_color;
+    color: @theme_fg_color;
+    border: 1px solid @borders;
+    border-radius: 5px;
+    padding: 4px 8px;
+}
+
+button:hover {
+    background-color: @surface_hover;
+}
+
+button:active,
+button:checked {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+/* ============================================================================
+   FIX: Solid background for treeviews (required for Transmission and other GTK4 apps)
+   ============================================================================ */
+treeview {
+    background-color: #0f0f0f;
+}
+
+treeview:backdrop {
+    background-color: #000000;
+}
+
+treeview:disabled {
+    background-color: #000000;
+}
+
+treeview:disabled:backdrop {
+    background-color: #000000;
+}
+
+/* ============================================================================
+   FIX: Menus, Popovers, and MenuBars
+   ============================================================================ */
+
+/* Main menu bar and menu items */
+menubar,
+.menubar {
+    background-color: @headerbar_bg_color;
+    color: @headerbar_fg_color;
+}
+
+menubar > menuitem,
+.menubar > menuitem {
+    color: @headerbar_fg_color;
+}
+
+menubar > menuitem:hover,
+.menubar > menuitem:hover {
+    background-color: @surface_hover;
+    color: @accent_color;
+}
+
+/* General menu styling (standard dropdown menus) */
+menu,
+.menu,
+.context-menu {
+    background-color: @surface_menu;
+    border: 1px solid @borders;
+    border-radius: 6px;
+    padding: 4px 0;
+}
+
+menu menuitem,
+.menu menuitem,
+.context-menu menuitem {
+    background-color: @surface_menu;
+    color: @window_fg_color;
+}
+
+menu menuitem:hover,
+.menu menuitem:hover,
+.context-menu menuitem:hover {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+menu menuitem:disabled,
+.menu menuitem:disabled,
+.context-menu menuitem:disabled {
+    color: @insensitive_fg_color;
+}
+
+/* Popovers for menus (e.g., right-click context menus) */
+popover.background {
+    background-color: @surface_menu;
+}
+
+popover.background > arrow,
+popover.background > contents {
+    background-color: @surface_menu;
+    border: 1px solid @borders;
+    border-radius: 9px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    color: @window_fg_color;
+}
+
+/* Style the contents of a popover menu */
+popover.background > contents > list,
+popover.background > contents > .view,
+popover.background > contents > iconview,
+popover.background > contents > toolbar {
+    background-color: transparent;
+    border-style: none;
+}
+
+/* Styling for models (menu items) inside a popover */
+popover.background modelbutton {
+    background-color: @surface_menu;
+    color: @window_fg_color;
+    border-radius: 5px;
+    padding: 4px 20px;
+}
+
+popover.background modelbutton:hover {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+popover.background modelbutton:checked {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+popover.background modelbutton:disabled {
+    background-color: @insensitive_bg_color;
+    color: @insensitive_fg_color;
+}
+
+/* Separator styling within menus and menuitems */
+separator {
+    background-color: @borders;
+    min-width: 1px;
+    min-height: 1px;
+}
+
+menu separator,
+.menu separator,
+.context-menu separator {
+    background-color: @borders;
+    margin: 4px 0;
+}
+
+/* ============================================================================
+   Ensure all primary toolbars and viewports are correctly themed
+   ============================================================================ */
+toolbar {
+    background-color: @theme_bg_color;
+    color: @theme_fg_color;
+    padding: 4px;
+}
+
+scrolledwindow {
+    background-color: @view_bg_color;
+}
+
+scrolledwindow viewport {
+    background-color: @view_bg_color;
+}
