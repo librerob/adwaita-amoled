@@ -1192,7 +1192,7 @@ button.suggested-action:checked {
     color: white;
     outline-color: rgba(255, 255, 255, 0.3);
     border-color: @accent_active;
-    background-image: image(#000fa1);
+    background-image: image(@accent_active);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1212,9 +1212,9 @@ button.suggested-action:backdrop:active,
 button.suggested-action:backdrop:checked,
 button.suggested-action.flat:backdrop:active,
 button.suggested-action.flat:backdrop:checked {
-    color: #f0fef1;
-    border-color: @accent_active;
-    background-image: image(#0a11af);
+    color: white;
+    border-color: @accent;
+    background-image: image(@accent_active);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
 
@@ -1247,7 +1247,7 @@ button.suggested-action.flat:backdrop:disabled {
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     text-shadow: none;
     -gtk-icon-shadow: none;
-    color: rgba(21, 83, 158, 0.8);
+    color: alpha(@accent, 0.6);
 }
 
 button.suggested-action:disabled {
@@ -2385,7 +2385,7 @@ headerbar button.toggle:checked:backdrop {
 .selection-mode headerbar,
 headerbar.selection-mode {
     color: #ffffff;
-    border-color: #000f0a;
+    border-color: @accent;
     text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
     background: @accent linear-gradient(to top, @accent_active 0%, @accent_hover 100%);
     box-shadow: inset 0 1px rgba(29, 88, 161, 0.535);
@@ -2481,7 +2481,7 @@ headerbar.selection-mode button:backdrop {
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
     -gtk-icon-effect: none;
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button:backdrop:active,
@@ -2499,7 +2499,7 @@ headerbar.selection-mode button:backdrop:checked {
     color: #f0fef1;
     background-image: image(#0a11af);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button:backdrop:disabled,
@@ -2508,12 +2508,12 @@ headerbar.selection-mode button:backdrop:checked {
 .selection-mode headerbar button:backdrop:disabled,
 headerbar.selection-mode button.flat:backdrop:disabled,
 headerbar.selection-mode button:backdrop:disabled {
-    color: #aecee1;
-    background-image: image(#0c1fcf);
+    color: alpha(white, 0.4);
+    background-image: image(alpha(@accent, 0.5));
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button:backdrop:disabled:active,
@@ -2527,7 +2527,7 @@ headerbar.selection-mode button:backdrop:disabled:checked {
     color: #acc1ee;
     background-image: image(#0a11af);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode button.titlebutton:backdrop,
@@ -2554,8 +2554,8 @@ headerbar.selection-mode button.flat:backdrop:disabled {
 .selection-mode.titlebar:not(headerbar) button:disabled,
 .selection-mode headerbar button:disabled,
 headerbar.selection-mode button:disabled {
-    color: #cfeafa;
-    background-image: image(#0c1fcf);
+    color: alpha(white, 0.4);
+    background-image: image(alpha(@accent, 0.5));
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
@@ -2586,7 +2586,7 @@ headerbar.selection-mode button.suggested-action {
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button.suggested-action:hover,
@@ -2600,7 +2600,7 @@ headerbar.selection-mode button.suggested-action:hover {
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0.04), 0 1px 2px rgba(0, 0, 0, 0.3);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button.suggested-action:active,
@@ -2613,7 +2613,7 @@ headerbar.selection-mode button.suggested-action:active {
     box-shadow: inset 0 1px rgba(0, 0, 0, 0.6);
     text-shadow: none;
     -gtk-icon-shadow: none;
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button.suggested-action:disabled,
@@ -2625,7 +2625,7 @@ headerbar.selection-mode button.suggested-action:disabled {
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button.suggested-action:backdrop,
@@ -2637,7 +2637,7 @@ headerbar.selection-mode button.suggested-action:backdrop {
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) button.suggested-action:backdrop:disabled,
@@ -2649,7 +2649,7 @@ headerbar.selection-mode button.suggested-action:backdrop:disabled {
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .selection-mode .titlebar:not(headerbar) .selection-menu,
@@ -2946,11 +2946,11 @@ treeview.view:disabled {
 }
 
 treeview.view:disabled:selected {
-    color: #a0ccf1;
+    color: alpha(@accent, 0.5);
 }
 
 treeview.view:disabled:selected:backdrop {
-    color: #1faeef;
+    color: alpha(@accent, 0.35);
 }
 
 treeview.view:disabled:backdrop {
@@ -2975,7 +2975,7 @@ treeview.view:backdrop {
 treeview.view:drop(active) {
     border-style: solid none;
     border-width: 1px;
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 treeview.view.after:drop(active) {
@@ -4735,7 +4735,7 @@ row:selected scale fill,
 scale row:selected fill,
 row:selected scale trough,
 scale row:selected trough {
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .osd progressbar trough,
@@ -4759,7 +4759,7 @@ scale .osd trough:disabled {
 
 progressbar progress,
 scale highlight {
-    border: 1px solid #000f0a;
+    border: 1px solid @accent;
     border-radius: 3px;
     background-color: @accent;
 }
@@ -4772,7 +4772,7 @@ scale highlight:disabled {
 
 progressbar progress:backdrop,
 scale highlight:backdrop {
-    border-color: #000f0a;
+    border-color: @accent;
     background-color: alpha(@accent, 0.7);
 }
 
@@ -4786,7 +4786,7 @@ row:selected progressbar progress,
 progressbar row:selected progress,
 row:selected scale highlight,
 scale row:selected highlight {
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .osd progressbar progress,
@@ -4892,7 +4892,7 @@ scale slider:hover {
 }
 
 scale slider:active {
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 scale slider:disabled {
@@ -4925,7 +4925,7 @@ scale slider:backdrop:disabled {
 
 row:selected scale slider:disabled,
 row:selected scale slider {
-    border-color: #000f0a;
+    border-color: @accent;
 }
 
 .osd scale slider {
@@ -5583,7 +5583,7 @@ row.activatable:selected:active {
 
 row.activatable.has-open-popup:selected,
 row.activatable:selected:hover {
-    background-color: #0ea0ea;
+    background-color: @accent_hover;
 }
 
 row.activatable:selected:backdrop {
@@ -6185,7 +6185,7 @@ infobar.info selection,
 infobar.question selection,
 infobar.warning selection,
 infobar.error selection {
-    background-color: #0e0e0e;
+    background-color: alpha(@accent, 0.4);
 }
 
 infobar.info *:link,
@@ -6914,7 +6914,7 @@ widgets main borders color on backdrop windows */
 /*
 these are pretty self explicative */
 
-@define-color warning_color #f1ac00;
+@define-color warning_color #e5a50a;
 @define-color error_color #ff0000;
 @define-color success_color #0aeea0;
 
