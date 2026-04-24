@@ -4,10 +4,6 @@
  * Borders: #2a2a2a (standard) / #1e1e1e (subtle)
  */
 
-/* Inherit Adwaita's structural drawing and layout rules */
-@import url("resource:///org/gtk/libgtk/theme/Adwaita/drawing.css");
-@import url("resource:///org/gtk/libgtk/theme/Adwaita/common.css");
-
 /* AMOLED depth tokens */
 @define-color surface_bg      #000000;
 @define-color surface_card    #0f0f0f;
@@ -29,17 +25,36 @@
 
 * {
     padding: 0;
+    -GtkToolButton-icon-spacing: 4;
     -GtkTextView-error-underline-color: #ff0000;
+    -GtkScrolledWindow-scrollbar-spacing: 0;
+    -GtkToolItemGroup-expander-size: 11;
+    -GtkWidget-text-handle-width: 20;
+    -GtkWidget-text-handle-height: 24;
+    -GtkDialog-button-spacing: 4;
+    -GtkDialog-action-area-border: 0;
     outline-color: alpha(currentColor, 0.3);
     outline-style: dashed;
     outline-offset: -3px;
     outline-width: 1px;
+    -gtk-outline-radius: 3px;
     -gtk-secondary-caret-color: @accent;
+}
+
+/* GtkTreeView row geometry — required for correct row/expander rendering */
+* {
+    -GtkTreeView-horizontal-separator: 4;
+    -GtkTreeView-grid-line-width: 1;
+    -GtkTreeView-grid-line-pattern: '';
+    -GtkTreeView-tree-line-width: 1;
+    -GtkTreeView-tree-line-pattern: '';
+    -GtkTreeView-expander-size: 16;
 }
 
 
 /*************** Base States * */
 
+/* .background is the authoritative window background node in GTK3 */
 .background {
     color: #ffffff;
     background-color: #000000;
@@ -90,6 +105,7 @@ iconview,
 iconview text,
 textview text {
     color: white;
+    caret-color: #e0e0e0;
     background-color: #0f0f0f;
 }
 
@@ -2323,7 +2339,7 @@ headerbar {
 
 .titlebar:backdrop:not(headerbar),
 headerbar:backdrop {
-    border-folor: #000000;
+    border-color: #000000;
     background-color: #000000;
     background-image: none;
     box-shadow: inset 0 1px rgba(238, 238, 236, 0.07);
@@ -3121,6 +3137,8 @@ menubar,
 .menubar {
     -GtkWidget-window-dragging: true;
     padding: 0px;
+    color: #ffffff;
+    background-color: #0a0a0a;
     box-shadow: inset 0 -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -5725,7 +5743,7 @@ filechooser .dialog-action-box:backdrop {
 }
 
 filechooser #pathbarbox {
-    border-eottom: 0px solid #000000;
+    border-bottom: 0px solid #000000;
 }
 
 filechooserbutton:drop(active) {
@@ -6319,11 +6337,11 @@ colorswatch overlay:backdrop:hover {
 }
 
 colorswatch#add-color-button {
-    border-refius: 1px 1px 0 0;
+    border-radius: 1px 1px 0 0;
 }
 
 colorswatch#add-color-button:only-child {
-    border-refius: 1px;
+    border-radius: 1px;
 }
 
 colorswatch#add-color-button overlay {
@@ -6371,11 +6389,11 @@ row:selected colorswatch {
 }
 
 colorswatch#editor-color-sample {
-    border-refius: 1px;
+    border-radius: 1px;
 }
 
 colorswatch#editor-color-sample overlay {
-    border-refius: 1.1px;
+    border-radius: 1.1px;
 }
 
 colorchooser .popover.osd {
