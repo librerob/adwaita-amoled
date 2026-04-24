@@ -291,6 +291,40 @@ menu separator,
 }
 
 /* ============================================================================
+   FIX: Clean window control buttons (minimize, maximize, close)
+   ============================================================================ */
+.titlebar button,
+windowcontrols button {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 4px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 0;
+}
+
+.titlebar button:hover,
+windowcontrols button:hover {
+    background-color: @surface_hover;
+}
+
+.titlebar button:active,
+windowcontrols button:active,
+.titlebar button:checked,
+windowcontrols button:checked {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+/* Optional: close button gets red hover like standard behavior */
+.titlebar button.close:hover,
+windowcontrols button.close:hover {
+    background-color: #e01b24;
+    color: white;
+}
+
+/* ============================================================================
    Toolbars and scrolled windows
    ============================================================================ */
 toolbar {
