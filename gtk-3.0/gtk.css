@@ -417,7 +417,7 @@ entry:disabled {
 spinbutton:backdrop:not(.vertical),
 entry:backdrop {
     color: #fafafa;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-color: #000000;
     box-shadow: none;
     transition: 200ms ease-out;
@@ -774,6 +774,7 @@ notebook > header > tabs > arrow:hover,
 button.flat:hover {
     transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transition-duration: 500ms;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 button.titlebutton:hover:active,
@@ -814,7 +815,7 @@ notebook > header > tabs > arrow:backdrop,
 button.flat:backdrop,
 button:backdrop {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -830,7 +831,7 @@ button.flat:backdrop:checked,
 button:backdrop:active,
 button:backdrop:checked {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#0e0e0e);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -839,7 +840,7 @@ notebook > header > tabs > arrow:backdrop:disabled,
 button.flat:backdrop:disabled,
 button:backdrop:disabled {
     color: #505050;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -853,7 +854,7 @@ button.flat:backdrop:disabled:checked,
 button:backdrop:disabled:active,
 button:backdrop:disabled:checked {
     color: #505050;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#0e0e0e);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -1656,7 +1657,7 @@ stacksidebar row.needs-attention > label:dir(rtl),
 
 .inline-toolbar toolbutton > button:backdrop {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1666,14 +1667,14 @@ stacksidebar row.needs-attention > label:dir(rtl),
 .inline-toolbar toolbutton > button:backdrop:active,
 .inline-toolbar toolbutton > button:backdrop:checked {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#0e0e0e);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
 
 .inline-toolbar toolbutton > button:backdrop:disabled {
     color: #505050;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1683,7 +1684,7 @@ stacksidebar row.needs-attention > label:dir(rtl),
 .inline-toolbar toolbutton > button:backdrop:disabled:active,
 .inline-toolbar toolbutton > button:backdrop:disabled:checked {
     color: #505050;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#0e0e0e);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -2314,7 +2315,7 @@ searchbar > revealer > box,
 .inline-toolbar:backdrop,
 searchbar > revealer > box:backdrop,
 .location-bar:backdrop {
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-color: #0f0f0f;
     box-shadow: none;
     transition: 200ms ease-out;
@@ -2374,7 +2375,7 @@ headerbar button.toggle:checked {
 headerbar stackswitcher button:checked:backdrop,
 headerbar button.toggle:checked:backdrop {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#0e0e0e);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -2886,12 +2887,6 @@ window.devel headerbar.titlebar:not(.selection-mode):backdrop {
     /* background-color would flash */
 }
 
-headerbar {
-    color: #ffffff;
-    background-color: #000000;
-    background-image: none
-}
-
 
 /************ Pathbars * */
 
@@ -2933,6 +2928,7 @@ headerbar {
 treeview.view {
     border-left-color: #cfcfcf;
     border-top-color: #000000;
+    background-color: #0f0f0f;
 }
 
 treeview.view:selected:focus,
@@ -2940,8 +2936,7 @@ treeview.view:selected {
     border-radius: 0;
 }
 
-treeview.view:selected:backdrop,
-treeview.view:selected {
+treeview.view:selected:backdrop {
     border-left-color: #ceecff;
     border-top-color: rgba(238, 238, 236, 0.1);
 }
@@ -2973,7 +2968,8 @@ treeview.view.separator:backdrop {
 
 treeview.view:backdrop {
     border-left-color: #a0a0a0;
-    border-top: #000000;
+    border-top-color: #000000;
+    background-color: #000000;
 }
 
 treeview.view:drop(active) {
@@ -3115,7 +3111,7 @@ treeview.view header button:disabled {
 
 treeview.view header button:backdrop {
     color: #a0a0a0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     border-style: none solid solid none;
     background-image: none;
     background-color: #000000;
@@ -3408,7 +3404,7 @@ notebook > header {
 }
 
 notebook > header:backdrop {
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-color: #0f0f0f;
 }
 
@@ -3763,7 +3759,7 @@ scrollbar.right {
 
 scrollbar:backdrop {
     background-color: #0f0f0f;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     transition: 200ms ease-out;
 }
 
@@ -3968,7 +3964,7 @@ switch {
 
 switch:checked {
     color: #ffffff;
-    border-color: #000f0a;
+    border-color: @accent;
     background-color: @accent;
     text-shadow: 0 1px rgba(3, 12, 23, 0.5), 0 0 2px rgba(255, 255, 255, 0.6);
 }
@@ -3982,14 +3978,14 @@ switch:disabled {
 
 switch:backdrop {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-color: #0f0f0f;
     text-shadow: none;
     transition: 200ms ease-out;
 }
 
 switch:backdrop:checked {
-    border-color: #000f0a;
+    border-color: @accent;
     background-color: @accent;
 }
 
@@ -4029,7 +4025,7 @@ switch:hover slider {
 }
 
 switch:checked > slider {
-    border: 1px solid #000f0a;
+    border: 1px solid shade(@accent, 0.8);
 }
 
 switch:disabled slider {
@@ -4052,7 +4048,7 @@ switch:backdrop slider {
 }
 
 switch:backdrop:checked > slider {
-    border-color: #000f0a;
+    border-color: shade(@accent, 0.8);
 }
 
 switch:backdrop:disabled slider {
@@ -4723,7 +4719,7 @@ progressbar trough:backdrop,
 scale fill:backdrop,
 scale trough:backdrop {
     background-color: #0f0f0f;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     transition: 200ms ease-out;
 }
 
@@ -5332,7 +5328,7 @@ levelbar trough {
 
 levelbar trough:backdrop {
     color: #fafafa;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-color: #000000;
     box-shadow: none;
 }
@@ -5418,7 +5414,7 @@ frame > border.flat,
 
 frame > border:backdrop,
 .frame:backdrop {
-    border-color: #000000;
+    border-color: @unfocused_borders;
 }
 
 actionbar > revealer > box {
@@ -5590,7 +5586,7 @@ row.activatable:selected:hover {
 }
 
 row.activatable:selected:backdrop {
-    background-color: @accent;
+    background-color: alpha(@accent, 0.7);
 }
 
 
@@ -6368,7 +6364,7 @@ colorswatch#add-color-button overlay:hover {
 
 colorswatch#add-color-button overlay:backdrop {
     color: #c0c0c0;
-    border-color: #000000;
+    border-color: @unfocused_borders;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
