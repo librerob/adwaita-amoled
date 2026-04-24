@@ -172,7 +172,7 @@ treeview:disabled:backdrop {
 }
 
 /* ============================================================================
-   FIX: Menus, Popovers, and MenuBars
+   FIX: Menus, Popovers, and MenuBars – WITHOUT the extra outer frame
    ============================================================================ */
 
 /* Main menu bar and menu items */
@@ -193,7 +193,7 @@ menubar > menuitem:hover,
     color: @accent_color;
 }
 
-/* General menu styling (standard dropdown menus) */
+/* Standard dropdown menus (non-popover style) */
 menu,
 .menu,
 .context-menu {
@@ -223,9 +223,11 @@ menu menuitem:disabled,
     color: @insensitive_fg_color;
 }
 
-/* Popovers for menus (e.g., right-click context menus) */
+/* Popover-based menus – remove outer border to avoid double frame */
 popover.background {
-    background-color: @surface_menu;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 popover.background > arrow,
@@ -233,11 +235,16 @@ popover.background > contents {
     background-color: @surface_menu;
     border: 1px solid @borders;
     border-radius: 9px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     color: @window_fg_color;
 }
 
-/* Style the contents of a popover menu */
+/* Ensure the contents have no extra outline */
+popover.background > contents {
+    padding: 4px 0;
+}
+
+/* Style the list inside popover menus */
 popover.background > contents > list,
 popover.background > contents > .view,
 popover.background > contents > iconview,
@@ -246,12 +253,12 @@ popover.background > contents > toolbar {
     border-style: none;
 }
 
-/* Styling for models (menu items) inside a popover */
+/* Model buttons (menu items) inside popovers */
 popover.background modelbutton {
     background-color: @surface_menu;
     color: @window_fg_color;
     border-radius: 5px;
-    padding: 4px 20px;
+    padding: 4px 12px;
 }
 
 popover.background modelbutton:hover {
@@ -269,7 +276,7 @@ popover.background modelbutton:disabled {
     color: @insensitive_fg_color;
 }
 
-/* Separator styling within menus and menuitems */
+/* Separators inside menus */
 separator {
     background-color: @borders;
     min-width: 1px;
@@ -284,7 +291,7 @@ menu separator,
 }
 
 /* ============================================================================
-   Ensure all primary toolbars and viewports are correctly themed
+   Toolbars and scrolled windows
    ============================================================================ */
 toolbar {
     background-color: @theme_bg_color;
