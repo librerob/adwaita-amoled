@@ -122,6 +122,7 @@ spinbutton,
 textview text {
     background-color: @theme_base_color;
     color: @theme_text_color;
+    border-radius: 12px;
 }
 
 entry:disabled,
@@ -134,8 +135,7 @@ textview text:disabled {
 button {
     background-color: @view_bg_color;
     color: @theme_fg_color;
-    border: 1px solid @borders;
-    border-radius: 5px;
+    border-radius: 12px;
     padding: 4px 8px;
 }
 
@@ -196,7 +196,7 @@ menu,
 .context-menu {
     background-color: @surface_menu;
     border: 1px solid @borders;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 4px 0;
 }
 
@@ -231,7 +231,7 @@ popover.background > arrow,
 popover.background > contents {
     background-color: @surface_menu;
     border: 1px solid @borders;
-    border-radius: 9px;
+    border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     color: @window_fg_color;
 }
@@ -254,7 +254,7 @@ popover.background > contents > toolbar {
 popover.background modelbutton {
     background-color: @surface_menu;
     color: @window_fg_color;
-    border-radius: 5px;
+    border-radius: 9px;
     padding: 4px 12px;
 }
 
@@ -298,7 +298,7 @@ windowcontrols button {
     padding: 4px;
     min-width: 24px;
     min-height: 24px;
-    border-radius: 0;
+    border-radius: 6px;
 }
 
 .titlebar button:hover,
@@ -340,5 +340,91 @@ scrolledwindow {
 }
 
 scrolledwindow viewport {
-    background-color: @view_bg_color;
+    background-color: transparent;
+}
+
+/* ============================================================================
+   Calendar
+   ============================================================================ */
+calendar {
+    padding: 0;
+    border: 1px solid @borders;
+    border-radius: 12px;
+    color: @window_fg_color;
+}
+
+calendar:disabled {
+    color: @insensitive_fg_color;
+}
+
+calendar > header {
+    padding: 3px;
+    border-bottom: 1px solid @borders;
+}
+
+calendar > grid {
+    margin: 3px;
+}
+
+calendar > grid > label {
+    border-radius: 12px;
+    margin: 0;
+}
+
+calendar > grid > label.day-number {
+    padding: 6px;
+}
+
+calendar > grid > label.day-number.other-month {
+    color: alpha(@window_fg_color, 0.3);
+}
+
+/* ============================================================================
+   Navigation sidebar row rounding
+   ============================================================================ */
+.navigation-sidebar > row {
+    border-radius: 9px;
+    min-height: 24px;
+    padding: 0 6px;
+    margin: 0;
+}
+
+.navigation-sidebar > row:not(:first-child) {
+    margin-top: 3px;
+}
+
+.navigation-sidebar > row:hover {
+    background-color: @surface_hover;
+}
+
+/* ============================================================================
+   Stacksidebar row rounding
+   ============================================================================ */
+stacksidebar list {
+    padding: 6px;
+    background-color: transparent;
+}
+
+stacksidebar row {
+    min-height: 24px;
+    padding: 6px;
+    border-radius: 12px;
+}
+
+stacksidebar row + row {
+    margin-top: 4px;
+}
+
+/* ============================================================================
+   Boxed list first/last row corner rounding
+   ============================================================================ */
+list.boxed-list > row:first-child {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+list.boxed-list > row:last-child {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    border-bottom-width: 0;
 }
