@@ -50,17 +50,14 @@ Then set the theme through your desktop's appearance settings, or via the termin
 ```bash
 # GTK (XFCE / Cinnamon / GNOME)
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-AMOLED"
-
 ```
 
 ```bash
 # If you use flatpak apps, run:
 sudo flatpak override --filesystem=xdg-config/gtk-3.0 && sudo flatpak override --filesystem=xdg-config/gtk-4.0
-
 ```
 
-**Important note to Firefox users:**
-For Firefox to be able to use these themes you'll need to open `about:config` and set  `widget.gtk.libadwaita-colors.enabled` to `false`.
+> **Firefox users:** Open `about:config` and set `widget.gtk.libadwaita-colors.enabled` to `false`.
 
 ---
 
@@ -92,61 +89,50 @@ Then open `qt5ct` / `qt6ct`, go to **Appearance → Color scheme**, and select *
 
 ---
 
-## Extras (Rofi / Alacritty / Qt)
+## Extras
 
 Additional themes are included in the `extra/` folder:
 
-    Alacritty → Terminal color scheme aligned with the palette
+| Extra | Description | How to apply |
+|---|---|---|
+| **Alacritty** | Terminal color scheme aligned with the palette | Import or merge the provided YAML into your `alacritty.toml` |
+| **Kitty** | Terminal color scheme | Include the `.conf` file in your `kitty.conf` |
+| **Neovim** | Colorscheme and airline theme | See [Neovim setup](#neovim) below |
+| **Qt5ct / Qt6ct** | Full color schemes | See [Qt setup](#qt-qt5ct--qt6ct) above |
+| **Rofi** | Matching launcher theme | Pass the theme with `-theme` or set it in your config |
+| **Zsh** | Autosuggestions & syntax highlighting config | Integrate the provided lines into your `.zshrc` |
 
-    Kitty → Terminal color scheme (see setup above)
+All extras follow the same AMOLED palette and accent system as the GTK theme.
 
-    Neovim → Colorscheme and airline theme (see setup above)
+### Neovim
 
-    Qt5ct / Qt6ct → Full color schemes (see setup above)
-
-    Rofi → Matching launcher theme
-
-    Zsh → Autosuggestions & syntax highlighting configuration (see setup above)
-
-Apply them manually depending on your setup:
-
-    Alacritty: Import or merge the provided YAML into your alacritty.toml
-
-    Rofi: Pass the theme with -theme or set it in your config
-
-    Kitty: Include the .conf file in your kitty.conf
-
-    Neovim: Copy the color files to ~/.config/nvim/colors/ and set the colorscheme
-
-    Zsh: Integrate the provided lines into your .zshrc
-
-
-Neovim theme
-
-To install the Neovim colorscheme:
-
-# Copy the colorscheme file (assuming Neovim config is in ~/.config/nvim)
+```bash
 mkdir -p ~/.config/nvim/colors
 cp ~/.themes/Adwaita-AMOLED/extra/nvim/colors/adwaita-amoled.vim ~/.config/nvim/colors/
+```
 
-Then add this to your init.vim or init.lua:
+Then add to your config:
 
-" For init.vim
+```vim
+" init.vim
 colorscheme adwaita-amoled
+```
 
--- For init.lua
+```lua
+-- init.lua
 vim.cmd('colorscheme adwaita-amoled')
+```
 
 If you use vim-airline, copy the airline theme as well:
 
+```bash
 mkdir -p ~/.config/nvim/autoload/airline/themes
 cp ~/.themes/Adwaita-AMOLED/extra/nvim/autoload/airline/themes/adwaita-amoled.vim ~/.config/nvim/autoload/airline/themes/
+```
 
-Then set it in your config:
-
+```vim
 let g:airline_theme = 'adwaita-amoled'
-
-All extras follow the same AMOLED palette and accent system as the GTK theme.
+```
 
 ---
 
@@ -194,7 +180,6 @@ Adwaita-AMOLED/
 │   ├── wallpaper/          Matching wallpaper
 │   └── zsh/                Zsh autosuggestions & syntax highlighting config
 └── index.theme
-
 ```
 
 ---
