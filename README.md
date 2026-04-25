@@ -96,14 +96,55 @@ Then open `qt5ct` / `qt6ct`, go to **Appearance → Color scheme**, and select *
 
 Additional themes are included in the `extra/` folder:
 
-- **Qt5ct / Qt6ct** → full color schemes (see setup above)
-- **Rofi** → matching launcher theme
-- **Alacritty** → terminal color scheme aligned with the palette
+    Alacritty → Terminal color scheme aligned with the palette
+
+    Kitty → Terminal color scheme (see setup above)
+
+    Neovim → Colorscheme and airline theme (see setup above)
+
+    Qt5ct / Qt6ct → Full color schemes (see setup above)
+
+    Rofi → Matching launcher theme
+
+    Zsh → Autosuggestions & syntax highlighting configuration (see setup above)
 
 Apply them manually depending on your setup:
 
-- Rofi: pass the theme with `-theme` or set it in your config
-- Alacritty: import or merge the provided YAML into your config
+    Alacritty: Import or merge the provided YAML into your alacritty.toml
+
+    Rofi: Pass the theme with -theme or set it in your config
+
+    Kitty: Include the .conf file in your kitty.conf
+
+    Neovim: Copy the color files to ~/.config/nvim/colors/ and set the colorscheme
+
+    Zsh: Integrate the provided lines into your .zshrc
+
+
+Neovim theme
+
+To install the Neovim colorscheme:
+
+# Copy the colorscheme file (assuming Neovim config is in ~/.config/nvim)
+mkdir -p ~/.config/nvim/colors
+cp ~/.themes/Adwaita-AMOLED/extra/nvim/colors/adwaita-amoled.vim ~/.config/nvim/colors/
+
+Then add this to your init.vim or init.lua:
+
+" For init.vim
+colorscheme adwaita-amoled
+
+-- For init.lua
+vim.cmd('colorscheme adwaita-amoled')
+
+If you use vim-airline, copy the airline theme as well:
+
+mkdir -p ~/.config/nvim/autoload/airline/themes
+cp ~/.themes/Adwaita-AMOLED/extra/nvim/autoload/airline/themes/adwaita-amoled.vim ~/.config/nvim/autoload/airline/themes/
+
+Then set it in your config:
+
+let g:airline_theme = 'adwaita-amoled'
 
 All extras follow the same AMOLED palette and accent system as the GTK theme.
 
@@ -134,20 +175,26 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 
 ```
 Adwaita-AMOLED/
-├── cinnamon/          Cinnamon shell theme
-├── gtk-2.0/           GTK2 theme (murrine engine)
-├── gtk-3.0/           GTK3 theme
-├── gtk-4.0/           GTK4 theme
-├── metacity-1/        Metacity / Muffin window decorations
-├── openbox-3/         Openbox window manager theme
+├── cinnamon/               Cinnamon shell theme
+├── gtk-2.0/                GTK2 theme (murrine engine)
+├── gtk-3.0/                GTK3 theme
+├── gtk-4.0/                GTK4 theme
+├── metacity-1/             Metacity / Muffin window decorations
+├── openbox-3/              Openbox window manager theme
 ├── extra/
-│   ├── libadwaita/    gtk.css + gtk-dark.css → copy to ~/.config/gtk-4.0/
-│   ├── qt5ct/         Qt5 color scheme
-│   ├── qt6ct/         Qt6 color scheme
-│   ├── wallpaper/     Matching wallpaper
-│   ├── screenshot/    Preview image
-│   └── logo/          Theme logo
+│   ├── alacritty/          Alacritty terminal theme
+│   ├── kitty/              Kitty terminal theme
+│   ├── libadwaita/         gtk.css + gtk-dark.css → copy to ~/.config/gtk-4.0/
+│   ├── logo/               Theme logo
+│   ├── nvim/               Neovim colorscheme and airline theme
+│   ├── qt5ct/              Qt5 color scheme
+│   ├── qt6ct/              Qt6 color scheme
+│   ├── rofi/               Rofi launcher theme
+│   ├── screenshot/         Preview image
+│   ├── wallpaper/          Matching wallpaper
+│   └── zsh/                Zsh autosuggestions & syntax highlighting config
 └── index.theme
+
 ```
 
 ---
