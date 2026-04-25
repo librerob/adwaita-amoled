@@ -150,22 +150,124 @@ button:checked {
 }
 
 /* ============================================================================
-   Solid background for treeviews (required for Transmission and other GTK4 apps)
+   listview / list — base background (GtkListView, GtkColumnView use these)
+   Ground truth: GTK4 Default-dark L1334
    ============================================================================ */
-treeview {
-    background-color: #0f0f0f;
+listview,
+list {
+    color: @window_fg_color;
+    background-color: @view_bg_color;
+    border-color: @border_subtle;
 }
 
-treeview:backdrop {
-    background-color: #000000;
+listview:backdrop,
+list:backdrop {
+    background-color: @view_bg_color;
+    border-color: @border_std;
 }
 
-treeview:disabled {
-    background-color: #000000;
+listview > row,
+list > row {
+    padding: 2px;
 }
 
-treeview:disabled:backdrop {
-    background-color: #000000;
+/* ============================================================================
+   columnview — System Monitor uses GtkColumnView exclusively
+   Ground truth: GTK4 Default-dark L1364-1370
+   ============================================================================ */
+columnview > listview > row {
+    padding: 0;
+}
+
+columnview > listview > row > cell {
+    padding: 8px 6px;
+}
+
+columnview > listview > row > cell:not(:first-child) {
+    border-left: 1px solid transparent;
+}
+
+columnview.column-separators > listview > row > cell {
+    border-left-color: @border_std;
+}
+
+/* ============================================================================
+   row hover and selection — THE missing rules causing invisible states
+   Ground truth: GTK4 Default-dark L1354-1362, L1732-1734
+   Without these, hover = invisible, selection = invisible.
+   ============================================================================ */
+
+/* Subtle hover — matches Adwaita behaviour (very dim, just enough to show) */
+row.activatable:hover {
+    background-color: @surface_hover;
+}
+
+row.activatable:active {
+    box-shadow: inset 0 2px 2px -2px rgba(0, 0, 0, 0.4);
+}
+
+/* Selection background — accent color, covers all GTK4 list/column/tree widgets */
+.view:selected:focus,
+.view:selected,
+columnview.view:selected:focus,
+columnview.view:selected,
+treeview.view:selected:focus,
+treeview.view:selected,
+row:selected,
+listview > row:selected,
+list > row:selected {
+    background-color: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+/* Selected + hovered — slightly brighter so the hover is still visible on selection */
+row.activatable:selected:hover {
+    background-color: mix(@accent_bg_color, white, 0.85);
+}
+
+/* Backdrop (window not focused) — dimmed accent */
+.view:selected:backdrop,
+columnview.view:selected:backdrop,
+treeview.view:selected:backdrop,
+row:selected:backdrop,
+listview > row:selected:backdrop,
+list > row:selected:backdrop {
+    background-color: mix(@accent_bg_color, @view_bg_color, 0.55);
+    color: alpha(@accent_fg_color, 0.8);
+}
+
+/* Disabled selected */
+.view:selected:disabled,
+row:selected:disabled {
+    background-color: mix(@accent_bg_color, @view_bg_color, 0.35);
+    color: alpha(@accent_fg_color, 0.5);
+}
+
+/* Focus outline on selected rows */
+row:selected {
+    outline-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================================================
+   treeview (GTK3 legacy, Transmission etc.)
+   ============================================================================ */
+treeview.view {
+    background-color: @view_bg_color;
+    color: @window_fg_color;
+}
+
+treeview.view:backdrop {
+    background-color: @view_bg_color;
+    color: alpha(@window_fg_color, 0.7);
+}
+
+treeview.view:disabled {
+    color: @insensitive_fg_color;
+}
+
+treeview.view.separator {
+    min-height: 2px;
+    color: @border_std;
 }
 
 /* ============================================================================
@@ -333,10 +435,6 @@ toolbar {
     background-color: @theme_bg_color;
     color: @theme_fg_color;
     padding: 4px;
-}
-
-scrolledwindow {
-    background-color: @view_bg_color;
 }
 
 scrolledwindow viewport {
