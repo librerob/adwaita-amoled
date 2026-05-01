@@ -69,6 +69,9 @@ libadwaita apps ignore GTK themes by default. To apply the overrides:
 mkdir -p ~/.config/gtk-4.0
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk.css ~/.config/gtk-4.0/gtk.css
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk-dark.css ~/.config/gtk-4.0/gtk-dark.css
+cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets ~/.config/gtk-4.0/assets
+cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/libadwaita-tweaks.css ~/.config/gtk-4.0/libadwaita-tweaks.css
+
 ```
 
 ---
