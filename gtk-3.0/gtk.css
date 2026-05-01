@@ -680,6 +680,61 @@ treeview entry:focus {
     border-color: @accent;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Nemo desktop inline rename — fix invisible text in unselected state
+   (Cinnamon / Linux Mint)
+
+   Root cause: The rename GtkEntry placed by NemoIconContainer (EelCanvas,
+   not a real GtkIconView) is given class .flat, which triggers the
+   entry.flat rule above and forces background-color:transparent.
+   NemoIconContainer is NOT matched by the `iconview` CSS selector, so there
+   is no opaque dark parent surface — the entry renders over whatever is
+   behind it (wallpaper, or a white GTK default surface).  The entry's text
+   color is white (inherited from .background { color:#ffffff }) and so is
+   the background → invisible until text is selected (accent background
+   then rescues contrast).
+
+   Fix: mirror the `treeview entry` treatment for both `iconview entry`
+   (standard GtkIconView inline editing) and `.nemo-desktop entry` (Nemo
+   desktop rename).  Each pseudo-class variant is listed individually so
+   specificity beats the grouped entry.flat:* rules (specificity 21).
+   ──────────────────────────────────────────────────────────────────────── */
+
+iconview entry,
+.nemo-desktop entry {
+    color: #ffffff;
+    caret-color: #e0e0e0;
+    background-color: #0f0f0f;
+    background-image: none;
+    border-color: #2a2a2a;
+}
+
+/* entry.flat                    specificity 11  → iconview entry.flat     = 12 ✓
+   entry.flat:focus/backdrop/… specificity 21  → iconview entry.flat:FOO  = 22 ✓
+   .nemo-desktop entry.flat      specificity 21  (source-order win, placed after) */
+iconview entry.flat,
+iconview entry.flat:focus,
+iconview entry.flat:backdrop,
+iconview entry.flat:disabled,
+.nemo-desktop entry.flat,
+.nemo-desktop entry.flat:focus,
+.nemo-desktop entry.flat:backdrop,
+.nemo-desktop entry.flat:disabled {
+    color: #ffffff;
+    caret-color: #e0e0e0;
+    background-color: #0f0f0f;
+    background-image: none;
+    border-color: #2a2a2a;
+}
+
+iconview entry:focus,
+iconview entry.flat:focus,
+.nemo-desktop entry:focus,
+.nemo-desktop entry.flat:focus {
+    border-color: @accent;
+    box-shadow: inset 0 0 0 1px @accent;
+}
+
 .entry-tag {
     padding: 5px;
     margin-top: 2px;
