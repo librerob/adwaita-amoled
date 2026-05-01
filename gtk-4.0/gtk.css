@@ -1,2 +1,114 @@
-@import url('libadwaita.css');
+/* ══════════════════════════════════════════════════════════════════════════
+ *  Adwaita-AMOLED — GTK4 / libadwaita semantic color overrides
+ *  ─────────────────────────────────────────────────────────────────────────
+ *
+ *  HOW LIBADWAITA THEMING WORKS
+ *  ════════════════════════════
+ *  Libadwaita renders its own widgets internally and ignores traditional
+ *  GTK theme CSS for those widgets.  The ONLY way to theme libadwaita apps
+ *  is by overriding its @define-color semantic color variables.
+ *
+ *  These variables are read from two places (in priority order):
+ *    1. ~/.config/gtk-4.0/gtk.css   ← user override (highest priority)
+ *    2. Active GTK theme's gtk-4.0/gtk.css
+ *
+ *  INSTALLATION
+ *  ════════════
+ *  Copy the entire gtk-4.0/ folder to ~/.config/gtk-4.0/ so that ALL
+ *  libadwaita apps pick up the AMOLED dark palette unconditionally:
+ *
+ *    cp -r ~/.local/share/themes/adwaita-amoled/gtk-4.0/* ~/.config/gtk-4.0/
+ *
+ *  No GTK_THEME env var or gsettings change is required for libadwaita colors;
+ *  the ~/.config/gtk-4.0/gtk.css path is always read by all GTK4 apps.
+ *
+ *  Non-color widget tweaks (OSD shape, Chromium CSD, etc.) are in
+ *  libadwaita-tweaks.css, imported below.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
 @import url('libadwaita-tweaks.css');
+
+/* ── Accent ──────────────────────────────────────────────────────────────── */
+@define-color accent_color             #387af2;
+@define-color accent_bg_color          #387af2;
+@define-color accent_fg_color          #ffffff;
+
+/* ── Window / base ───────────────────────────────────────────────────────── */
+@define-color window_bg_color          #000000;
+@define-color window_fg_color          #ffffff;
+
+/* ── View (lists, treeviews, text areas) ─────────────────────────────────── */
+@define-color view_bg_color            #0f0f0f;
+@define-color view_fg_color            #ffffff;
+
+/* ── Headerbar ───────────────────────────────────────────────────────────── */
+@define-color headerbar_bg_color       #0e0e0e;
+@define-color headerbar_fg_color       #ffffff;
+@define-color headerbar_border_color   #2a2a2a;
+@define-color headerbar_backdrop_color #000000;
+@define-color headerbar_shade_color    rgba(0, 0, 0, 0.5);
+@define-color headerbar_darker_shade_color rgba(0, 0, 0, 0.9);
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+@define-color card_bg_color            #0f0f0f;
+@define-color card_fg_color            #ffffff;
+@define-color card_shade_color         rgba(0, 0, 0, 0.4);
+
+/* ── Dialog ──────────────────────────────────────────────────────────────── */
+@define-color dialog_bg_color          #141414;
+@define-color dialog_fg_color          #ffffff;
+
+/* ── Popover / tooltip ───────────────────────────────────────────────────── */
+@define-color popover_bg_color         #141414;
+@define-color popover_fg_color         #ffffff;
+@define-color popover_shade_color      rgba(0, 0, 0, 0.4);
+
+/* ── Thumbnail ───────────────────────────────────────────────────────────── */
+@define-color thumbnail_bg_color       #141414;
+@define-color thumbnail_fg_color       #ffffff;
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+@define-color sidebar_bg_color         #000000;
+@define-color sidebar_fg_color         #ffffff;
+@define-color sidebar_backdrop_color   #000000;
+@define-color sidebar_border_color     #2a2a2a;
+@define-color sidebar_shade_color      rgba(0, 0, 0, 0.4);
+
+/* ── Secondary sidebar ───────────────────────────────────────────────────── */
+@define-color secondary_sidebar_bg_color       #0a0a0a;
+@define-color secondary_sidebar_fg_color       #ffffff;
+@define-color secondary_sidebar_backdrop_color #000000;
+@define-color secondary_sidebar_border_color   #2a2a2a;
+@define-color secondary_sidebar_shade_color    rgba(0, 0, 0, 0.4);
+
+/* ── Shade / scrollbar ───────────────────────────────────────────────────── */
+@define-color shade_color              rgba(0, 0, 0, 0.4);
+@define-color scrollbar_outline_color  rgba(0, 0, 0, 0.95);
+
+/* ── Semantic status colors ──────────────────────────────────────────────── */
+@define-color destructive_color        #ff7b7b;
+@define-color destructive_bg_color     #c01c28;
+@define-color destructive_fg_color     #ffffff;
+
+@define-color success_color            #8ff0a4;
+@define-color success_bg_color         #26a269;
+@define-color success_fg_color         #ffffff;
+
+@define-color warning_color            #f8e45c;
+@define-color warning_bg_color         #cd9309;
+@define-color warning_fg_color         rgba(0, 0, 0, 0.8);
+
+@define-color error_color              #ff7b7b;
+@define-color error_bg_color           #c01c28;
+@define-color error_fg_color           #ffffff;
+
+/* ── Legacy GTK3 named color aliases (adw-gtk3 compatibility) ────────────── */
+@define-color theme_bg_color           #000000;
+@define-color theme_fg_color           #ffffff;
+@define-color theme_base_color         #0f0f0f;
+@define-color theme_text_color         #ffffff;
+@define-color theme_selected_bg_color  #387af2;
+@define-color theme_selected_fg_color  #ffffff;
+@define-color insensitive_bg_color     #0a0a0a;
+@define-color insensitive_fg_color     rgba(255, 255, 255, 0.35);
+@define-color insensitive_base_color   #0f0f0f;

@@ -1,3 +1,21 @@
+/* ══════════════════════════════════════════════════════════════════════════
+ *  Adwaita-AMOLED — user override for ~/.config/gtk-4.0/gtk.css
+ *  ─────────────────────────────────────────────────────────────────────────
+ *
+ *  NOTE: This file is now IDENTICAL to the theme's gtk-4.0/gtk.css.
+ *
+ *  PREFERRED INSTALLATION METHOD:
+ *    Copy the entire gtk-4.0/ folder directly:
+ *
+ *      cp -r path/to/adwaita-amoled/gtk-4.0/* ~/.config/gtk-4.0/
+ *
+ *  That copies both gtk.css (colors) and libadwaita-tweaks.css (shapes)
+ *  in one step.  You do NOT need to use this file separately anymore.
+ *
+ *  The extra/libadwaita/ directory is kept for backwards compatibility
+ *  only.  The canonical source of truth is gtk-4.0/gtk.css.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
 /* ── Accent ──────────────────────────────────────────────────────────────── */
 @define-color accent_color             #387af2;
 @define-color accent_bg_color          #387af2;
@@ -45,17 +63,17 @@
 @define-color sidebar_shade_color      rgba(0, 0, 0, 0.4);
 
 /* ── Secondary sidebar ───────────────────────────────────────────────────── */
-@define-color secondary_sidebar_bg_color          #0a0a0a;
-@define-color secondary_sidebar_fg_color          #ffffff;
-@define-color secondary_sidebar_backdrop_color    #000000;
-@define-color secondary_sidebar_border_color      #2a2a2a;
-@define-color secondary_sidebar_shade_color       rgba(0, 0, 0, 0.4);
+@define-color secondary_sidebar_bg_color       #0a0a0a;
+@define-color secondary_sidebar_fg_color       #ffffff;
+@define-color secondary_sidebar_backdrop_color #000000;
+@define-color secondary_sidebar_border_color   #2a2a2a;
+@define-color secondary_sidebar_shade_color    rgba(0, 0, 0, 0.4);
 
 /* ── Shade / scrollbar ───────────────────────────────────────────────────── */
 @define-color shade_color              rgba(0, 0, 0, 0.4);
 @define-color scrollbar_outline_color  rgba(0, 0, 0, 0.95);
 
-/* ── Semantic (keep Adwaita values — don't break error/warning/success) ──── */
+/* ── Semantic status colors ──────────────────────────────────────────────── */
 @define-color destructive_color        #ff7b7b;
 @define-color destructive_bg_color     #c01c28;
 @define-color destructive_fg_color     #ffffff;
@@ -72,7 +90,7 @@
 @define-color error_bg_color           #c01c28;
 @define-color error_fg_color           #ffffff;
 
-/* ── Legacy GTK3 named color aliases (adw-gtk3 reads these) ──────────────── */
+/* ── Legacy GTK3 named color aliases (adw-gtk3 compatibility) ────────────── */
 @define-color theme_bg_color           #000000;
 @define-color theme_fg_color           #ffffff;
 @define-color theme_base_color         #0f0f0f;

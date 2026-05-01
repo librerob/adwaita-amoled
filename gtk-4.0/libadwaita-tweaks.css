@@ -1,32 +1,25 @@
-@define-color accent_bg_color @blue_3;
-@define-color accent_fg_color white;
-:root {
-  --accent-blue: #387af2;
-  --accent-teal: #2190a4;
-  --accent-green: #3a944a;
-  --accent-yellow: #c88800;
-  --accent-orange: #ed5b00;
-  --accent-red: #e62d42;
-  --accent-pink: #d56199;
-  --accent-purple: #9141ac;
-  --accent-slate: #6f8396;
-  --accent-bg-color: var(--accent-blue);
-  --accent-fg-color: @accent_fg_color;
-  --window-bg-color: @window_bg_color;
-  --headerbar-bg-color: @headerbar_bg_color;
-}
+/* ══════════════════════════════════════════════════════════════════════════
+ *  Adwaita-AMOLED — non-color widget tweaks
+ *  ─────────────────────────────────────────────────────────────────────────
+ *
+ *  These rules apply minor shape and layout corrections on top of
+ *  libadwaita's internal styles.  Colors are NOT set here — they are
+ *  handled entirely via @define-color in gtk.css.
+ *
+ *  All var() references here use CSS custom properties (--foo) that
+ *  libadwaita automatically derives from the @define-color values you set.
+ * ══════════════════════════════════════════════════════════════════════════ */
 
-notebook > header {
-  background-color: var(--window-bg-color);
-}
-
-.osd, .osd button {
+/* ── Rounder OSD surfaces ────────────────────────────────────────────────── */
+.osd,
+.osd button {
   border-radius: 24px;
 }
 .osd button {
   margin: 2px;
 }
 
+/* ── Tighter window-control padding in default-decoration headerbars ─────── */
 headerbar.default-decoration windowcontrols > button {
   margin: 0 1px;
 }
@@ -40,25 +33,21 @@ headerbar.default-decoration windowcontrols.end {
   margin-right: 3px;
 }
 
+/* ── Chromium / Electron CSD overrides ──────────────────────────────────── *
+ *  Chromium draws its own titlebar as a GTK widget with class .chromium.
+ *  We override it here so it picks up the AMOLED palette instead of
+ *  Chromium's hardcoded grey.
+ * ─────────────────────────────────────────────────────────────────────── */
 .background.chromium {
   background-color: var(--window-bg-color);
 }
-@media (prefers-color-scheme: dark) {
-  .background.chromium {
-    background-color: hsl(from var(--headerbar-bg-color) h calc(s * 1.2) calc(l * 1.2));
-  }
-}
-.background.chromium selection, .background.chromium selection:focus {
+
+.background.chromium selection,
+.background.chromium selection:focus {
   background-color: color-mix(in srgb, var(--accent-bg-color) 30%, transparent);
-}
-@media (prefers-color-scheme: dark) {
-  .background.chromium selection, .background.chromium selection:focus {
-    background-color: var(--accent-bg-color);
-  }
-}
-.background.chromium selection, .background.chromium selection:focus {
   color: var(--accent-fg-color);
 }
+
 .background.chromium windowcontrols > button {
   background-color: color-mix(in srgb, currentColor 10%, transparent);
   color: var(--window-fg-color);
@@ -77,5 +66,5 @@ headerbar.default-decoration windowcontrols.end {
 }
 
 tooltip.background.chromium {
-  background-color: RGB(0 0 6/80%);
+  background-color: rgba(0, 0, 6, 0.80);
 }
