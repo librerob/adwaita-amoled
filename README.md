@@ -23,6 +23,11 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
   <img src="./extra/screenshot/screenshot.png" alt="Adwaita AMOLED Screenshot">
 </p>
 
+<p align="center">
+  <img src="./extra/screenshot/screenshot2.png" alt="Adwaita AMOLED Screenshot">
+</p>
+
+
 ---
 
 ## Features
