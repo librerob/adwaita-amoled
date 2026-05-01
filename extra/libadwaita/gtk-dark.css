@@ -1,31 +1,3 @@
-/* ══════════════════════════════════════════════════════════════════════════
- *  Adwaita-AMOLED — GTK4 / libadwaita semantic color overrides
- *  ─────────────────────────────────────────────────────────────────────────
- *
- *  HOW LIBADWAITA THEMING WORKS
- *  ════════════════════════════
- *  Libadwaita renders its own widgets internally and ignores traditional
- *  GTK theme CSS for those widgets.  The ONLY way to theme libadwaita apps
- *  is by overriding its @define-color semantic color variables.
- *
- *  These variables are read from two places (in priority order):
- *    1. ~/.config/gtk-4.0/gtk.css   ← user override (highest priority)
- *    2. Active GTK theme's gtk-4.0/gtk.css
- *
- *  INSTALLATION
- *  ════════════
- *  Copy the entire gtk-4.0/ folder to ~/.config/gtk-4.0/ so that ALL
- *  libadwaita apps pick up the AMOLED dark palette unconditionally:
- *
- *    cp -r ~/.local/share/themes/adwaita-amoled/gtk-4.0/* ~/.config/gtk-4.0/
- *
- *  No GTK_THEME env var or gsettings change is required for libadwaita colors;
- *  the ~/.config/gtk-4.0/gtk.css path is always read by all GTK4 apps.
- *
- *  Non-color widget tweaks (OSD shape, Chromium CSD, etc.) are in
- *  libadwaita-tweaks.css, imported below.
- * ══════════════════════════════════════════════════════════════════════════ */
-
 @import url('libadwaita-tweaks.css');
 
 /* ── Accent ──────────────────────────────────────────────────────────────── */

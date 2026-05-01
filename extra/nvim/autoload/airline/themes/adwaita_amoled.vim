@@ -1,22 +1,5 @@
 " =============================================================================
 " autoload/airline/themes/adwaita_amoled.vim
-" vim-airline theme for Adwaita-AMOLED  (revised v2)
-" =============================================================================
-"
-" Palette columns: [ guifg, guibg, ctermfg, ctermbg ]
-"
-"   normal mode   → black   #000000 on accent blue    #387af2
-"   insert mode   → black   #000000 on success green  #0aeea0
-"   visual mode   → black   #000000 on warning yellow #f1ac00
-"   replace mode  → black   #000000 on error red      #ff3333  [FIX v2]
-"   inactive      → #737373 on surface_card #0f0f0f   [FIX v2: was #555555 2.57:1]
-"
-" v2 changes:
-"   • s:ghost  #555555 → #737373  (2.57:1 → 4.04:1 on surface_card)
-"     Inactive statusline text was nearly unreadable on the surface_card
-"     background. At 4.04:1 it's clearly legible as secondary/inactive.
-"   • s:red    #ff0000 → #ff3333  (consistent with colorscheme error color)
-"
 " =============================================================================
 
 let s:bg        = ['#000000', 0  ]

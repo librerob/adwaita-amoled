@@ -1,38 +1,3 @@
-# -----------------------------------------------------------------------------
-# Colors — Adwaita-AMOLED  (revised v2)
-# -----------------------------------------------------------------------------
-# Changelog from v1:
-#   • normal.red  #ff0000 → #ff3333  (5.77:1; pure saturated red on black
-#     causes eye-strain on OLED over long sessions — slight desaturation
-#     keeps semantic meaning while removing the harsh glare)
-#   • All other values unchanged; every entry verified below.
-#
-# Contrast ratios (WCAG relative-luminance, bg = #000000)
-#   normal.black   #000000    0.00:1  (invisible by design — terminal fill)
-#   normal.red     #ff3333    5.77:1  ✓
-#   normal.green   #0aeea0   13.75:1  ✓
-#   normal.yellow  #f1ac00   10.64:1  ✓
-#   normal.blue    #387af2    5.23:1  ✓
-#   normal.magenta #c678dd    7.13:1  ✓
-#   normal.cyan    #01c1f1    9.90:1  ✓
-#   normal.white   #ffffff   21.00:1  ✓
-#   bright.black   #1a1a1a    1.21:1  (surface; intentionally dark)
-#   bright.red     #ff4444    6.16:1  ✓
-#   bright.green   #4affc4   16.39:1  ✓
-#   bright.yellow  #ffcc44   13.97:1  ✓
-#   bright.blue    #4a8cf5    6.36:1  ✓
-#   bright.magenta #e599ff   10.33:1  ✓
-#   bright.cyan    #44ddff   13.03:1  ✓
-#   bright.white   #fafafa   20.78:1  ✓
-#   dim.red        #e00a0f    4.22:1  ✓  (dim — intentionally lower)
-#   dim.green      #00aa70    6.98:1  ✓
-#   dim.yellow     #aa7800    5.40:1  ✓
-#   dim.blue       #2d6be0    4.29:1  ✓
-#   dim.magenta    #8a55aa    3.96:1  △  (dim — acceptable for faint attribute)
-#   dim.cyan       #0a88aa    5.12:1  ✓
-#   dim.white      #c0c0c0   11.54:1  ✓
-# -----------------------------------------------------------------------------
-
 [colors]
 draw_bold_text_with_bright_colors = true
 
