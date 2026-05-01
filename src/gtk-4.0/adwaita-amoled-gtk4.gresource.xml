@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/adwaita-amoled/gtk-4.0">
+    <file compressed="true" alias="gtk-main.css">gtk-main.css</file>
+    <file alias="assets/check-symbolic.svg">assets/check-symbolic.svg</file>
+    <file alias="assets/bullet-symbolic.svg">assets/bullet-symbolic.svg</file>
+    <file alias="assets/dash-symbolic.svg">assets/dash-symbolic.svg</file>
+    <file alias="assets/devel-symbolic.svg">assets/devel-symbolic.svg</file>
+  </gresource>
+</gresources>
