@@ -1,0 +1,138 @@
+/********************************************
+ * Adwaita-amoled for Rofi                   *
+ * Based on librerob/adwaita-amoled GTK theme*
+ * Colors extracted from gtk.css:           *
+ *   - True black: #000000                   *
+ *   - Surface: #0f0f0f                      *
+ *   - Border: #0e0e0e                       *
+ *   - Text: #ffffff                         *
+ *   - Dim text: #c0c0c0                     *
+ *   - Accent: #387af2                        *
+ ********************************************/
+
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    terminal: "alacritty";
+    drun-display-format: "{name}";
+    window-format: "{w} – {t}";
+}
+
+* {
+    font:                        "monospace 12";
+    background-color:           transparent;
+    text-color:                 #ffffff;      /* theme_fg_color */
+}
+
+window {
+    transparency:               "real";
+    location:                   0;
+    anchor:                     center;
+    fullscreen:                 false;
+    width:                      720;
+    x-offset:                   0;
+    y-offset:                   0;
+    enabled:                    true;
+    background-color:           #000000;      /* theme_bg_color - true black */
+    border:                     1px;
+    border-color:               #0e0e0e;      /* borders - dark gray border */
+    border-radius:              12px;
+    cursor:                     "default";
+}
+
+mainbox {
+    children:                   [ "inputbar", "message", "listview" ];
+    spacing:                    8px;
+    padding:                    12px;
+    background-color:           inherit;
+    border-radius:              inherit;
+}
+
+inputbar {
+    children:                   [ "textbox-prompt-colon", "entry" ];
+    spacing:                    8px;
+    background-color:           #0f0f0f;      /* theme_base_color - surface */
+    border-radius:              8px;
+    padding:                    8px 12px;
+    text-color:                 #ffffff;
+    expand:                     false;
+}
+
+textbox-prompt-colon {
+    expand:                     false;
+    str:                        "🔍";
+    text-color:                 #387af2;      /* @accent - main accent blue */
+    background-color:           inherit;
+}
+
+entry {
+    expand:                     true;
+    background-color:           inherit;
+    text-color:                 #ffffff;      /* theme_text_color */
+    cursor:                     text;
+    placeholder:                "Type to search…";
+    placeholder-color:          #c0c0c0;      /* insensitive_fg_color - dimmed */
+}
+
+listview {
+    scrollbar:                  true;
+    scrollbar-width:            6px;
+    scrollbar-color:            #387af2;      /* @accent - accent blue */
+    scrollbar-background-color: #0e0e0e;      /* borders - border color */
+    lines:                      12;
+    columns:                    1;
+    fixed-height:               true;
+    dynamic:                    false;
+    spacing:                    4px;
+    background-color:           inherit;
+    border-radius:              8px;
+}
+
+element {
+    padding:                    8px 12px;
+    background-color:           transparent;
+    text-color:                 #ffffff;
+    border-radius:              8px;
+    cursor:                     pointer;
+}
+
+element selected {
+    background-color:           #387af2;      /* @accent + theme_selected_bg_color */
+    text-color:                 #ffffff;      /* theme_selected_fg_color */
+}
+
+element normal.normal {
+    background-color:           transparent;
+    text-color:                 #ffffff;
+}
+
+element alternate.normal {
+    background-color:           #0f0f0f;      /* theme_base_color - subtle alternate rows */
+    text-color:                 #ffffff;
+}
+
+element-icon {
+    size:                       1.2em;
+    cursor:                     inherit;
+}
+
+element-text {
+    text-color:                 inherit;
+    cursor:                     inherit;
+    horizontal-align:           0;
+    vertical-align:             0.5;
+}
+
+message {
+    background-color:           #0f0f0f;      /* theme_base_color - surface */
+    border-radius:              8px;
+    padding:                    8px;
+    margin:                     0px;
+    text-color:                 #ffffff;
+}
+
+textbox {
+    background-color:           inherit;
+    text-color:                 inherit;
+}
