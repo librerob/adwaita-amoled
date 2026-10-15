@@ -78,7 +78,7 @@ button.suggested-action {
   background-color: @accent_bg_color;
   border-color: @accent_bg_color;
 }
-button.suggested-action:hover { background-color: shade(@accent_bg_color, 1.12); }
+button.suggested-action:hover { background-color: shade(@accent_bg_color, 0.95); }
 button.suggested-action:active, button.suggested-action:checked { background-color: shade(@accent_bg_color, 0.85); }
 button.destructive-action {
   color: @destructive_fg_color;

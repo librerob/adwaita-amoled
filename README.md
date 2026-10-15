@@ -39,11 +39,19 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 - Complete GTK2 theme via the murrine engine, fully styled across all widget classes
 - GTK4 + libadwaita color overrides included
 - Cinnamon shell theme, Openbox theme, and Metacity window decorations included
-- Qt5ct and Qt6ct color schemes with palette matched 1:1 to the GTK tokens
+- Qt5ct and Qt6ct color schemes aligned with the GTK palette
 
 ---
 
 ## Installation
+
+GTK2 applications require the **Murrine** theme engine. On Debian/Ubuntu:
+
+```bash
+sudo apt install gtk2-engines-murrine
+```
+
+The compiled GTK3/GTK4 bundles are included, so cloning does not require a build.
 
 ```bash
 # Clone the repo
@@ -57,10 +65,21 @@ Then set the theme through your desktop's appearance settings, or via the termin
 gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-AMOLED"
 ```
 
+For a Flatpak application, install a matching GTK theme extension if one is
+available for its runtime. Otherwise, expose the cloned theme and the GTK
+configuration to that application (replace `APP_ID` with its application ID):
+
 ```bash
-# If you use flatpak apps, run:
-sudo flatpak override --filesystem=xdg-config/gtk-3.0 && sudo flatpak override --filesystem=xdg-config/gtk-4.0
+flatpak override --user \
+  --filesystem="$HOME/.themes:ro" \
+  --filesystem=xdg-config/gtk-3.0:ro \
+  --filesystem=xdg-config/gtk-4.0:ro \
+  APP_ID
 ```
+
+The GTK4 overrides below must also be copied if you use libadwaita applications.
+Flatpak runtimes and desktop theme detection vary; exposing the directories
+alone does not select a theme or install a missing theme engine in the sandbox.
 
 > **Firefox users:** Open `about:config` and set `widget.gtk.libadwaita-colors.enabled` to `false`.
 
@@ -97,6 +116,19 @@ cp ~/.themes/Adwaita-AMOLED/extra/qt6ct/colors/Adwaita-AMOLED.conf ~/.config/qt6
 
 Then open `qt5ct` / `qt6ct`, go to **Appearance → Color scheme**, and select **Adwaita-AMOLED**.
 
+Install the corresponding `qt5ct` / `qt6ct` platform-theme plugin. If your
+desktop does not already select it, launch an application with the matching
+Qt version's integration:
+
+```bash
+QT_QPA_PLATFORMTHEME=qt5ct your-qt5-application
+QT_QPA_PLATFORMTHEME=qt6ct your-qt6-application
+```
+
+Choose the appropriate value for each application; one global value does not
+select both plugins. KDE and other desktops may already provide their own Qt
+integration, which you should configure through their appearance settings.
+
 ---
 
 ## Extras
@@ -105,16 +137,43 @@ Additional themes are included in the `extra/` folder:
 
 | Extra | Description | How to apply |
 |---|---|---|
-| **Alacritty** | Terminal color scheme aligned with the palette | Import or merge the provided YAML into your `alacritty.toml` |
+| **Alacritty** | Terminal color scheme aligned with the palette | Import the provided TOML; see [Alacritty setup](#alacritty) |
 | **Kitty** | Terminal color scheme | Include the `.conf` file in your `kitty.conf` |
 | **Neovim** | Colorscheme and airline theme | See [Neovim setup](#neovim) below |
 | **Qt5ct / Qt6ct** | Full color schemes | See [Qt setup](#qt-qt5ct--qt6ct) above |
 | **Rofi** | Matching launcher theme | Pass the theme with `-theme` or set it in your config |
-| **Zsh** | Autosuggestions & syntax highlighting config | Integrate the provided lines into your `.zshrc` |
+| **Zsh** | Prompt, completion and optional plugin colors | See [Zsh setup](#zsh) |
 
 All extras follow the same AMOLED palette and accent system as the GTK theme.
 
+### Alacritty
+
+For recent Alacritty versions (tested with 0.15.1), add this import to your
+`alacritty.toml`, merging it into an existing `[general]` table if necessary:
+
+```toml
+[general]
+import = ["~/.themes/Adwaita-AMOLED/extra/alacritty/alacritty.toml"]
+```
+
+### Zsh
+
+The prompt and completion configuration works without highlighting plugins.
+For autosuggestions and syntax colors, install `zsh-autosuggestions` and
+`fast-syntax-highlighting` using your distribution or plugin manager, and load
+them **before** sourcing this snippet:
+
+```zsh
+# Load your optional plugins above this line.
+source ~/.themes/Adwaita-AMOLED/extra/zsh/.zshrc
+```
+
+The snippet declares its highlighting array when the plugin is absent and
+registers a title hook without replacing other `precmd` hooks.
+
 ### Neovim
+
+Use Neovim 0.9 or newer and a true-color terminal.
 
 ```bash
 mkdir -p ~/.config/nvim/colors
@@ -125,11 +184,13 @@ Then add to your config:
 
 ```vim
 " init.vim
+set termguicolors
 colorscheme adwaita-amoled
 ```
 
 ```lua
 -- init.lua
+vim.opt.termguicolors = true
 vim.cmd('colorscheme adwaita-amoled')
 ```
 
@@ -143,6 +204,33 @@ cp ~/.themes/Adwaita-AMOLED/extra/nvim/autoload/airline/themes/adwaita_amoled.vi
 ```vim
 let g:airline_theme = 'adwaita_amoled'
 ```
+
+---
+
+## Building and testing
+
+Install GLib's resource compiler and `rsync` before using `--install`:
+
+```bash
+# Debian / Ubuntu
+sudo apt install libglib2.0-dev rsync
+# Arch / Artix
+sudo pacman -S glib2 rsync
+```
+
+```bash
+./build.sh
+./build.sh --install
+```
+
+`--install` copies the theme to `~/.local/share/themes/Adwaita-AMOLED` and
+replaces `~/.config/gtk-4.0/gtk.css` with the source overrides. Back up an
+existing custom override first. After editing `src/`, rebuild and commit the
+updated `gtk.gresource` bundles together with their source changes.
+The installer honors `XDG_DATA_HOME` and `XDG_CONFIG_HOME` when they are set.
+
+The repository's regression checks and their prerequisites are documented in
+[tests/README.md](tests/README.md). GitHub Actions runs them on pull requests.
 
 ---
 
@@ -162,8 +250,12 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 | Hover | `#1a1a1a` | Hover state |
 | Border | `#2a2a2a` | Widget borders |
 | Accent | `#387af2` | Focus, selection, links |
+| Filled GTK accent | `#2d6be0` | Selected surfaces with white text |
 | Foreground | `#ffffff` | Primary text |
 | Dim | `#888888` | Secondary / inactive text |
+
+White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
+use the brighter `#387af2` as a text background use black text (5.23:1).
 
 ---
 

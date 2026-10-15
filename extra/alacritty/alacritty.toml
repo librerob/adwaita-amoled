@@ -23,7 +23,7 @@ foreground = '#f1ac00'      # warning yellow — 9.30:1 on match bg
 
 [colors.search.focused_match]
 background = '#387af2'      # @accent — active match
-foreground = '#ffffff'      # 5.23:1 (inverted; bg is #387af2)
+foreground = '#000000'      # 5.23:1 on the #387af2 accent background
 
 [colors.footer_bar]
 background = '#000000'      # surface_bg
