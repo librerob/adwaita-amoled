@@ -35,6 +35,8 @@ Set `THEME_TEST_OUTPUT` to an output directory to retain GTK screenshots and
 representative Metacity renders. GitHub Actions uploads these images as the
 `theme-rendering` artifact. Missing required native libraries fail the runtime
 checks rather than silently skipping them.
+Failures are also emitted as GitHub check annotations, with the original test
+exit status preserved, so they remain visible without downloading run logs.
 
 These tests use software rendering under X11. They do not establish native
 Wayland, Brave, Flatpak, full Cinnamon/Marco session, physical OLED, or GPU-driver
