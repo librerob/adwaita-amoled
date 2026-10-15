@@ -24,13 +24,20 @@ SRC3="$THEME_DIR/src/gtk-3.0"
 SRC4="$THEME_DIR/src/gtk-4.0"
 OUT3="$THEME_DIR/gtk-3.0"
 OUT4="$THEME_DIR/gtk-4.0"
-INSTALL_DIR="$HOME/.local/share/themes/$THEME_NAME"
+INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/themes/$THEME_NAME"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
 
 # ── Dependency check ──────────────────────────────────────────────────────────
 if ! command -v glib-compile-resources &>/dev/null; then
     echo "ERROR: glib-compile-resources not found."
     echo "Install with:  sudo pacman -S glib2        (Arch/Artix)"
     echo "           or: sudo apt install libglib2.0-dev  (Debian/Ubuntu)"
+    exit 1
+fi
+
+# Check install-only tools before rebuilding or creating installation files.
+if [[ "${1:-}" == "--install" ]] && ! command -v rsync &>/dev/null; then
+    echo "ERROR: rsync not found. Install rsync to use --install."
     exit 1
 fi
 
@@ -63,11 +70,11 @@ if [[ "${1:-}" == "--install" ]]; then
     # ~/.config/gtk-4.0/ — libadwaita user override path
     # NOTE: GTK4 only reads gtk.css here; it does NOT scan for or register
     # a gtk.gresource in this directory.  resource:// URIs would silently
-    # fail.  We copy the real source CSS directly — it is only ~185 lines
-    # so there is no performance reason to bundle it.
-    mkdir -p "$HOME/.config/gtk-4.0"
-    cp "$SRC4/gtk-main.css" "$HOME/.config/gtk-4.0/gtk.css"
+    # fail. Copy source CSS directly so apps can load it without registering
+    # the theme's resources.
+    mkdir -p "$CONFIG_DIR"
+    cp "$SRC4/gtk-main.css" "$CONFIG_DIR/gtk.css"
     echo "  → $INSTALL_DIR"
-    echo "  → ~/.config/gtk-4.0/gtk.css (source CSS, not a resource redirect)"
+    echo "  → $CONFIG_DIR/gtk.css (source CSS, not a resource redirect)"
     echo "Done. Restart your apps to see changes."
 fi

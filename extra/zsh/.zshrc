@@ -1,9 +1,11 @@
 PROMPT='%B%F{#387af2}%n%f %F{#c678dd}%~%f %(?.%B%F{#0aeea0}❯%f%b.%B%F{#ff3333}❯%f%b) '
 
-# Set terminal title
-precmd() {
-    print -n "\e]0;%n@%m: %~\a"
+# Set terminal title without replacing other precmd hooks.
+autoload -Uz add-zsh-hook
+_adwaita_amoled_title() {
+    print -Pn '\e]0;%n@%m: %~\a'
 }
+add-zsh-hook precmd _adwaita_amoled_title
 
 # --- Completion System --------------------------------------------------------
 autoload -Uz compinit && compinit
@@ -20,6 +22,10 @@ zstyle ':completion:*' special-dirs true
 
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#767676'
+
+# Optional fast-syntax-highlighting styles. Source its plugin before this file.
+# Declaring the array also makes the snippet safe when the plugin is absent.
+typeset -gA FAST_HIGHLIGHT_STYLES
 
 # Commands & executables
 FAST_HIGHLIGHT_STYLES[unknown-token]='fg=#ff3333,bold'        # error red    — bad/unrecognized input

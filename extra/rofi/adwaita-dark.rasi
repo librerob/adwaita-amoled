@@ -99,7 +99,7 @@ element {
 
 element selected {
     background-color:           #387af2;      /* @accent + theme_selected_bg_color */
-    text-color:                 #ffffff;      /* theme_selected_fg_color */
+    text-color:                 #000000;      /* theme_selected_fg_color */
 }
 
 element normal.normal {

@@ -107,9 +107,9 @@ hi VisualNOS       guifg=NONE      guibg=#1a2d4a   gui=NONE
 " Search (all matches): black text on warning yellow (#f1ac00) — 10.64:1.
 " Much more scannable than the previous muted blue-text approach.  [FIX v2]
 hi Search          guifg=#000000   guibg=#f1ac00   gui=bold
-" Active/current match: white on accent blue (#387af2).
-hi IncSearch       guifg=#ffffff   guibg=#387af2   gui=bold
-hi CurSearch       guifg=#ffffff   guibg=#387af2   gui=bold
+" Active/current match: black on accent blue (#387af2), 5.23:1.
+hi IncSearch       guifg=#000000   guibg=#387af2   gui=bold
+hi CurSearch       guifg=#000000   guibg=#387af2   gui=bold
 
 hi MatchParen      guifg=#f1ac00   guibg=NONE      gui=bold,underline
 
@@ -126,7 +126,7 @@ hi PmenuSel        guifg=#000000   guibg=#387af2   gui=bold
 hi PmenuSbar       guifg=NONE      guibg=#1a1a1a   gui=NONE
 hi PmenuThumb      guifg=NONE      guibg=#387af2   gui=NONE
 hi PmenuMatch      guifg=#f1ac00   guibg=#111820   gui=bold
-hi PmenuMatchSel   guifg=#f1ac00   guibg=#387af2   gui=bold
+hi PmenuMatchSel   guifg=#000000   guibg=#387af2   gui=bold,underline
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Messages & prompts
@@ -146,7 +146,7 @@ hi Question        guifg=#0aeea0   guibg=NONE      gui=NONE
 hi DiffAdd         guifg=#0aeea0   guibg=#001a0f   gui=NONE   " 11.91:1
 hi DiffChange      guifg=#f1ac00   guibg=#141000   gui=NONE   "  9.64:1
 hi DiffDelete      guifg=#ff3333   guibg=#1a0000   gui=NONE   "  5.90:1  [FIX v2]
-hi DiffText        guifg=#ffffff   guibg=#387af2   gui=bold
+hi DiffText        guifg=#000000   guibg=#387af2   gui=bold
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Spell
