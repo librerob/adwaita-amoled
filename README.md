@@ -169,7 +169,9 @@ source ~/.themes/Adwaita-AMOLED/extra/zsh/.zshrc
 ```
 
 The snippet declares its highlighting array when the plugin is absent and
-registers a title hook without replacing other `precmd` hooks.
+registers a title hook without replacing other `precmd` hooks. Completion is
+initialized only in interactive shells, and existing completion setups are
+preserved.
 
 ### Neovim
 

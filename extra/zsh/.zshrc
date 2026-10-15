@@ -8,7 +8,9 @@ _adwaita_amoled_title() {
 add-zsh-hook precmd _adwaita_amoled_title
 
 # --- Completion System --------------------------------------------------------
-autoload -Uz compinit && compinit
+if [[ -o interactive ]] && (( ! ${+functions[compdef]} )); then
+    autoload -Uz compinit && compinit
+fi
 zstyle ':completion:*' menu select
 zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' format 'Completing %d'
