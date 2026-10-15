@@ -45,7 +45,6 @@ style "default" {
     rgba               = FALSE
     roundness          = 2
     scrollbarstyle     = 0
-    shadowstyle        = 0
     sliderstyle        = 0
     stepperstyle       = 0
     toolbarstyle       = 0

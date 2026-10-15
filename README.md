@@ -74,10 +74,12 @@ libadwaita apps ignore GTK themes by default. To apply the overrides:
 mkdir -p ~/.config/gtk-4.0
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk.css ~/.config/gtk-4.0/gtk.css
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk-dark.css ~/.config/gtk-4.0/gtk-dark.css
-cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets ~/.config/gtk-4.0/assets
+cp -r ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets ~/.config/gtk-4.0/assets
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/libadwaita-tweaks.css ~/.config/gtk-4.0/libadwaita-tweaks.css
 
 ```
+
+> **Chromium / Brave:** recent builds prefer GTK4 on GNOME under Wayland (elsewhere it is opt-in via `--gtk-version=4`), so the GTK4 part of the theme matters there too. Choose the GTK option in the browser's Appearance settings. The `libadwaita-tweaks.css` you copy above is a copy, not a link: after updating the theme, copy it again and fully restart the browser.
 
 ---
 
@@ -135,11 +137,11 @@ If you use vim-airline, copy the airline theme as well:
 
 ```bash
 mkdir -p ~/.config/nvim/autoload/airline/themes
-cp ~/.themes/Adwaita-AMOLED/extra/nvim/autoload/airline/themes/adwaita-amoled.vim ~/.config/nvim/autoload/airline/themes/
+cp ~/.themes/Adwaita-AMOLED/extra/nvim/autoload/airline/themes/adwaita_amoled.vim ~/.config/nvim/autoload/airline/themes/
 ```
 
 ```vim
-let g:airline_theme = 'adwaita-amoled'
+let g:airline_theme = 'adwaita_amoled'
 ```
 
 ---

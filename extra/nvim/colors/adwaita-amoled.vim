@@ -261,7 +261,7 @@ hi   @comment.documentation  guifg=#8a8a8a   guibg=NONE   gui=italic
 hi! link @string             String
 hi! link @string.escape      SpecialChar
 hi! link @string.special     SpecialChar
-hi! link @string.regex       guifg=#44ddff guibg=NONE gui=NONE
+hi   @string.regex       guifg=#44ddff guibg=NONE gui=NONE
 hi   @string.regexp          guifg=#44ddff   guibg=NONE   gui=NONE
 hi! link @number             Number
 hi! link @float              Float
@@ -333,11 +333,11 @@ hi! link @tag                Tag
 hi   @tag.attribute          guifg=#0aeea0   guibg=NONE   gui=NONE
 hi! link @tag.delimiter      Delimiter
 hi! link @markup.heading     Title
-hi! link @markup.link        guifg=#01c1f1 guibg=NONE gui=underline
+hi   @markup.link        guifg=#01c1f1 guibg=NONE gui=underline
 hi   @markup.link.url        guifg=#01c1f1   guibg=NONE   gui=underline
 hi! link @markup.raw         String
-hi! link @markup.strong      gui=bold
-hi! link @markup.italic      gui=italic
+hi   @markup.strong      gui=bold
+hi   @markup.italic      gui=italic
 
 " Diff (Treesitter diff parser)
 hi @diff.plus                guifg=#0aeea0   guibg=#001a0f   gui=NONE
