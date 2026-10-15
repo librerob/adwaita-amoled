@@ -109,8 +109,13 @@ class ThemeTests(unittest.TestCase):
 
     def test_zsh_clean_shell_and_existing_hooks(self):
         with tempfile.TemporaryDirectory() as temporary:
-            env = dict(os.environ, THEME_ROOT=str(ROOT), ZDOTDIR=temporary)
+            completions = Path(temporary) / 'completions'
+            completions.mkdir()
+            completions.chmod(0o777)
+            env = dict(os.environ, THEME_ROOT=str(ROOT), ZDOTDIR=temporary,
+                       THEME_TEST_COMPLETIONS=str(completions))
             result = run('zsh', '-f', '-c', '''
+                fpath=( "$THEME_TEST_COMPLETIONS" $fpath )
                 precmd() { print -r -- existing-hook; }
                 source "$THEME_ROOT/extra/zsh/.zshrc" || exit 1
                 source "$THEME_ROOT/extra/zsh/.zshrc" || exit 1
@@ -133,6 +138,17 @@ class ThemeTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotIn('unknown config', result.stderr.lower())
         self.assertNotIn('ignoring', result.stderr.lower())
+
+    def test_zsh_preserves_interactive_completion(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            env = dict(os.environ, THEME_ROOT=str(ROOT), ZDOTDIR=temporary)
+            result = run('zsh', '-f', '-i', '+m', '-c', '''
+                compdef() { print -r -- existing-completion; }
+                source "$THEME_ROOT/extra/zsh/.zshrc" || exit 1
+                [[ $(compdef) == existing-completion ]] || exit 2
+            ''', env=env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stderr, '')
 
     def test_neovim_colorscheme(self):
         with tempfile.TemporaryDirectory() as temporary:

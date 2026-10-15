@@ -20,7 +20,8 @@ xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_runtime.py
 
 `test_theme.py` checks the shipping and freshly compiled bundle contents, asset
 references, selected-text contrast, Kitty's native parser, clean-shell Zsh
-loading and hook preservation, Neovim highlight loading, and repeatable
+loading with an insecure completion-path fixture and hook preservation, Neovim
+highlight loading, and repeatable
 installation into temporary XDG directories. It also checks that a missing
 `rsync` fails before rebuilding or installing anything.
 
