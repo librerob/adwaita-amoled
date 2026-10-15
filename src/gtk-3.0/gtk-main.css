@@ -17,8 +17,8 @@
 /* Define accent color */
 
 @define-color accent #387af2; /*blue*/
-/*@define-color accent #38f27a; /*green*/
-/*@define-color accent #f2387a; /*red*/
+/*@define-color accent #38f27a; green*/
+/*@define-color accent #f2387a; red*/
 
 
 /*************************** Check and Radio buttons * */
@@ -4290,8 +4290,7 @@ radio {
     min-height: 16px;
     min-width: 16px;
     border: 1px solid;
-    -gtk-icon-source: image(none);
-    -gtk-icon-size: 16px;
+    -gtk-icon-source: none;
 }
 
 check:only-child,
@@ -4322,7 +4321,7 @@ radio {
     border-color: #808080;
     box-shadow: none;
     color: #ffffff;
-    -gtk-icon-source: image(none);
+    -gtk-icon-source: none;
 }
 
 check:hover,

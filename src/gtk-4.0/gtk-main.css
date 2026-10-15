@@ -25,20 +25,25 @@ headerbar.default-decoration windowcontrols.end {
  *  Chromium draws its own titlebar as a GTK widget with class .chromium.
  *  We override it here so it picks up the AMOLED palette instead of
  *  Chromium's hardcoded grey.
+ *
+ *  Named colors (@window_bg_color ...) are used on purpose, not var(--*):
+ *  the --*-color custom properties only exist inside libadwaita. In a plain
+ *  GTK4 app such as Chromium the var() is invalid and the declaration
+ *  computes to "transparent", which made the whole window see-through.
  * ─────────────────────────────────────────────────────────────────────── */
 .background.chromium {
-  background-color: var(--window-bg-color);
+  background-color: @window_bg_color;
 }
 
 .background.chromium selection,
 .background.chromium selection:focus {
-  background-color: color-mix(in srgb, var(--accent-bg-color) 30%, transparent);
-  color: var(--accent-fg-color);
+  background-color: color-mix(in srgb, @accent_bg_color 30%, transparent);
+  color: @accent_fg_color;
 }
 
 .background.chromium windowcontrols > button {
   background-color: color-mix(in srgb, currentColor 10%, transparent);
-  color: var(--window-fg-color);
+  color: @window_fg_color;
   min-width: 24px;
   padding: 0;
   box-shadow: none;
