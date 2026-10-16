@@ -180,7 +180,9 @@ def gtk(version, adwaita=False):
     scale.set_value(50)
     add(scale)
     if adwaita:
-        add(Adw.ActionRow(title='Libadwaita row', subtitle='AMOLED surfaces'))
+        rows = Gtk.ListBox()
+        rows.append(Adw.ActionRow(title='Libadwaita row', subtitle='AMOLED surfaces'))
+        add(rows)
     if version == '3.0':
         window.show_all()
     else:

@@ -41,6 +41,9 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 - Cinnamon shell theme, Openbox theme, and Metacity window decorations included
 - Qt5ct and Qt6ct color schemes aligned with the GTK palette
 
+See [tested upstream versions and coverage limits](COMPATIBILITY.md) for the
+latest compatibility review.
+
 ---
 
 ## Installation
@@ -98,6 +101,21 @@ cp -r ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets/. ~/.config/gtk-4.0/asset
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/libadwaita-tweaks.css ~/.config/gtk-4.0/libadwaita-tweaks.css
 
 ```
+
+For **GTK 4.16 or newer** (libadwaita 1.6 or newer), then select the modern
+entry point:
+
+```bash
+cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk-modern.css ~/.config/gtk-4.0/gtk.css
+```
+
+Keep `gtk-dark.css` and `libadwaita-tweaks.css` from the first block beside it.
+The modern entry point imports them and maps libadwaita's standalone text
+variables to the AMOLED colors. This prevents dark accent, status and destructive
+text when an application requests light mode over the black surfaces. Repeat
+both blocks after updating the theme or running `build.sh --install`.
+On GTK 4.14 and older, use only the first block; those releases cannot parse
+CSS variables.
 
 > **Chromium / Brave:** recent builds prefer GTK4 on GNOME under Wayland (elsewhere it is opt-in via `--gtk-version=4`), so the GTK4 part of the theme matters there too. Choose the GTK option in the browser's Appearance settings. The `libadwaita-tweaks.css` you copy above is a copy, not a link: after updating the theme, copy it again and fully restart the browser.
 

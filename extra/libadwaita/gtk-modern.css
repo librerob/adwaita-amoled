@@ -1,0 +1,13 @@
+/* GTK 4.16+ / libadwaita 1.6+: keep standalone text colors readable even
+ * when an application requests light mode over the AMOLED surfaces.
+ * Keep gtk-dark.css beside this file when installing it as gtk.css.
+ */
+@import url('gtk-dark.css');
+
+:root {
+  --accent-color: @accent_color;
+  --destructive-color: @destructive_color;
+  --success-color: @success_color;
+  --warning-color: @warning_color;
+  --error-color: @error_color;
+}
