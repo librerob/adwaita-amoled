@@ -93,7 +93,8 @@ libadwaita apps ignore GTK themes by default. To apply the overrides:
 mkdir -p ~/.config/gtk-4.0
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk.css ~/.config/gtk-4.0/gtk.css
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk-dark.css ~/.config/gtk-4.0/gtk-dark.css
-cp -r ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets ~/.config/gtk-4.0/assets
+mkdir -p ~/.config/gtk-4.0/assets
+cp -r ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets/. ~/.config/gtk-4.0/assets/
 cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/libadwaita-tweaks.css ~/.config/gtk-4.0/libadwaita-tweaks.css
 
 ```
@@ -258,6 +259,7 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 
 White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
 use the brighter `#387af2` as a text background use black text (5.23:1).
+Success surfaces use black text on `#26a269` (approximately 6.45:1).
 
 ---
 

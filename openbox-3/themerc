@@ -40,7 +40,7 @@ window.active.label.bg: parentrelative
 window.active.label.bg.color: #151515
 window.active.label.text.color:#DDDDDD
 window.inactive.label.bg: parentrelative
-window.inactive.label.text.color: #454545
+window.inactive.label.text.color: #888888
 
 !! window borders etc
 window.active.client.color: #ffffff

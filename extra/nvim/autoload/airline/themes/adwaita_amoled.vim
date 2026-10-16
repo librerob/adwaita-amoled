@@ -6,8 +6,8 @@ let s:bg        = ['#000000', 0  ]
 let s:surface   = ['#0f0f0f', 233]
 let s:hover     = ['#1a1a1a', 234]
 let s:border    = ['#333333', 236]
-" ghost_ui: inactive text — bumped from #555555 (2.57:1) to #737373 (4.04:1)  [FIX v2]
-let s:ghost     = ['#737373', 243]
+" Secondary text on surface_card: #808080 gives 4.85:1 contrast.
+let s:ghost     = ['#808080', 244]
 let s:disabled  = ['#c0c0c0', 251]
 let s:fg        = ['#ffffff', 15 ]
 
@@ -73,7 +73,7 @@ let g:airline#themes#adwaita_amoled#palette.replace_modified =
     \ g:airline#themes#adwaita_amoled#palette.normal_modified
 
 " ── Inactive windows ─────────────────────────────────────────────────────────
-" All sections use ghost (#737373) on surface_card — 4.04:1.  [FIX v2]
+" All sections use ghost (#808080) on surface_card — 4.85:1.
 let s:IA = [s:ghost[0],  s:surface[0], s:ghost[1], s:surface[1], '']
 
 let g:airline#themes#adwaita_amoled#palette.inactive = {

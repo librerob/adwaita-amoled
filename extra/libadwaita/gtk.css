@@ -64,7 +64,7 @@
 
 @define-color success_color            #8ff0a4;
 @define-color success_bg_color         #26a269;
-@define-color success_fg_color         #ffffff;
+@define-color success_fg_color         #000000;
 
 @define-color warning_color            #f8e45c;
 @define-color warning_bg_color         #cd9309;

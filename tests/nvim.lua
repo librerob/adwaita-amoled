@@ -17,6 +17,22 @@ local ok, err = pcall(function()
   local selected = vim.fn.hlID('PmenuMatchSel')
   assert(vim.fn.synIDattr(selected, 'fg', 'gui') == '#000000')
   assert(vim.fn.synIDattr(selected, 'underline', 'gui') == '1')
+  local function luminance(color)
+    local value = 0
+    for i, weight in ipairs({0.2126, 0.7152, 0.0722}) do
+      local channel = tonumber(color:sub(i * 2, i * 2 + 1), 16) / 255
+      local linear = channel <= 0.04045 and channel / 12.92 or ((channel + 0.055) / 1.055) ^ 2.4
+      value = value + weight * linear
+    end
+    return value
+  end
+  for _, name in ipairs({'Folded', 'StatusLineNC', 'TabLine'}) do
+    local id = vim.fn.hlID(name)
+    local foreground = luminance(vim.fn.synIDattr(id, 'fg', 'gui'))
+    local background = luminance(vim.fn.synIDattr(id, 'bg', 'gui'))
+    local ratio = (math.max(foreground, background) + 0.05) / (math.min(foreground, background) + 0.05)
+    assert(ratio >= 4.5, name .. ' contrast is ' .. ratio .. ':1')
+  end
 end)
 if not ok then
   io.stderr:write(tostring(err) .. '\n')

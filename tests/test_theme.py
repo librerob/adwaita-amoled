@@ -107,6 +107,55 @@ class ThemeTests(unittest.TestCase):
                     # QPalette::Highlight and HighlightedText, stripping opaque ARGB alpha.
                     self.assertGreaterEqual(contrast('#' + colors[13][3:], '#' + colors[12][3:]), 4.5)
 
+    def test_readme_libadwaita_copy_updates_existing_assets(self):
+        section = (ROOT / 'README.md').read_text().split('## GTK4 & libadwaita', 1)[1]
+        commands = re.search(r'```bash\n(.*?)```', section, re.S)[1]
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            source = home / '.themes/Adwaita-AMOLED/extra/libadwaita'
+            shutil.copytree(ROOT / 'extra/libadwaita', source)
+            asset = next((source / 'assets').glob('*.svg'))
+            destination = home / '.config/gtk-4.0'
+            env = dict(os.environ, HOME=str(home))
+            for update in range(3):
+                with asset.open('a') as stream:
+                    stream.write(f'\n<!-- Update {update} -->\n')
+                result = run('bash', '--noprofile', '--norc', '-c', commands, env=env)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual((destination / 'assets' / asset.name).read_bytes(), asset.read_bytes())
+                self.assertFalse((destination / 'assets/assets').exists())
+                for name in ('gtk.css', 'gtk-dark.css', 'libadwaita-tweaks.css'):
+                    self.assertEqual((destination / name).read_bytes(), (source / name).read_bytes())
+
+    def test_success_color_pair_contrast(self):
+        pairs = []
+        for name in ('src/gtk-4.0/gtk-main.css', 'extra/libadwaita/gtk.css', 'extra/libadwaita/gtk-dark.css'):
+            with self.subTest(stylesheet=name):
+                text = (ROOT / name).read_text()
+                bg = re.search(r'@define-color success_bg_color\s+(#[\da-f]{6});', text)[1]
+                fg = re.search(r'@define-color success_fg_color\s+(#[\da-f]{6});', text)[1]
+                pairs.append((fg, bg))
+                self.assertGreaterEqual(contrast(fg, bg), 4.5, name)
+        self.assertEqual(len(set(pairs)), 1, 'Theme and user overrides must use the same success colors')
+
+    def test_secondary_editor_text_contrast(self):
+        text = (ROOT / 'extra/nvim/autoload/airline/themes/adwaita_amoled.vim').read_text()
+        foreground = re.search(r"let s:ghost\s*=\s*\['(#[\da-f]{6})'", text)[1]
+        background = re.search(r"let s:surface\s*=\s*\['(#[\da-f]{6})'", text)[1]
+        self.assertGreaterEqual(contrast(foreground, background), 4.5, 'Airline filename and inactive text')
+
+    def test_openbox_title_text_contrast(self):
+        values = {}
+        for line in (ROOT / 'openbox-3/themerc').read_text().splitlines():
+            if ':' in line and not line.lstrip().startswith('!'):
+                name, value = line.split(':', 1)
+                values[name.strip()] = value.strip()
+        for state in ('active', 'inactive'):
+            with self.subTest(state=state):
+                foreground = values[f'window.{state}.label.text.color']
+                background = values[f'window.{state}.title.bg.color']
+                self.assertGreaterEqual(contrast(foreground, background), 4.5, state + ' title')
+
     def test_zsh_clean_shell_and_existing_hooks(self):
         with tempfile.TemporaryDirectory() as temporary:
             completions = Path(temporary) / 'completions'

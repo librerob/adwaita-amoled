@@ -21,7 +21,7 @@ let g:colors_name = 'adwaita-amoled'
 "   surface_hover #1a1a1a
 "   border        #333333   1.66:1 vs bg            [FIX v2: was #2a2a2a 1.58:1]
 "   ghost         #767676   4.62:1 vs bg            [FIX v2: was #555555 2.82:1]
-"   ghost_ui      #737373   4.04:1 vs surface_card  [FIX v2: new; airline/statusline inactive]
+"   ghost_ui      #808080   4.85:1 vs surface_card  (folded text, airline/statusline inactive)
 "   disabled      #c0c0c0  11.54:1
 "   fg            #ffffff  21.00:1
 "
@@ -69,7 +69,7 @@ hi ColorColumn     guifg=NONE      guibg=#0f0f0f   gui=NONE
 " SignColumn / FoldColumn — brought to #767676 for readability.  [FIX v2]
 hi SignColumn      guifg=#767676   guibg=NONE      gui=NONE
 hi FoldColumn      guifg=#767676   guibg=NONE      gui=NONE
-hi Folded          guifg=#767676   guibg=#0f0f0f   gui=italic
+hi Folded          guifg=#808080   guibg=#0f0f0f   gui=italic
 
 hi EndOfBuffer     guifg=#333333   guibg=NONE      gui=NONE
 hi NonText         guifg=#333333   guibg=NONE      gui=NONE
@@ -89,10 +89,9 @@ hi WinBarNC        guifg=#767676   guibg=NONE      gui=NONE
 " Status / tab line
 " ─────────────────────────────────────────────────────────────────────────────
 hi StatusLine      guifg=#c0c0c0   guibg=#0f0f0f   gui=NONE
-" StatusLineNC bumped to #737373 (4.04:1 on surface) — was #555555 2.57:1.  [FIX v2]
-hi StatusLineNC    guifg=#737373   guibg=#0f0f0f   gui=NONE
-" TabLine inactive text bumped to #737373.  [FIX v2]
-hi TabLine         guifg=#737373   guibg=#0f0f0f   gui=NONE
+" Secondary text on surface_card uses #808080 for 4.85:1 contrast.
+hi StatusLineNC    guifg=#808080   guibg=#0f0f0f   gui=NONE
+hi TabLine         guifg=#808080   guibg=#0f0f0f   gui=NONE
 hi TabLineSel      guifg=#ffffff   guibg=NONE      gui=bold
 hi TabLineFill     guifg=NONE      guibg=#0f0f0f   gui=NONE
 

@@ -24,6 +24,10 @@ loading with an insecure completion-path fixture and hook preservation, Neovim
 highlight loading, and repeatable
 installation into temporary XDG directories. It also checks that a missing
 `rsync` fails before rebuilding or installing anything.
+The documented libadwaita copy commands are executed across repeated asset
+updates to catch nested directories and stale files. Contrast checks cover the
+success foreground/background pair, Openbox titles and secondary editor text;
+Neovim's actual loaded highlights are checked as well.
 
 `test_runtime.py` runs GTK3, GTK4 and libadwaita in separate processes. It parses
 the theme and overrides, renders representative widget states, checks the GTK3
@@ -31,6 +35,10 @@ slider's actual pixels, exercises 2,000 toggles and click signals per fixture,
 and creates/destroys 200 windows per fixture. The Metacity check loads the XML
 through libmetacity and renders 504 combinations of window type, frame state,
 focus, button state and scale, including titleless menu/border frames.
+The libadwaita fixture resolves the success-color pair through GTK and verifies
+its contrast. On libadwaita 1.7 or newer it also checks the foreground of a real
+`.success.suggested-action` button, which consumes that pair through accent
+variables.
 
 Set `THEME_TEST_OUTPUT` to an output directory to retain GTK screenshots and
 representative Metacity renders. GitHub Actions uploads these images as the
