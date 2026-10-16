@@ -37,3 +37,26 @@ jobs:
           name: theme-rendering
           path: ${{ runner.temp }}/theme-test-output
           if-no-files-found: ignore
+
+  modern-native:
+    runs-on: ubuntu-24.04
+    container: ubuntu:26.10
+    steps:
+      - name: Install modern native consumers
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            git ca-certificates python3-gi gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
+            gir1.2-adw-1 libmetacity3 xvfb xauth
+      - uses: actions/checkout@v7
+      - name: Check modern native parsing, rendering and text colors
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern
+        run: xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_runtime.py
+      - name: Upload modern rendering evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: theme-rendering-modern
+          path: ${{ runner.temp }}/theme-test-output-modern
+          if-no-files-found: ignore

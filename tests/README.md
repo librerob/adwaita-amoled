@@ -39,10 +39,18 @@ The libadwaita fixture resolves the success-color pair through GTK and verifies
 its contrast. On libadwaita 1.7 or newer it also checks the foreground of a real
 `.success.suggested-action` button, which consumes that pair through accent
 variables.
+Two additional native checks request light and dark schemes, resolve real accent,
+success, warning, error and destructive widget text, and check the resulting
+colors and contrast on black. They use `gtk-modern.css` on GTK 4.16 or newer,
+and the legacy entry point on older GTK versions. The modern entry point is
+tested separately from the legacy overrides; it must not be installed on GTK
+versions that cannot parse CSS variables.
 
 Set `THEME_TEST_OUTPUT` to an output directory to retain GTK screenshots and
 representative Metacity renders. GitHub Actions uploads these images as the
-`theme-rendering` artifact. Missing required native libraries fail the runtime
+`theme-rendering` and `theme-rendering-modern` artifacts. Its Ubuntu 26.10
+container job exercises the modern libadwaita entry point alongside the
+Ubuntu 24.04 checks. Missing required native libraries fail the runtime
 checks rather than silently skipping them.
 Failures are also emitted as GitHub check annotations, with the original test
 exit status preserved, so they remain visible without downloading run logs.
