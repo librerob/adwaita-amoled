@@ -161,6 +161,12 @@ def gtk(version, adwaita=False):
     button = Gtk.Button(label='Suggested action')
     button.get_style_context().add_class('suggested-action')
     add(button)
+    success = None
+    if adwaita:
+        success = Gtk.Button(label='Successful operation')
+        success.add_css_class('success')
+        success.add_css_class('suggested-action')
+        add(success)
     check = Gtk.CheckButton(label='Checked')
     check.set_active(True)
     add(check)
@@ -187,6 +193,22 @@ def gtk(version, adwaita=False):
                 context.iteration(False)
             time.sleep(.002)
     pump()
+    success_contrast = None
+    if success is not None:
+        from test_theme import contrast
+        style = success.get_style_context()
+        found_fg, foreground = style.lookup_color('success_fg_color')
+        found_bg, background = style.lookup_color('success_bg_color')
+        assert found_fg and found_bg
+        def hex_color(color):
+            return '#' + ''.join(f'{round(channel * 255):02x}'
+                                 for channel in (color.red, color.green, color.blue))
+        success_contrast = contrast(hex_color(foreground), hex_color(background))
+        assert success_contrast >= 4.5, f'Success text contrast is {success_contrast}:1'
+        if (Adw.get_major_version(), Adw.get_minor_version()) >= (1, 7):
+            # Libadwaita 1.7 maps .success onto the accent variables consumed by
+            # .suggested-action. Check the widget's resolved foreground as well.
+            assert hex_color(style.get_color()) == hex_color(foreground)
     state_mask = Gtk.StateFlags.CHECKED | Gtk.StateFlags.INCONSISTENT
     original = {w: w.get_state_flags() & state_mask for w in (button, check, mixed, entry)}
     for name, flag in [('normal', Gtk.StateFlags.NORMAL), ('hover', Gtk.StateFlags.PRELIGHT),
@@ -244,6 +266,7 @@ def gtk(version, adwaita=False):
     window.destroy()
     assert not errors, errors
     print(json.dumps({'gtk': version, 'libadwaita': adwaita, 'parser_errors': errors,
+                      'success_text_contrast': success_contrast,
                       'window_lifecycles': 200, 'signals': signals}))
 
 
