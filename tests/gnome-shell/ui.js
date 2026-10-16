@@ -53,10 +53,20 @@ function contrast(foreground, background) {
     return (high + 0.05) / (low + 0.05);
 }
 
+function composite(foreground, background) {
+    const alpha = parseInt(foreground.slice(7, 9), 16) / 255;
+    return '#' + [1, 3, 5].map(i => Math.round(parseInt(foreground.slice(i, i + 2), 16) * alpha +
+        parseInt(background.slice(i, i + 2), 16) * (1 - alpha)).toString(16).padStart(2, '0')).join('') + 'ff';
+}
+
 async function checkAccentRoles(context, theme) {
     const settings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
     const original = settings.get_string('accent-color');
     const pairs = [];
+    const graphics = [];
+    const states = ['', 'hover', 'focus', 'active', 'active:hover', 'focus:hover', 'active:focus', 'active:focus:hover'];
+    const make = (parent, classes, state = '', type = St.Widget.$gtype, id = null) =>
+        St.ThemeNode.new(context, parent, theme, type, id, classes, state.replaceAll(':', ' '), '');
     try {
         for (const accent of ['blue', 'teal', 'green', 'yellow', 'orange', 'red', 'pink', 'purple', 'slate']) {
             settings.set_string('accent-color', accent);
@@ -70,20 +80,59 @@ async function checkAccentRoles(context, theme) {
                 ['monitor-label', null, 'osd-monitor-label', ''],
                 ['keyboard-latched', null, 'keyboard-key default-key', 'latched'],
                 ['emoji-latched', 'emoji-panel', 'keyboard-key', 'latched'],
+                ['checkbox', null, '', 'checked'],
+                ['switch-handle', null, '', 'checked'],
+                ['debug-switch-handle', null, '', 'checked'],
+                ['week-number', 'calendar', 'calendar-week-number', ''],
+                ['word-suggestion', null, '', ''],
             ]) {
-                for (const state of ['', 'hover', 'focus', 'active', 'active:hover', 'focus:hover']) {
+                for (const state of states) {
                     let parent = context.get_root_node();
                     if (parentClass)
-                        parent = St.ThemeNode.new(context, parent, theme, St.Widget.$gtype,
-                            null, parentClass, null, '');
-                    const pseudo = [baseState, state.replaceAll(':', ' ')].filter(Boolean).join(' ');
-                    const node = St.ThemeNode.new(context, parent, theme, St.Widget.$gtype,
-                        null, childClass, pseudo, '');
-                    const foreground = node.get_foreground_color().to_string();
-                    const background = node.get_background_color().to_string();
-                    assert(background.endsWith('ff'), `${name} needs an opaque accent background: ${background}`);
+                        parent = make(parent, parentClass);
+                    const pseudo = [baseState, state].filter(Boolean).join(':');
+                    let node, foreground, background;
+                    if (name === 'checkbox') {
+                        parent = make(parent, 'check-box', pseudo);
+                        node = make(parent, null, '', St.Icon.$gtype);
+                    } else if (name === 'switch-handle' || name === 'debug-switch-handle') {
+                        if (name === 'debug-switch-handle') {
+                            parent = make(parent, null, '', St.Widget.$gtype, 'LookingGlassDebugFlags');
+                            parent = make(parent, 'lg-debug-flag-button');
+                        }
+                        parent = make(parent, 'toggle-switch', pseudo);
+                        node = make(parent, 'handle');
+                        foreground = node.get_background_color().to_string();
+                        background = parent.get_background_color().to_string();
+                    } else if (name === 'word-suggestion') {
+                        parent = make(parent, null, '', St.BoxLayout.$gtype, 'keyboard');
+                        const base = composite(parent.get_background_color().to_string(), '#000000ff');
+                        parent = make(parent, 'word-suggestions');
+                        node = make(parent, null, pseudo, St.Button.$gtype);
+                        background = composite(node.get_background_color().to_string(), base);
+                    } else if (name === 'week-number') {
+                        const base = composite(parent.get_background_color().to_string(), '#000000ff');
+                        node = make(parent, childClass, pseudo);
+                        background = composite(node.get_background_color().to_string(), base);
+                    } else {
+                        node = make(parent, childClass, pseudo);
+                    }
+                    foreground ??= node.get_foreground_color().to_string();
+                    background ??= node.get_background_color().to_string();
+                    assert(background.endsWith('ff'), `${name} needs an opaque control background: ${background}`);
                     pairs.push({accent, name, state, foreground, background,
-                        contrast: contrast(foreground, background)});
+                        contrast: contrast(composite(foreground, background), background)});
+                }
+            }
+            const bar = make(context.get_root_node(), null, '', St.ScrollBar.$gtype);
+            for (const orientation of ['vhandle', 'hhandle']) {
+                for (const state of ['', 'hover', 'active']) {
+                    const handle = make(bar, orientation, state, St.Button.$gtype);
+                    const foreground = handle.get_background_color().to_string();
+                    for (const background of ['#000000ff', '#141414ff', '#1a1a1aff']) {
+                        graphics.push({accent, orientation, state, foreground, background,
+                            contrast: contrast(composite(foreground, background), background)});
+                    }
                 }
             }
         }
@@ -92,12 +141,49 @@ async function checkAccentRoles(context, theme) {
         await Scripting.sleep(60);
     }
     const output = GLib.getenv('THEME_TEST_OUTPUT');
-    if (output)
+    if (output) {
         GLib.file_set_contents(`${output}/shell-accent-colors.json`, JSON.stringify(pairs, null, 2));
+        GLib.file_set_contents(`${output}/shell-graphic-colors.json`, JSON.stringify(graphics, null, 2));
+    }
     const failures = pairs.filter(pair => pair.contrast < 4.5);
-    assert(failures.length === 0, `Unreadable Shell accent states: ${JSON.stringify(failures)}`);
+    assert(failures.length === 0, `Unreadable Shell control states: ${JSON.stringify(failures)}`);
+    const graphicFailures = graphics.filter(pair => pair.contrast < 3);
+    assert(graphicFailures.length === 0, `Unreadable Shell scrollbar states: ${JSON.stringify(graphicFailures)}`);
     results.accentPairs = pairs.length;
     results.minimumAccentContrast = Math.min(...pairs.map(pair => pair.contrast));
+    results.graphicPairs = graphics.length;
+    results.minimumGraphicContrast = Math.min(...graphics.map(pair => pair.contrast));
+}
+
+async function checkPlaceholderFonts(context, theme) {
+    const original = context.get_font().copy();
+    const pairs = [];
+    try {
+        for (const points of [9, 11, 14]) {
+            const description = original.copy();
+            description.set_size(points * 1024);
+            context.set_font(description);
+            await Scripting.sleep(60);
+            const parent = St.ThemeNode.new(context, context.get_root_node(), theme, St.Widget.$gtype,
+                null, 'message-list', null, '');
+            const placeholder = St.ThemeNode.new(context, parent, theme, St.Widget.$gtype,
+                null, 'message-list-placeholder', null, '');
+            const label = St.ThemeNode.new(context, placeholder, theme, St.Label.$gtype,
+                null, null, null, '');
+            const foreground = label.get_foreground_color().to_string();
+            const background = '#000000ff';
+            pairs.push({points, font: label.get_font().to_string(), foreground, background,
+                contrast: contrast(composite(foreground, background), background)});
+        }
+    } finally {
+        context.set_font(original);
+        await Scripting.sleep(60);
+    }
+    const output = GLib.getenv('THEME_TEST_OUTPUT');
+    if (output)
+        GLib.file_set_contents(`${output}/shell-font-colors.json`, JSON.stringify(pairs, null, 2));
+    assert(pairs.every(pair => pair.contrast >= 4.5), `Unreadable Shell placeholder: ${JSON.stringify(pairs)}`);
+    results.fontPairs = pairs.length;
 }
 
 export async function run() {
@@ -131,6 +217,7 @@ export async function run() {
         'Dash surface must use the AMOLED raised surface');
 
     await checkAccentRoles(context, theme);
+    await checkPlaceholderFonts(context, theme);
 
     const [, bytes] = stylesheet.load_contents(null);
     const css = new TextDecoder().decode(bytes);

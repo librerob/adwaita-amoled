@@ -45,7 +45,9 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 
 See [tested upstream versions and coverage limits](COMPATIBILITY.md) for the
 latest compatibility review. See the [color readability audit](COLOR_READABILITY.md)
-for color roles, native measurements and the limits of contrast checks.
+for color roles, native measurements and the limits of contrast checks. The
+[repository-wide color follow-up](COLOR_COMPLETENESS.md) records compound-state
+fixes and the expanded file/paint review.
 
 ---
 
@@ -306,6 +308,7 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 | Decorative border | `#2a2a2a` | Nonessential separators and depth |
 | Text accent | `#8ab4f8` | Readable accent text, links and focus |
 | Filled GTK accent | `#2d6be0` | Selected surfaces with white text |
+| Filled hover | `#2862cf` | Hovered selections/controls with white text |
 | Foreground | `#ffffff` | Primary text |
 | Dim | `#a0a0a0` | Readable secondary text |
 

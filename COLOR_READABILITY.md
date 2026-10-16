@@ -1,5 +1,9 @@
 # Color readability audit — 2026-10-16
 
+This records the original v1.2.0 readability work. The subsequent
+[repository-wide color follow-up](COLOR_COMPLETENESS.md) documents additional
+failures found by broader tests, their fixes and the current coverage.
+
 The readability palette uses pale blue for standalone accent text and focus
 indicators, with dark blue fills and white labels for GTK/Cinnamon buttons.
 Pure black remains the main background. This audit inventories the 177 files

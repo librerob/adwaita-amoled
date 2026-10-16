@@ -12,6 +12,7 @@
 @define-color border_color    #2a2a2a;
 @define-color border_darker   #1e1e1e;
 @define-color accent_hover    #aecbfa;
+@define-color accent_fill_hover #2862cf;
 @define-color accent_active   #2d6be0;
 
 /* Define accent color */
@@ -33,7 +34,7 @@
     -GtkWidget-text-handle-height: 24;
     -GtkDialog-button-spacing: 4;
     -GtkDialog-action-area-border: 0;
-    outline-color: alpha(currentColor, 0.3);
+    outline-color: @accent;
     outline-style: dashed;
     outline-offset: -3px;
     outline-width: 1px;
@@ -994,7 +995,7 @@ row:selected button.flat:not(:active):not(:checked):not(:hover):not(disabled) {
 
 row:selected button.sidebar-button:not(:active):not(:checked):not(:hover):not(disabled):backdrop,
 row:selected button.flat:not(:active):not(:checked):not(:hover):not(disabled):backdrop {
-    color: #c0c0c0;
+    color: #ffffff;
 }
 
 button.osd {
@@ -2739,7 +2740,7 @@ headerbar.selection-mode .selection-menu arrow {
 headerbar.selection-mode .selection-menu:backdrop .arrow,
 headerbar.selection-mode .selection-menu .arrow {
     -gtk-icon-source: -gtk-icontheme("pan-down-symbolic");
-    color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
     -gtk-icon-shadow: none;
 }
 
@@ -3383,7 +3384,7 @@ menu > arrow:disabled,
 }
 
 menuitem accelerator {
-    color: alpha(currentColor, 0.55);
+    color: #a0a0a0;
 }
 
 menuitem check,
@@ -4246,7 +4247,7 @@ iconview.content-view.check:backdrop:checked:not(list),
     min-width: 32px;
     min-height: 32px;
     color: rgba(238, 238, 236, 0.8);
-    background-color: #a0a0a0;
+    background-color: @accent_active;
     border-radius: 5px;
     background-image: none;
     transition: 200ms;
@@ -4381,14 +4382,14 @@ radio:checked {
 
 check:checked:hover {
     border-color: @accent_hover;
-    background-image: image(@accent_hover);
+    background-image: image(@accent_fill_hover);
     color: #ffffff;
     -gtk-icon-source: -gtk-icontheme("checkbox-checked-symbolic");
 }
 
 radio:checked:hover {
     border-color: @accent_hover;
-    background-image: image(@accent_hover);
+    background-image: image(@accent_fill_hover);
     color: #ffffff;
     -gtk-icon-source: -gtk-icontheme("radio-checked-symbolic");
 }
@@ -4458,13 +4459,13 @@ radio:indeterminate {
 
 check:indeterminate:hover {
     border-color: @accent_hover;
-    background-image: image(@accent_hover);
+    background-image: image(@accent_fill_hover);
     -gtk-icon-source: -gtk-icontheme("checkbox-mixed-symbolic");
 }
 
 radio:indeterminate:hover {
     border-color: @accent_hover;
-    background-image: image(@accent_hover);
+    background-image: image(@accent_fill_hover);
     -gtk-icon-source: -gtk-icontheme("radio-mixed-symbolic");
 }
 
@@ -4568,7 +4569,7 @@ radio:focus:indeterminate {
 
 check:checked:hover:focus {
     border-color: @accent_hover;
-    background-image: image(@accent_hover);
+    background-image: image(@accent_fill_hover);
 }
 
 check:checked:active:focus,
@@ -4595,7 +4596,7 @@ radio:indeterminate:focus {
 check:indeterminate:hover:focus,
 radio:indeterminate:hover:focus {
     border-color: @accent_hover;
-    background-image: image(@accent_hover);
+    background-image: image(@accent_fill_hover);
 }
 
 check:indeterminate:active:focus,
@@ -5437,14 +5438,14 @@ levelbar block.empty:backdrop {
 /**************** Print dialog * */
 
 printdialog paper {
-    color: #ffffff;
+    color: #757575;
     border: 1px solid #2a2a2a;
     background: white;
     padding: 0;
 }
 
 printdialog paper:backdrop {
-    color: #c0c0c0;
+    color: #757575;
     border-color: #000000;
 }
 
@@ -5639,7 +5640,7 @@ row.activatable:selected:active {
 
 row.activatable.has-open-popup:selected,
 row.activatable:selected:hover {
-    background-color: @accent_hover;
+    background-color: @accent_fill_hover;
 }
 
 row.activatable:selected:backdrop {
@@ -5748,7 +5749,7 @@ calendar:backdrop {
 }
 
 calendar:indeterminate {
-    color: alpha(currentColor, 0.1);
+    color: #a0a0a0;
 }
 
 
@@ -5966,7 +5967,7 @@ placessidebar row:drop(active):not(:disabled) {
 }
 
 placessidebar row:drop(active):not(:disabled):selected {
-    color: #ffffff;
+    color: #000000;
     background-color: #1fce0a;
 }
 
@@ -6971,7 +6972,7 @@ widgets main borders color on backdrop windows */
 these are pretty self explicative */
 
 @define-color warning_color #e5a50a;
-@define-color error_color #ff0000;
+@define-color error_color #ff7b7b;
 @define-color success_color #0aeea0;
 
 /*
@@ -7259,3 +7260,59 @@ button.destructive-action.flat:backdrop:active, button.destructive-action.flat:b
     background-color: alpha(#c01c28, 0.25);
     background-image: none;
 }
+
+/* Keep secondary text and glyphs legible on selected blue surfaces. */
+row:selected .dim-label { opacity: 1; }
+row:selected scale marks, row:selected scale value,
+row:selected button.flat:backdrop:not(:disabled),
+row:selected button.sidebar-button:backdrop:not(:disabled),
+menuitem:hover accelerator, menuitem:selected accelerator {
+    color: #ffffff;
+}
+.selection-mode .titlebar:not(headerbar) .subtitle,
+.selection-mode.titlebar:not(headerbar) .subtitle,
+.selection-mode headerbar .subtitle, headerbar.selection-mode .subtitle {
+    opacity: 1;
+}
+.selection-mode .titlebar:not(headerbar) .selection-menu .arrow,
+.selection-mode.titlebar:not(headerbar) .selection-menu .arrow,
+.selection-mode headerbar .selection-menu .arrow,
+headerbar.selection-mode .selection-menu .arrow {
+    color: #ffffff;
+}
+notebook > header tab button.flat:not(:disabled),
+notebook > header tab button.flat:backdrop:not(:disabled) {
+    color: #a0a0a0;
+}
+notebook > header tab button.flat:not(:disabled):hover,
+notebook > header tab button.flat:backdrop:not(:disabled):hover {
+    color: #ffffff;
+}
+
+/* Selected opaque rows use a selection foreground instead of status ink. */
+row:selected label.error, row:selected label.warning, row:selected label.success,
+row:selected label.accent, row:selected label.link,
+row:selected button.flat:not(:disabled),
+row:selected button:link:not(:disabled), row:selected button:visited:not(:disabled) {
+    color: #ffffff;
+}
+
+/* Inset focus on a filled selection needs its selection foreground. */
+.view:selected:focus, .view text:selected:focus, textview text:selected:focus,
+.view text selection:focus, textview text selection:focus,
+iconview:selected:focus, iconview text selection:focus,
+treeview.view:selected:focus, row:selected:focus, switch:checked:focus,
+row:selected button.flat:focus, row:selected button:link:focus,
+row:selected button:visited:focus {
+    outline-color: #ffffff;
+}
+.selection-mode headerbar button:focus, headerbar.selection-mode button:focus,
+.selection-mode .titlebar:not(headerbar) button:focus,
+.selection-mode.titlebar:not(headerbar) button:focus {
+    outline-color: #ffffff;
+}
+
+/* GTK uses one ink color for page numbers on white and rulers on the canvas.
+ * #757575 meets 4.5:1 on both white paper and this black preview canvas.
+ */
+printdialog notebook > stack, printdialog notebook > stack:not(:only-child) { background-color: #000000; background-image: none; }

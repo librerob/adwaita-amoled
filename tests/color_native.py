@@ -91,6 +91,12 @@ for name, cls in [
         classes(b, *cls.split())
     add(b)
     items.append((name, b))
+if version == "4.0":
+    for status in ["success", "warning", "error"]:
+        button = Gtk.Button(label="Flat " + status + " action")
+        classes(button, status, "suggested-action", "flat")
+        add(button)
+        items.append(("flat-" + status, button))
 for name in ["accent", "error", "warning", "success", "dim-label", "link"]:
     label = Gtk.Label(label=name + " readable text")
     classes(label, name)
@@ -238,6 +244,17 @@ for name, widget in items:
             assert any(
                 0 < alpha < 1 for _, alpha in text_colors
             ), "CSS opacity was not measured"
+        if (
+            name in ["flat-success", "flat-warning", "flat-error"]
+            and state != "disabled"
+        ):
+            found, expected = style.lookup_color(name.removeprefix("flat-") + "_color")
+            assert found
+            assert all(foreground == rgb(expected) for foreground, _ in text_colors), (
+                name,
+                state,
+                text_colors,
+            )
         surface, colors = bgpaint(widget)
         background, count = colors.most_common(1)[0]
         ratios = [

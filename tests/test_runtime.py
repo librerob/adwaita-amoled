@@ -60,6 +60,34 @@ class RuntimeTests(unittest.TestCase):
     def test_libadwaita_light_request_text_contrast(self):
         self.check_text_contrast('adw', light=True)
 
+    def test_gtk3_inherited_and_compound_color_states(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(os.environ.get('THEME_TEST_OUTPUT', temporary)) / 'gtk3-contexts'
+            self.check_native(str(ROOT), str(output), script='gtk3_color_states.py')
+
+    def check_selection_colors(self, version, adw=False, light=False):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(os.environ.get('THEME_TEST_OUTPUT', temporary)) / (
+                'selected-' + version + ('-adw' if adw else '') + ('-light' if light else '-dark'))
+            arguments = [str(ROOT), version, str(output)]
+            if adw:
+                arguments.append('--adw')
+            if light:
+                arguments.append('--light')
+            self.check_native(*arguments, script='selection_colors.py')
+
+    def test_gtk3_selected_row_colors(self):
+        self.check_selection_colors('3.0')
+
+    def test_gtk4_selected_row_colors(self):
+        self.check_selection_colors('4.0')
+
+    def test_libadwaita_dark_selected_row_colors(self):
+        self.check_selection_colors('4.0', adw=True)
+
+    def test_libadwaita_light_selected_row_colors(self):
+        self.check_selection_colors('4.0', adw=True, light=True)
+
     def test_metacity_renderer(self):
         self.check_native('--metacity')
 
