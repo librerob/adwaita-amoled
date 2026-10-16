@@ -13,7 +13,7 @@ on GTK 4.16 or newer. Keep the legacy entry point on older GTK releases.
 
 | Component | Stable target checked | Evidence and boundary |
 | --- | --- | --- |
-| GNOME | 51; Shell 51.1 | Official release sources and GNOME 51 toolkit manifest reviewed. Application styling tested through GTK/libadwaita below. This repository has no GNOME Shell stylesheet; the GNOME Shell session itself was not run. |
+| GNOME | 51; Shell 51.1 | Shell theme derived from the pinned 51.1 default. Native headless Wayland Shell 51.1 loads it through User Themes; surface colors, eight rendered views, 40 menu transitions and 6,822 style-state queries at 1×/2× verified. Isolated service mocks are used; real login and authentication are not tested. Application styling tested through GTK/libadwaita below. |
 | GTK3 / Adwaita | 3.24.52 | Native parsing, widget states, slider pixels, window lifecycle and callback checks on X11 and Wayland. |
 | GTK4 / Default | 4.24.1 | Native parsing and rendering on X11 and Wayland. The theme's runtime import still resolves GTK's own `Default-dark.css`, retaining the installed toolkit's widget definitions. |
 | libadwaita | 1.10.0 | Native light/dark color checks; current sidebars, overlay sidebar, dropdown styles, GTK/Adwaita spinners, toggle group, banner and preference rows rendered. Stock Adwaita used as a control. |
@@ -48,6 +48,24 @@ Additional isolated stress fixtures completed **9,000 window lifecycles and
 errors were recorded. These counters represent automated operations, not a
 claim that every application or desktop feature was tested.
 
+## GNOME Shell theme
+
+The separate `gnome-shell/` component keeps all **963 upstream style rules**,
+selectors, property names and non-color layout values from Shell 51.1. Its
+unmodified upstream Sass and SVG files are pinned by SHA-256 in `UPSTREAM.json`;
+the AMOLED palette and local asset paths are applied during a reproducible
+build. GNOME's selected system accent and privacy indicators are retained.
+
+Four additional checks pass on Shell 51.0 and 51.1. They validate source hashes,
+byte-for-byte CSS reproduction, upstream layout preservation and native Shell rendering. Native theme-node
+queries confirm black panel, overview, popover and dialog surfaces with white
+text, and a `#141414` OSD. Screenshots cover desktop, overview, applications,
+quick settings, calendar, a visible notification, volume OSD and modal dialog.
+The fixture dismisses startup notifications before testing its own banner and
+uses a solid desktop background to avoid distribution wallpaper decoder timing.
+This is a logged-in Shell theme for **51.x**, not a GDM resource replacement;
+other Shell major versions have not been verified.
+
 ## Remaining limits
 
 Headless Cinnamon and Budgie runs report missing Bluetooth, login/power or
@@ -59,6 +77,12 @@ the same themed test completed without that exception after waiting for
 Cinnamon's `RunState.RUNNING` before starting clients. Startup timing and
 complete desktop-service behavior remain outside a clean
 end-to-end claim. No upstream desktop code was changed.
+
+The Shell fixture similarly reports missing IBus, authentication and volume
+services, plus a GDM registration signature mismatch in the upstream mock.
+It does not establish working screen locking; GNOME explicitly reports that
+screen locking requires GDM in this isolated session. These service boundaries
+are separate from the passing stylesheet and rendering checks.
 
 There is no physical OLED panel, DRM/GPU device or real login seat in this
 environment. Hardware drivers, power savings, HDR, burn-in behavior, login,

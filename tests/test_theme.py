@@ -67,8 +67,19 @@ class ThemeTests(unittest.TestCase):
             tree = ET.parse(path)
             ids = [e.attrib['id'] for e in tree.iter() if 'id' in e.attrib]
             self.assertEqual(len(ids), len(set(ids)), str(path))
-            for match in re.findall(r'url\(#([^)]+)\)|href="#([^"]+)"', path.read_text()):
-                self.assertIn(match[0] or match[1], ids, str(path))
+            for element in tree.iter():
+                # Inline CSS overrides SVG presentation attributes. Upstream
+                # Shell artwork retains old fill URLs beneath valid style fills.
+                inline = dict(re.findall(r'([\w-]+)\s*:\s*([^;]+)',
+                                         element.get('style', '')))
+                for attribute, value in element.attrib.items():
+                    if attribute != 'style' and attribute in inline:
+                        continue
+                    references = re.findall(r'''url\(\s*['"]?#([^)'"\s]+)['"]?\s*\)''', value)
+                    if attribute.rsplit('}', 1)[-1] == 'href' and value.startswith('#'):
+                        references.append(value[1:])
+                    for reference in references:
+                        self.assertIn(reference, ids, str(path))
 
     def test_selected_text_contrast(self):
         nvim = (ROOT / 'extra/nvim/colors/adwaita-amoled.vim').read_text()

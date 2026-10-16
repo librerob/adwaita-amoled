@@ -55,7 +55,27 @@ checks rather than silently skipping them.
 Failures are also emitted as GitHub check annotations, with the original test
 exit status preserved, so they remain visible without downloading run logs.
 
-These tests use software rendering under X11. They do not establish native
+The GTK regression tests above use software rendering under X11. They do not establish native
 Wayland, Brave, Flatpak, full Cinnamon/Marco session, physical OLED, or GPU-driver
 correctness. GTK's older `alpha()` color function keeps the Chromium rules
 compatible with GTK4 releases before `color-mix()` support.
+
+## GNOME Shell 51
+
+On Ubuntu 26.10, install the separate Shell test prerequisites:
+
+```bash
+sudo apt install gnome-shell gnome-shell-extension-user-theme mutter-51-tests \
+  python3-dbusmock python3-dbus sassc pipewire wireplumber
+python3 tests/test_shell.py
+```
+
+These four checks verify all pinned upstream source/asset hashes, reproduce the
+compiled stylesheet, compare its layout and selectors with upstream, and start
+a real headless Wayland Shell on isolated D-Bus services. The native case loads
+the theme through User Themes, checks native surface colors and style nodes at
+1×/2×, cycles quick settings/calendar menus, and captures eight rendered views.
+Set `THEME_TEST_OUTPUT` to retain screenshots, the session log and JSON counters.
+The fixture uses upstream GNOME service mocks; it does not test real login,
+authentication, power management or physical GPU hardware. Missing Shell 51 or
+test dependencies fail the check rather than skipping it.
