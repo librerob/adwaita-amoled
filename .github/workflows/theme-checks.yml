@@ -22,7 +22,7 @@ jobs:
             libmetacity3 xvfb xauth
       - name: Check shell syntax
         run: |
-          shellcheck build.sh
+          shellcheck build.sh gnome-shell/build.sh tests/gnome-shell/session.sh
           zsh -n extra/zsh/.zshrc
       - name: Check resources, installation and extras
         run: python3 tests/test_theme.py
@@ -59,4 +59,27 @@ jobs:
         with:
           name: theme-rendering-modern
           path: ${{ runner.temp }}/theme-test-output-modern
+          if-no-files-found: ignore
+
+  gnome-shell:
+    runs-on: ubuntu-24.04
+    container: ubuntu:26.10
+    steps:
+      - name: Install native GNOME Shell test tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            git ca-certificates gnome-shell gnome-shell-extension-user-theme \
+            mutter-51-tests python3-dbusmock python3-dbus sassc pipewire wireplumber
+      - uses: actions/checkout@v7
+      - name: Check Shell source, reproducibility and native Wayland rendering
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-shell
+        run: python3 tests/test_shell.py
+      - name: Upload Shell rendering evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gnome-shell-rendering
+          path: ${{ runner.temp }}/theme-test-output-shell
           if-no-files-found: ignore

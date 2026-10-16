@@ -1,0 +1,9 @@
+// Adwaita-AMOLED adaptation, 2026-10-16. SPDX-License-Identifier: GPL-2.0-or-later
+$variant: 'dark';
+$contrast: 'normal';
+
+@import 'upstream/colors';
+@import 'amoled';
+@import 'upstream/drawing';
+@import 'upstream/common';
+@import 'upstream/widgets';

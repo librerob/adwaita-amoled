@@ -10,6 +10,7 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 <img src="https://img.shields.io/badge/GTK3-✓-black">
 <img src="https://img.shields.io/badge/GTK4-✓-black">
 <img src="https://img.shields.io/badge/libadwaita-✓-black">
+<img src="https://img.shields.io/badge/GNOME_Shell-51-black">
 <img src="https://img.shields.io/badge/XFCE-✓-black">
 <img src="https://img.shields.io/badge/Cinnamon-✓-black">
 <img src="https://img.shields.io/badge/Openbox-✓-black">
@@ -38,6 +39,7 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 - Refined XFCE panel with accent underline focus indicator, no flat white blocks
 - Complete GTK2 theme via the murrine engine, fully styled across all widget classes
 - GTK4 + libadwaita color overrides included
+- GNOME Shell 51 theme based on the upstream 51.1 default, with an AMOLED palette
 - Cinnamon shell theme, Openbox theme, and Metacity window decorations included
 - Qt5ct and Qt6ct color schemes aligned with the GTK palette
 
@@ -85,6 +87,20 @@ Flatpak runtimes and desktop theme detection vary; exposing the directories
 alone does not select a theme or install a missing theme engine in the sandbox.
 
 > **Firefox users:** Open `about:config` and set `widget.gtk.libadwaita-colors.enabled` to `false`.
+
+---
+
+## GNOME Shell
+
+The included Shell theme targets **GNOME Shell 51.x** and is based on the
+upstream **51.1** default. Install the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/),
+enable it, and select **Adwaita-AMOLED** in its settings. Selecting the GTK
+theme does not activate the Shell theme. See [Shell installation and source
+details](gnome-shell/README.md) for commands and update instructions.
+
+This themes the logged-in Shell session, including the panel, overview, menus,
+notifications, OSDs and dialogs. Other Shell major versions and the GDM login
+screen are outside its verified scope. GNOME's selected accent color is retained.
 
 ---
 
@@ -250,6 +266,9 @@ existing custom override first. After editing `src/`, rebuild and commit the
 updated `gtk.gresource` bundles together with their source changes.
 The installer honors `XDG_DATA_HOME` and `XDG_CONFIG_HOME` when they are set.
 
+The GNOME Shell CSS is also included precompiled. After changing its Sass
+palette, rebuild it separately with `./gnome-shell/build.sh` (requires `sassc`).
+
 The repository's regression checks and their prerequisites are documented in
 [tests/README.md](tests/README.md). GitHub Actions runs them on pull requests.
 
@@ -286,6 +305,7 @@ Success surfaces use black text on `#26a269` (approximately 6.45:1).
 ```
 Adwaita-AMOLED/
 ├── cinnamon/               Cinnamon shell theme
+├── gnome-shell/            GNOME Shell 51 theme, assets and Sass source
 ├── gtk-2.0/                GTK2 theme (murrine engine)
 ├── gtk-3.0/                GTK3 theme
 ├── gtk-4.0/                GTK4 theme
