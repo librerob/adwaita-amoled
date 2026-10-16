@@ -64,7 +64,7 @@ tooltip.background.chromium {
 
 
 /* ── Accent ──────────────────────────────────────────────────────────────── */
-@define-color accent_color             #387af2;
+@define-color accent_color             #8ab4f8;
 @define-color accent_bg_color          #2d6be0;
 @define-color accent_fg_color          #ffffff;
 
@@ -79,7 +79,7 @@ tooltip.background.chromium {
 /* ── Headerbar ───────────────────────────────────────────────────────────── */
 @define-color headerbar_bg_color       #0e0e0e;
 @define-color headerbar_fg_color       #ffffff;
-@define-color headerbar_border_color   #2a2a2a;
+@define-color headerbar_border_color   #808080;
 @define-color headerbar_backdrop_color #000000;
 @define-color headerbar_shade_color    rgba(0, 0, 0, 0.5);
 @define-color headerbar_darker_shade_color rgba(0, 0, 0, 0.9);
@@ -106,14 +106,14 @@ tooltip.background.chromium {
 @define-color sidebar_bg_color         #000000;
 @define-color sidebar_fg_color         #ffffff;
 @define-color sidebar_backdrop_color   #000000;
-@define-color sidebar_border_color     #2a2a2a;
+@define-color sidebar_border_color     #808080;
 @define-color sidebar_shade_color      rgba(0, 0, 0, 0.4);
 
 /* ── Secondary sidebar ───────────────────────────────────────────────────── */
 @define-color secondary_sidebar_bg_color       #0a0a0a;
 @define-color secondary_sidebar_fg_color       #ffffff;
 @define-color secondary_sidebar_backdrop_color #000000;
-@define-color secondary_sidebar_border_color   #2a2a2a;
+@define-color secondary_sidebar_border_color   #808080;
 @define-color secondary_sidebar_shade_color    rgba(0, 0, 0, 0.4);
 
 /* ── Shade / scrollbar ───────────────────────────────────────────────────── */
@@ -145,5 +145,95 @@ tooltip.background.chromium {
 @define-color theme_selected_bg_color  @accent_bg_color;
 @define-color theme_selected_fg_color  #ffffff;
 @define-color insensitive_bg_color     #0a0a0a;
-@define-color insensitive_fg_color     rgba(255, 255, 255, 0.35);
+@define-color insensitive_fg_color     #909090;
 @define-color insensitive_base_color   #0f0f0f;
+
+/* Readability roles: pale standalone text, dark filled controls with white labels.
+ * Keep semantic filled controls on their own foreground/background pairs.
+ */
+.accent, button.suggested-action.flat, button.suggested-action.flat:hover,
+button.suggested-action.flat:active, button.suggested-action.flat:checked,
+button.link, button.link:visited, button.link:hover, button.link:active {
+  color: @accent_color;
+}
+.error, label.error, entry.error, entry.error > text { color: @error_color; }
+.warning, label.warning, entry.warning, entry.warning > text { color: @warning_color; }
+.success, label.success { color: @success_color; }
+button.suggested-action.flat {
+  background-color: transparent;
+  background-image: none;
+}
+button.suggested-action.flat:hover { background-color: alpha(@accent_bg_color, 0.15); }
+button.suggested-action.flat:active, button.suggested-action.flat:checked {
+  background-color: alpha(@accent_bg_color, 0.25);
+}
+button.suggested-action:not(.flat):not(.success):not(.warning):not(.error):not(.destructive-action):hover {
+  color: @accent_fg_color;
+  background-color: shade(@accent_bg_color, 0.95);
+  background-image: none;
+}
+button.suggested-action:not(.flat):not(.success):not(.warning):not(.error):not(.destructive-action):active,
+button.suggested-action:not(.flat):not(.success):not(.warning):not(.error):not(.destructive-action):checked {
+  color: @accent_fg_color;
+  background-color: shade(@accent_bg_color, 0.85);
+  background-image: none;
+}
+button:focus-visible, entry:focus-within, spinbutton:focus-within {
+  outline-color: @accent_color;
+  outline-style: solid;
+  outline-width: 2px;
+  outline-offset: -2px;
+}
+
+button.suggested-action:focus-visible, button.destructive-action:focus-visible {
+  outline-color: @accent_fg_color;
+}
+button.success.suggested-action:focus-visible { outline-color: @success_fg_color; }
+button.warning.suggested-action:focus-visible { outline-color: @warning_fg_color; }
+
+/* Explicit semantic filled roles work in plain GTK4 and libadwaita alike. */
+button.success.suggested-action:not(.flat) {
+  color: @success_fg_color;
+  background-color: @success_bg_color;
+  background-image: none;
+}
+button.success.suggested-action:not(.flat):hover { background-color: shade(@success_bg_color, 1.08); }
+button.success.suggested-action:not(.flat):active { background-color: shade(@success_bg_color, 0.9); }
+button.warning.suggested-action:not(.flat) {
+  color: @warning_fg_color;
+  background-color: @warning_bg_color;
+  background-image: none;
+}
+button.warning.suggested-action:not(.flat):hover { background-color: shade(@warning_bg_color, 1.08); }
+button.warning.suggested-action:not(.flat):active { background-color: shade(@warning_bg_color, 0.9); }
+button.error.suggested-action:not(.flat) {
+  color: @error_fg_color;
+  background-color: @error_bg_color;
+  background-image: none;
+}
+button.error.suggested-action:not(.flat):hover { background-color: shade(@error_bg_color, 1.08); }
+button.error.suggested-action:not(.flat):active { background-color: shade(@error_bg_color, 0.9); }
+
+/* Flat destructive text uses the lighter standalone semantic color. */
+button.destructive-action.flat {
+  color: @destructive_color;
+  background-color: transparent;
+  background-image: none;
+}
+button.destructive-action.flat:hover {
+  color: @destructive_color;
+  background-color: alpha(@destructive_bg_color, 0.15);
+  background-image: none;
+}
+button.destructive-action.flat:active, button.destructive-action.flat:checked {
+  color: @destructive_color;
+  background-color: alpha(@destructive_bg_color, 0.25);
+  background-image: none;
+}
+
+/* GtkLinkButton exposes link/visited state nodes, rather than a .link class. */
+button:link, button:visited, button:link:hover, button:visited:hover,
+button:link:active, button:visited:active,
+button:link:backdrop:active, button:visited:backdrop:active {
+  color: @accent_color;
+}

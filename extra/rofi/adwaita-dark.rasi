@@ -7,7 +7,7 @@
  *   - Border: #0e0e0e                       *
  *   - Text: #ffffff                         *
  *   - Dim text: #c0c0c0                     *
- *   - Accent: #387af2                        *
+ *   - Accent: #8ab4f8                        *
  ********************************************/
 
 configuration {
@@ -62,7 +62,7 @@ inputbar {
 textbox-prompt-colon {
     expand:                     false;
     str:                        "🔍";
-    text-color:                 #387af2;      /* @accent - main accent blue */
+    text-color:                 #8ab4f8;      /* @accent - main accent blue */
     background-color:           inherit;
 }
 
@@ -78,7 +78,7 @@ entry {
 listview {
     scrollbar:                  true;
     scrollbar-width:            6px;
-    scrollbar-color:            #387af2;      /* @accent - accent blue */
+    scrollbar-color:            #8ab4f8;      /* @accent - accent blue */
     scrollbar-background-color: #0e0e0e;      /* borders - border color */
     lines:                      12;
     columns:                    1;
@@ -98,7 +98,7 @@ element {
 }
 
 element selected {
-    background-color:           #387af2;      /* @accent + theme_selected_bg_color */
+    background-color:           #8ab4f8;      /* @accent + theme_selected_bg_color */
     text-color:                 #000000;      /* theme_selected_fg_color */
 }
 

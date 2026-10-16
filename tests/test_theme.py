@@ -83,10 +83,13 @@ class ThemeTests(unittest.TestCase):
 
     def test_selected_text_contrast(self):
         nvim = (ROOT / 'extra/nvim/colors/adwaita-amoled.vim').read_text()
+        checked = 0
         for line in nvim.splitlines():
             match = re.match(r'hi\s+(\S+)\s+guifg=(#[\da-f]{6})\s+guibg=(#[\da-f]{6})', line)
-            if match and match[3] == '#387af2':
+            if match:
+                checked += 1
                 self.assertGreaterEqual(contrast(match[2], match[3]), 4.5, match[1])
+        self.assertGreater(checked, 10, 'Expected explicit Neovim foreground/background pairs')
         alacritty = tomllib.loads((ROOT / 'extra/alacritty/alacritty.toml').read_text())
         focused = alacritty['colors']['search']['focused_match']
         self.assertGreaterEqual(contrast(focused['foreground'], focused['background']), 4.5)

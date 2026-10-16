@@ -2,6 +2,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
+import MetaTest from 'gi://MetaTest';
 import Shell from 'gi://Shell';
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -12,8 +13,16 @@ import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 export const METRICS = {};
 const results = {surfaces: {}, views: [], transitions: 0, styleNodes: 0};
 
+let testMonitor = null;
 export function init() {
     print('AMOLED_SHELL_PHASE automation-loaded');
+    // Follow upstream tests/shell/headlessStart.js: connect the test monitor
+    // after automation initialization, so startup-complete cannot be missed.
+    global.connect('shutdown', () => testMonitor?.destroy());
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, () => {
+        testMonitor = MetaTest.TestMonitor.new(global.context, 1600, 1200, 60.0);
+        return GLib.SOURCE_REMOVE;
+    });
 }
 
 function assert(condition, message) {
@@ -34,6 +43,63 @@ async function capture(name) {
     results.views.push(name);
 }
 
+
+function contrast(foreground, background) {
+    const channels = color => [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16) / 255);
+    const luminance = color => channels(color).reduce((sum, value, i) => sum +
+        (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4) *
+        [0.2126, 0.7152, 0.0722][i], 0);
+    const [high, low] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+    return (high + 0.05) / (low + 0.05);
+}
+
+async function checkAccentRoles(context, theme) {
+    const settings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
+    const original = settings.get_string('accent-color');
+    const pairs = [];
+    try {
+        for (const accent of ['blue', 'teal', 'green', 'yellow', 'orange', 'red', 'pink', 'purple', 'slate']) {
+            settings.set_string('accent-color', accent);
+            await Scripting.sleep(60);
+            for (const [name, parentClass, childClass, baseState] of [
+                ['default', null, 'button default', ''],
+                ['quick-toggle', null, 'quick-toggle', 'checked'],
+                ['calendar-today', 'calendar', 'calendar-day calendar-today', ''],
+                ['quick-menu', 'quick-toggle-has-menu', 'quick-toggle-menu-button', 'checked'],
+                ['input-candidate', null, 'candidate-box', 'selected'],
+                ['monitor-label', null, 'osd-monitor-label', ''],
+                ['keyboard-latched', null, 'keyboard-key default-key', 'latched'],
+                ['emoji-latched', 'emoji-panel', 'keyboard-key', 'latched'],
+            ]) {
+                for (const state of ['', 'hover', 'focus', 'active', 'active:hover', 'focus:hover']) {
+                    let parent = context.get_root_node();
+                    if (parentClass)
+                        parent = St.ThemeNode.new(context, parent, theme, St.Widget.$gtype,
+                            null, parentClass, null, '');
+                    const pseudo = [baseState, state.replaceAll(':', ' ')].filter(Boolean).join(' ');
+                    const node = St.ThemeNode.new(context, parent, theme, St.Widget.$gtype,
+                        null, childClass, pseudo, '');
+                    const foreground = node.get_foreground_color().to_string();
+                    const background = node.get_background_color().to_string();
+                    assert(background.endsWith('ff'), `${name} needs an opaque accent background: ${background}`);
+                    pairs.push({accent, name, state, foreground, background,
+                        contrast: contrast(foreground, background)});
+                }
+            }
+        }
+    } finally {
+        settings.set_string('accent-color', original);
+        await Scripting.sleep(60);
+    }
+    const output = GLib.getenv('THEME_TEST_OUTPUT');
+    if (output)
+        GLib.file_set_contents(`${output}/shell-accent-colors.json`, JSON.stringify(pairs, null, 2));
+    const failures = pairs.filter(pair => pair.contrast < 4.5);
+    assert(failures.length === 0, `Unreadable Shell accent states: ${JSON.stringify(failures)}`);
+    results.accentPairs = pairs.length;
+    results.minimumAccentContrast = Math.min(...pairs.map(pair => pair.contrast));
+}
+
 export async function run() {
     assert(Config.PACKAGE_VERSION.startsWith('51.'), `Expected Shell 51, got ${Config.PACKAGE_VERSION}`);
     await Scripting.sleep(500);
@@ -45,7 +111,7 @@ export async function run() {
     const theme = context.get_theme();
     let root = context.get_root_node();
     const node = (id, cls, state = null, parent = root) =>
-        St.ThemeNode.new(context, parent, theme, St.Widget.$gtype, id, cls, state, '');
+        St.ThemeNode.new(context, parent, theme, St.Widget.$gtype, id, cls, state === null ? null : state.replaceAll(':', ' '), '');
     for (const [name, id, cls, expected] of [
         ['panel', 'panel', null, '#000000ff'],
         ['overview', 'overviewGroup', null, '#000000ff'],
@@ -63,6 +129,8 @@ export async function run() {
     const dash = node('dash', null);
     assert(node(null, 'dash-background', null, dash).get_background_color().to_string() === '#0f0f0fff',
         'Dash surface must use the AMOLED raised surface');
+
+    await checkAccentRoles(context, theme);
 
     const [, bytes] = stylesheet.load_contents(null);
     const css = new TextDecoder().decode(bytes);

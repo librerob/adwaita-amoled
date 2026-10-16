@@ -6,61 +6,61 @@ background = '#000000'      # surface_bg — pure AMOLED black
 foreground = '#ffffff'      # primary text
 
 [colors.cursor]
-cursor = '#387af2'          # @accent — primary blue
+cursor = '#8ab4f8'          # @accent — primary blue
 text   = '#000000'          # background behind cursor text
 
 [colors.vi_mode_cursor]
-cursor = '#387af2'          # @accent
+cursor = '#8ab4f8'          # @accent
 text   = '#000000'
 
 [colors.selection]
-background = '#1a2d4a'      # blue-tinted selection; 1.52:1 vs bg — chromatic
-text       = '#ffffff'      # 13.83:1 on selection bg
+background = '#1a2d4a'      # blue-tinted selection
+text       = '#ffffff'      # readable selection text
 
 [colors.search.matches]
 background = '#1a1200'      # warm dark bg for non-focused matches
-foreground = '#f1ac00'      # warning yellow — 9.30:1 on match bg
+foreground = '#f1ac00'      # warning yellow
 
 [colors.search.focused_match]
-background = '#387af2'      # @accent — active match
-foreground = '#000000'      # 5.23:1 on the #387af2 accent background
+background = '#8ab4f8'      # @accent — active match
+foreground = '#000000'      # readable text on the pale accent
 
 [colors.footer_bar]
 background = '#000000'      # surface_bg
-foreground = '#c0c0c0'      # disabled/backdrop text — 11.54:1
+foreground = '#c0c0c0'      # disabled/backdrop text
 
 # Normal colors — mapped from Adwaita AMOLED semantic tokens
 [colors.normal]
 black   = '#000000'         # pure black (terminal fill)
-red     = '#ff3333'         # error — softened from #ff0000; 5.77:1  [FIX v2]
-green   = '#0aeea0'         # success — 13.75:1
-yellow  = '#f1ac00'         # warning — 10.64:1
-blue    = '#387af2'         # @accent — 5.23:1
-magenta = '#c678dd'         # no Adwaita equivalent; Doom One reference — 7.13:1
-cyan    = '#01c1f1'         # link color — 9.90:1
-white   = '#ffffff'         # primary fg — 21.00:1
+red     = '#ff7b7b'         # error — softened from #ff0000
+green   = '#0aeea0'         # success
+yellow  = '#f1ac00'         # warning
+blue    = '#8ab4f8'         # @accent
+magenta = '#d49bea'         # readable syntax magenta
+cyan    = '#01c1f1'         # link color
+white   = '#ffffff'         # primary fg
 
 # Bright colors — rendered for bold text (draw_bold_text_with_bright_colors)
 [colors.bright]
-black   = '#1a1a1a'         # surface_hover
-red     = '#ff4444'         # brighter error — 6.16:1
-green   = '#4affc4'         # brighter success — 16.39:1
-yellow  = '#ffcc44'         # brighter warning — 13.97:1
-blue    = '#4a8cf5'         # @accent_hover — 6.36:1
-magenta = '#e599ff'         # bright magenta — 10.33:1
-cyan    = '#44ddff'         # bright cyan — 13.03:1
-white   = '#fafafa'         # backdrop text — 20.78:1
+black   = '#a0a0a0'         # readable bright-black text
+red     = '#ff9a9a'         # brighter error
+green   = '#4affc4'         # brighter success
+yellow  = '#ffcc44'         # brighter warning
+blue    = '#aecbfa'         # @accent_hover
+magenta = '#e599ff'         # bright magenta
+cyan    = '#44ddff'         # bright cyan
+white   = '#fafafa'         # backdrop text
 
-# Dim colors — rendered for faint/dim ANSI attribute (~70-80% lum of normals)
+# Dim colors — explicit faint/dim ANSI palette
 [colors.dim]
 black   = '#0f0f0f'         # surface_card
-red     = '#e00a0f'         # destructive bg (GTK) — 4.22:1
-green   = '#00aa70'         # dimmed success — 6.98:1
-yellow  = '#aa7800'         # dimmed warning — 5.40:1
-blue    = '#2d6be0'         # @accent_active — 4.29:1
-magenta = '#8a55aa'         # dimmed magenta — 3.96:1 (dim; acceptable)
-cyan    = '#0a88aa'         # dimmed cyan — 5.12:1
-white   = '#c0c0c0'         # disabled/backdrop text — 11.54:1
+red     = '#d46a74'         # faint red text
+green   = '#00aa70'         # dimmed success
+yellow  = '#aa7800'         # dimmed warning
+blue    = '#6c91ce'         # faint blue text
+magenta = '#aa77c8'         # dimmed magenta
+cyan    = '#0a88aa'         # dimmed cyan
+white   = '#c0c0c0'         # disabled/backdrop text
 
 # -----------------------------------------------------------------------------
 # Bell
@@ -68,4 +68,4 @@ white   = '#c0c0c0'         # disabled/backdrop text — 11.54:1
 [bell]
 animation = "EaseOutExpo"
 duration  = 0
-color     = "#387af2"       # @accent
+color     = "#8ab4f8"       # @accent

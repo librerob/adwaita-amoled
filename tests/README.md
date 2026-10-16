@@ -4,9 +4,10 @@ GResource bundles contain the current source. Python 3.11 or newer is required.
 Install the tools on Debian/Ubuntu:
 
 ```bash
-sudo apt install libglib2.0-dev rsync shellcheck zsh kitty neovim \
-  python3-gi gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
-  libmetacity3 xvfb xauth
+sudo apt install libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
+  python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
+  libmetacity3 xvfb xauth bat rofi librsvg2-bin python3-pyqt5 python3-pyqt6 \
+  libgtk2.0-0t64 gtk2-engines-murrine
 ```
 
 From the repository root:
@@ -15,7 +16,9 @@ From the repository root:
 shellcheck build.sh
 zsh -n extra/zsh/.zshrc
 python3 tests/test_theme.py
+python3 tests/test_readability.py
 xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_runtime.py
+xvfb-run -a python3 tests/test_consumers.py
 ```
 
 `test_theme.py` checks the shipping and freshly compiled bundle contents, asset
@@ -79,3 +82,48 @@ Set `THEME_TEST_OUTPUT` to retain screenshots, the session log and JSON counters
 The fixture uses upstream GNOME service mocks; it does not test real login,
 authentication, power management or physical GPU hardware. Missing Shell 51 or
 test dependencies fail the check rather than skipping it.
+
+## Color readability coverage
+
+`test_readability.py` checks terminal text, faint compositing, selected matches,
+bat syntax across supported backgrounds, Qt active/inactive roles and alpha
+placeholders, optional Qt scrollbar handles, Openbox labels/buttons, Zsh ANSI
+completion pairs, and the standalone accent on six dark surfaces.
+
+The native Neovim check resolves 736 ordinary/structural highlight pairs on
+normal, float, cursor-line and selection backgrounds. It also loads the real
+vim-airline plugin and checks 70 true-color/256-color mode pairs. Set
+`THEME_AIRLINE_RUNTIME` when that plugin is installed outside `/usr/share/vim-airline`.
+
+Five additional `test_runtime.py` cases use GTK's native Cairo background
+renderer and actual label foregrounds for 19 widget roles in eleven states, plus GTK3 tasklist/launcher roles.
+They check GTK3 plus plain GTK4/libadwaita requesting light and dark modes.
+Their 1,067 state samples retain 97 disabled measurements separately; enabled text
+must meet 4.5:1. Background gradients are sampled across the control interior. GTK3 style/widget
+opacity and GTK4 native snapshot text/opacity nodes are included.
+
+`test_consumers.py` checks native Qt5/Qt6 QPalette colors and renders a Fusion
+widget gallery, resolves GTK2 style colors and paints Murrine button/scrollbar/scale states,
+builds/uses bat's actual theme cache, parses the Rofi theme, and renders every
+SVG through librsvg. GitHub Actions uploads Qt images and GTK2 measurements in
+`extra-consumer-rendering`.
+
+The Shell automation additionally checks 432 opaque accent/text pairs across
+all nine system accents and compound hover/focus/active states. It connects its
+virtual monitor after automation initialization, following upstream's
+`tests/shell/headlessStart.js`, to avoid missing the startup-complete signal.
+
+An optional Cinnamon integration fixture is intended for an isolated test
+container/VM with Cinnamon 6.6 and its session packages:
+
+```bash
+xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
+  dbus-run-session -- python3 tests/cinnamon_colors.py . /tmp/amoled-cinnamon-colors
+```
+
+It uses temporary user settings, checks 77 representative text/state pairs,
+and evaluates style nodes at the session's native scale. A running system D-Bus service is required;
+real login/power/network behavior is not established by this fixture.
+See [the color audit](../COLOR_READABILITY.md) for measured improvements,
+intentional exceptions and limits. Passing these tests does not establish full
+WCAG conformance or cover arbitrary application-provided colors.

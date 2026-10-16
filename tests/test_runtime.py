@@ -38,6 +38,28 @@ class RuntimeTests(unittest.TestCase):
     def test_libadwaita_light_semantic_colors(self):
         self.check_native('--light', script='adwaita_colors.py')
 
+    def check_text_contrast(self, consumer, light=False):
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(os.environ.get('THEME_TEST_OUTPUT', temporary))
+            output = base / ('colors-' + consumer + ('-light' if light else '-dark'))
+            arguments = [str(ROOT), consumer, str(output)] + (['--light'] if light else [])
+            self.check_native(*arguments, script='color_native.py')
+
+    def test_gtk3_text_contrast(self):
+        self.check_text_contrast('gtk3')
+
+    def test_gtk4_dark_text_contrast(self):
+        self.check_text_contrast('gtk4')
+
+    def test_gtk4_light_request_text_contrast(self):
+        self.check_text_contrast('gtk4', light=True)
+
+    def test_libadwaita_dark_text_contrast(self):
+        self.check_text_contrast('adw')
+
+    def test_libadwaita_light_request_text_contrast(self):
+        self.check_text_contrast('adw', light=True)
+
     def test_metacity_renderer(self):
         self.check_native('--metacity')
 

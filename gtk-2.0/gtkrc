@@ -3,7 +3,7 @@
 # Engine: murrine (primary) | clearlooks (fallback, see bottom)
 # Palette mirrors gtk-3.0 depth tokens:
 #   bg #000000  surface #0f0f0f  hover #1a1a1a  border #2a2a2a
-#   accent #387af2  text #ffffff  dim #888888
+#   filled accent #2d6be0  text #ffffff  dim #a0a0a0
 # ══════════════════════════════════════════════════════════════════════
 
 gtk-color-scheme =
@@ -53,8 +53,8 @@ style "default" {
   GtkWidget::focus-padding          = 1
   GtkWidget::focus-line-width       = 1
   GtkWidget::interior-focus         = 1
-  GtkWidget::link-color             = "#387af2"
-  GtkWidget::visited-link-color     = "#4a8cf5"
+  GtkWidget::link-color             = "#8ab4f8"
+  GtkWidget::visited-link-color     = "#aecbfa"
   GtkButton::child-displacement-x   = 0
   GtkButton::child-displacement-y   = 0
   GtkButton::inner-border           = {4, 4, 3, 3}
@@ -89,7 +89,7 @@ style "default" {
   fg[PRELIGHT]      = @fg_color
   fg[SELECTED]      = @selected_fg_color
   fg[ACTIVE]        = @fg_color
-  fg[INSENSITIVE]   = "#606060"
+  fg[INSENSITIVE]   = "#909090"
 
   bg[NORMAL]        = @bg_color
   bg[PRELIGHT]      = "#1a1a1a"
@@ -107,7 +107,7 @@ style "default" {
   text[PRELIGHT]    = @text_color
   text[SELECTED]    = @selected_fg_color
   text[ACTIVE]      = @text_color
-  text[INSENSITIVE] = "#505050"
+  text[INSENSITIVE] = "#909090"
 }
 
 # ── Buttons ────────────────────────────────────────────────────────────
@@ -117,7 +117,7 @@ style "button" = "default" {
   bg[PRELIGHT]    = "#222222"
   bg[ACTIVE]      = "#0a0a0a"
   bg[INSENSITIVE] = "#0c0c0c"
-  fg[INSENSITIVE] = "#404040"
+  fg[INSENSITIVE] = "#909090"
 }
 
 # ── Entries / text fields ──────────────────────────────────────────────
@@ -129,7 +129,7 @@ style "entry" = "default" {
   base[INSENSITIVE] = "#050505"
   text[NORMAL]      = @text_color
   text[ACTIVE]      = @text_color
-  text[INSENSITIVE] = "#484848"
+  text[INSENSITIVE] = "#909090"
   bg[NORMAL]        = "#0a0a0a"
 }
 
@@ -142,7 +142,7 @@ style "menu" = "default" {
   bg[INSENSITIVE] = "#080808"
   fg[NORMAL]      = @fg_color
   fg[PRELIGHT]    = @selected_fg_color
-  fg[INSENSITIVE] = "#505050"
+  fg[INSENSITIVE] = "#909090"
   text[NORMAL]    = @text_color
   text[PRELIGHT]  = @selected_fg_color
   GtkMenu::vertical-padding    = 4
@@ -182,16 +182,16 @@ style "notebook" = "default" {
   bg[NORMAL]      = "#0f0f0f"
   bg[ACTIVE]      = "#000000"
   bg[PRELIGHT]    = "#161616"
-  fg[NORMAL]      = "#888888"
+  fg[NORMAL]      = "#a0a0a0"
   fg[ACTIVE]      = @fg_color
 }
 
 # ── Scrollbars ─────────────────────────────────────────────────────────
 
 style "scrollbar" = "default" {
-  bg[NORMAL]      = "#1a1a1a"
-  bg[PRELIGHT]    = "#282828"
-  bg[ACTIVE]      = "#387af2"
+  bg[NORMAL]      = "#2d6be0"
+  bg[PRELIGHT]    = "#2d6be0"
+  bg[ACTIVE]      = "#2d6be0"
   base[NORMAL]    = "#080808"
   GtkRange::trough-border = 1
 }
@@ -239,7 +239,7 @@ style "tooltip" = "default" {
 # ── Frame / separator ─────────────────────────────────────────────────
 
 style "frame-label" = "default" {
-  fg[NORMAL]      = "#808080"
+  fg[NORMAL]      = "#a0a0a0"
 }
 
 style "separator" = "default" {
@@ -250,8 +250,8 @@ style "separator" = "default" {
 # ── Scale slider ───────────────────────────────────────────────────────
 
 style "scale" = "default" {
-  bg[NORMAL]      = "#0a0a0a"
-  bg[PRELIGHT]    = "#387af2"
+  bg[NORMAL]      = "#2d6be0"
+  bg[PRELIGHT]    = "#2d6be0"
   bg[ACTIVE]      = "#2d6be0"
   GtkRange::trough-border = 2
   GtkRange::slider-width  = 18
@@ -284,7 +284,7 @@ style "calendar" = "default" {
 
 style "statusbar" = "default" {
   bg[NORMAL]      = "#000000"
-  fg[NORMAL]      = "#888888"
+  fg[NORMAL]      = "#a0a0a0"
 }
 
 # ── Panel (XFCE4, LXDE, etc.) ─────────────────────────────────────────
@@ -302,7 +302,7 @@ style "panel" = "default" {
 # ── Expander ──────────────────────────────────────────────────────────
 
 style "expander" = "default" {
-  fg[NORMAL]      = "#888888"
+  fg[NORMAL]      = "#a0a0a0"
   fg[PRELIGHT]    = @fg_color
 }
 

@@ -12,7 +12,7 @@
     button_normal   = rgba(255,255,255,0.15)
     button_hover    = rgba(255,255,255,0.25)
     button_active   = rgba(255,255,255,0.08)
-    accent          = #387af2
+    accent          = #8ab4f8
     close_hover     = #e01b24
 -->
 
@@ -244,8 +244,8 @@
     <line color="#c0c0c0" x1="12" y1="9" x2="12" y2="17"/>
   </draw_ops>
   <draw_ops name="btn_unstick">
-    <line color="#387af2" x1="8" y1="9" x2="16" y2="9"/>
-    <line color="#387af2" x1="12" y1="9" x2="12" y2="17"/>
+    <line color="#8ab4f8" x1="8" y1="9" x2="16" y2="9"/>
+    <line color="#8ab4f8" x1="12" y1="9" x2="12" y2="17"/>
   </draw_ops>
 
   <!-- ── Frame style: normal window ────────────────────────────────── -->

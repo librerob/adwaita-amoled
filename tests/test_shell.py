@@ -47,10 +47,12 @@ class ShellSourceTests(unittest.TestCase):
         stock = rules(result.stdout)
         amoled = rules((THEME / 'gnome-shell.css').read_text())
         self.assertGreater(len(stock), 900)
-        self.assertEqual(len(stock), len(amoled))
+        self.assertGreaterEqual(len(amoled), len(stock))
         color_properties = {'color', 'background', 'background-color', 'background-image',
                             'border', 'border-color', 'box-shadow', '-arrow-background-color',
                             '-arrow-border-color', '-barlevel-overdrive-color', 'warning-color'}
+        for selector, declarations in amoled[len(stock):]:
+            self.assertTrue(all(key in color_properties for key, _ in declarations), selector)
         for (selector, before), (new_selector, after) in zip(stock, amoled):
             self.assertEqual(selector, new_selector)
             self.assertEqual([key for key, _ in before], [key for key, _ in after], selector)
@@ -99,6 +101,8 @@ class ShellRuntimeTests(unittest.TestCase):
             self.assertEqual(len(result['views']), 8)
             self.assertEqual(result['transitions'], 40)
             self.assertGreater(result['styleNodes'], 1000)
+            self.assertEqual(result['accentPairs'], 432)
+            self.assertGreaterEqual(result['minimumAccentContrast'], 4.5)
             for name in result['views']:
                 self.assertGreater((output / f'shell-{name}.png').stat().st_size, 100)
             print(json.dumps(result))

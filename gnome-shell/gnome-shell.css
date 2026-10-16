@@ -1303,7 +1303,7 @@ StScrollBar > .vhandle:active, StScrollBar > .hhandle:active {
   padding: 6px;
   background-color: #000000;
   border-radius: 20px;
-  border: 1px solid #1a1a1a;
+  border: 1px solid #808080;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -1440,7 +1440,7 @@ StScrollBar > .vhandle:active, StScrollBar > .hhandle:active {
 
 .popup-separator-menu-item .popup-separator-menu-item-separator {
   height: 1px;
-  background-color: #2a2a2a;
+  background-color: #808080;
 }
 
 .popup-sub-menu .popup-separator-menu-item {
@@ -1456,7 +1456,7 @@ StScrollBar > .vhandle:active, StScrollBar > .hhandle:active {
 }
 
 .popup-sub-menu .popup-separator-menu-item .popup-separator-menu-item-separator {
-  background-color: #2a2a2a;
+  background-color: #808080;
 }
 
 .background-menu {
@@ -1675,7 +1675,7 @@ StScrollBar > .vhandle:active, StScrollBar > .hhandle:active {
 /* Message List */
 .message-list {
   width: 29em;
-  border: solid #2a2a2a;
+  border: solid #808080;
 }
 
 .message-list:ltr {
@@ -2395,7 +2395,7 @@ StScrollBar > .vhandle:active, StScrollBar > .hhandle:active {
 
 .switcher-list .separator {
   width: 1px;
-  background: #2a2a2a;
+  background: #808080;
 }
 
 .switcher-list .thumbnail-box {
@@ -5249,4 +5249,85 @@ StScrollBar > .vhandle:active, StScrollBar > .hhandle:active {
 .login-dialog .user-widget.vertical .user-icon StIcon,
 .unlock-dialog .user-widget.vertical .user-icon StIcon {
   padding: 30px;
+}
+
+.button.default, .icon-button.default, .calendar .calendar-month-header .default.pager-button, .calendar .calendar-day.calendar-today, .message-notification-group .default.message-collapse-button, .message .message-header .default.message-expand-button,
+.message .message-header .default.message-close-button, .default.screenshot-ui-show-pointer-button, .quick-toggle:checked, .keyboard-brightness-level .button:checked, .default.login-dialog-button.next-button, .default.login-dialog-button.a11y-button, .default.login-dialog-button.cancel-button, .default.login-dialog-button.switch-user-button, .default.login-dialog-button.login-dialog-auth-menu-button, .default.login-dialog-button.login-dialog-session-list-button {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+}
+
+.button.default:focus, .icon-button.default:focus, .calendar .calendar-month-header .default.pager-button:focus, .calendar .calendar-day.calendar-today:focus, .message-notification-group .default.message-collapse-button:focus, .message .message-header .default.message-expand-button:focus,
+.message .message-header .default.message-close-button:focus, .default.screenshot-ui-show-pointer-button:focus, .quick-toggle:focus:checked, .keyboard-brightness-level .button:focus:checked, .default.login-dialog-button.next-button:focus, .default.login-dialog-button.a11y-button:focus, .default.login-dialog-button.cancel-button:focus, .default.login-dialog-button.switch-user-button:focus, .default.login-dialog-button.login-dialog-auth-menu-button:focus, .default.login-dialog-button.login-dialog-session-list-button:focus {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+}
+
+.button.default:hover, .icon-button.default:hover, .calendar .calendar-month-header .default.pager-button:hover, .calendar .calendar-day.calendar-today:hover, .message-notification-group .default.message-collapse-button:hover, .message .message-header .default.message-expand-button:hover,
+.message .message-header .default.message-close-button:hover, .default.screenshot-ui-show-pointer-button:hover, .quick-toggle:hover:checked, .keyboard-brightness-level .button:hover:checked, .default.login-dialog-button.next-button:hover, .default.login-dialog-button.a11y-button:hover, .default.login-dialog-button.cancel-button:hover, .default.login-dialog-button.switch-user-button:hover, .default.login-dialog-button.login-dialog-auth-menu-button:hover, .default.login-dialog-button.login-dialog-session-list-button:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+  color: #ffffff;
+}
+
+.button.default:active, .icon-button.default:active, .calendar .calendar-month-header .default.pager-button:active, .calendar .calendar-day.calendar-today:active, .message-notification-group .default.message-collapse-button:active, .message .message-header .default.message-expand-button:active,
+.message .message-header .default.message-close-button:active, .default.screenshot-ui-show-pointer-button:active, .quick-toggle:active:checked, .keyboard-brightness-level .button:active:checked, .default.login-dialog-button.next-button:active, .default.login-dialog-button.a11y-button:active, .default.login-dialog-button.cancel-button:active, .default.login-dialog-button.switch-user-button:active, .default.login-dialog-button.login-dialog-auth-menu-button:active, .default.login-dialog-button.login-dialog-session-list-button:active {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #ffffff;
+}
+
+.button.default:focus:hover, .icon-button.default:focus:hover, .calendar .calendar-month-header .default.pager-button:focus:hover, .calendar .calendar-day.calendar-today:focus:hover, .message-notification-group .default.message-collapse-button:focus:hover, .message .message-header .default.message-expand-button:focus:hover,
+.message .message-header .default.message-close-button:focus:hover, .default.screenshot-ui-show-pointer-button:focus:hover, .quick-toggle:focus:hover:checked, .keyboard-brightness-level .button:focus:hover:checked, .default.login-dialog-button.next-button:focus:hover, .default.login-dialog-button.a11y-button:focus:hover, .default.login-dialog-button.cancel-button:focus:hover, .default.login-dialog-button.switch-user-button:focus:hover, .default.login-dialog-button.login-dialog-auth-menu-button:focus:hover, .default.login-dialog-button.login-dialog-session-list-button:focus:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+  color: #ffffff;
+}
+
+.button.default:active:hover, .icon-button.default:active:hover, .calendar .calendar-month-header .default.pager-button:active:hover, .calendar .calendar-day.calendar-today:active:hover, .message-notification-group .default.message-collapse-button:active:hover, .message .message-header .default.message-expand-button:active:hover,
+.message .message-header .default.message-close-button:active:hover, .default.screenshot-ui-show-pointer-button:active:hover, .quick-toggle:active:hover:checked, .keyboard-brightness-level .button:active:hover:checked, .default.login-dialog-button.next-button:active:hover, .default.login-dialog-button.a11y-button:active:hover, .default.login-dialog-button.cancel-button:active:hover, .default.login-dialog-button.switch-user-button:active:hover, .default.login-dialog-button.login-dialog-auth-menu-button:active:hover, .default.login-dialog-button.login-dialog-session-list-button:active:hover {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #ffffff;
+}
+
+.button.default:active:focus, .icon-button.default:active:focus, .calendar .calendar-month-header .default.pager-button:active:focus, .calendar .calendar-day.calendar-today:active:focus, .message-notification-group .default.message-collapse-button:active:focus, .message .message-header .default.message-expand-button:active:focus,
+.message .message-header .default.message-close-button:active:focus, .default.screenshot-ui-show-pointer-button:active:focus, .quick-toggle:active:focus:checked, .keyboard-brightness-level .button:active:focus:checked, .default.login-dialog-button.next-button:active:focus, .default.login-dialog-button.a11y-button:active:focus, .default.login-dialog-button.cancel-button:active:focus, .default.login-dialog-button.switch-user-button:active:focus, .default.login-dialog-button.login-dialog-auth-menu-button:active:focus, .default.login-dialog-button.login-dialog-session-list-button:active:focus {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #ffffff;
+}
+
+.button.default:active:focus:hover, .icon-button.default:active:focus:hover, .calendar .calendar-month-header .default.pager-button:active:focus:hover, .calendar .calendar-day.calendar-today:active:focus:hover, .message-notification-group .default.message-collapse-button:active:focus:hover, .message .message-header .default.message-expand-button:active:focus:hover,
+.message .message-header .default.message-close-button:active:focus:hover, .default.screenshot-ui-show-pointer-button:active:focus:hover, .quick-toggle:active:focus:hover:checked, .keyboard-brightness-level .button:active:focus:hover:checked, .default.login-dialog-button.next-button:active:focus:hover, .default.login-dialog-button.a11y-button:active:focus:hover, .default.login-dialog-button.cancel-button:active:focus:hover, .default.login-dialog-button.switch-user-button:active:focus:hover, .default.login-dialog-button.login-dialog-auth-menu-button:active:focus:hover, .default.login-dialog-button.login-dialog-session-list-button:active:focus:hover {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #ffffff;
+}
+
+.button.default:insensitive, .icon-button.default:insensitive, .calendar .calendar-month-header .default.pager-button:insensitive, .calendar .calendar-day.calendar-today:insensitive, .message-notification-group .default.message-collapse-button:insensitive, .message .message-header .default.message-expand-button:insensitive,
+.message .message-header .default.message-close-button:insensitive, .default.screenshot-ui-show-pointer-button:insensitive, .quick-toggle:insensitive:checked, .keyboard-brightness-level .button:insensitive:checked, .default.login-dialog-button.next-button:insensitive, .default.login-dialog-button.a11y-button:insensitive, .default.login-dialog-button.cancel-button:insensitive, .default.login-dialog-button.switch-user-button:insensitive, .default.login-dialog-button.login-dialog-auth-menu-button:insensitive, .default.login-dialog-button.login-dialog-session-list-button:insensitive {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #c0c0c0;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked,
+.candidate-box:selected,
+.osd-monitor-label, .osd-break-countdown-label,
+.screenshot-ui-window-selector-window:checked .screenshot-ui-window-selector-check,
+.quick-toggle-menu .header .icon.active,
+.keyboard-key.default-key:latched, .emoji-panel .keyboard-key:latched {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:hover,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:hover {
+  background-color: st-darken(-st-accent-color, 18%);
 }
