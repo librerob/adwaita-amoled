@@ -96,9 +96,9 @@ vim-airline plugin and checks 70 true-color/256-color mode pairs. Set
 `THEME_AIRLINE_RUNTIME` when that plugin is installed outside `/usr/share/vim-airline`.
 
 Five additional `test_runtime.py` cases use GTK's native Cairo background
-renderer and actual label foregrounds for 19 widget roles in eleven states, plus GTK3 tasklist/launcher roles.
+renderer and actual label foregrounds across eleven states, including flat semantic actions and GTK3 tasklist/launcher roles.
 They check GTK3 plus plain GTK4/libadwaita requesting light and dark modes.
-Their 1,067 state samples retain 97 disabled measurements separately; enabled text
+Their 1,199 state samples retain 109 disabled measurements separately; enabled text
 must meet 4.5:1. Background gradients are sampled across the control interior. GTK3 style/widget
 opacity and GTK4 native snapshot text/opacity nodes are included.
 
@@ -108,12 +108,14 @@ builds/uses bat's actual theme cache, parses the Rofi theme, and renders every
 SVG through librsvg. GitHub Actions uploads Qt images and GTK2 measurements in
 `extra-consumer-rendering`.
 
-The Shell automation additionally checks 432 opaque accent/text pairs across
-all nine system accents and compound hover/focus/active states. It connects its
+The Shell automation additionally checks 936 control/glyph pairs across
+all nine system accents and compound hover/focus/active states, including Looking
+Glass switches. It separately checks 162 scrollbar graphic pairs and placeholder
+text with three interface font sizes. It connects its
 virtual monitor after automation initialization, following upstream's
 `tests/shell/headlessStart.js`, to avoid missing the startup-complete signal.
 
-An optional Cinnamon integration fixture is intended for an isolated test
+The Cinnamon integration fixture runs as a separate CI job and requires an isolated test
 container/VM with Cinnamon 6.6 and its session packages:
 
 ```bash
@@ -121,9 +123,20 @@ xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
   dbus-run-session -- python3 tests/cinnamon_colors.py . /tmp/amoled-cinnamon-colors
 ```
 
-It uses temporary user settings, checks 77 representative text/state pairs,
+It uses temporary user settings, checks 125 representative text/state/overlay pairs,
 and evaluates style nodes at the session's native scale. A running system D-Bus service is required;
 real login/power/network behavior is not established by this fixture.
 See [the color audit](../COLOR_READABILITY.md) for measured improvements,
 intentional exceptions and limits. Passing these tests does not establish full
 WCAG conformance or cover arbitrary application-provided colors.
+
+Five further native runtime cases cover 241 GTK3 inherited/compound/context
+pairs and 33 selected-row descendant pairs for each of GTK3, plain GTK4 and
+light/dark libadwaita. The GTK3 contexts include calendar adjacent-month dates,
+menu accelerators, selection-header glyphs, checked/backdrop content controls,
+focus outlines, named semantic colors, and print-preview ink against paper and
+ruler canvas. Ordinary enabled text must meet 4.5:1, and identifying graphics
+and focus outlines 3:1. Selected-row tests use actual widgets; some GTK3
+compound checks deliberately construct CSS nodes to exercise specific selectors.
+See [the repository-wide follow-up](../COLOR_COMPLETENESS.md) for the
+reproduced failures, full inventory scope and limits.

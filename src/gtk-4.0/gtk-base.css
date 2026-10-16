@@ -168,3 +168,22 @@ separator { background-color: #1e1e1e; }
 
 /* GTK default progress labels otherwise inherit a faint foreground. */
 progressbar { color: #a0a0a0; }
+
+/* Opaque selected rows need full-opacity text, including secondary labels. */
+row:selected .dim-label { opacity: 1; }
+
+/* Selected opaque rows use a selection foreground instead of status ink. */
+row:selected label.error, row:selected label.warning, row:selected label.success,
+row:selected label.accent, row:selected label.link,
+row:selected button.flat:not(:disabled),
+row:selected button:link:not(:disabled), row:selected button:visited:not(:disabled) {
+    color: #ffffff;
+}
+
+/* GTK also sets an explicit backdrop color on the button's child label. */
+row:selected button.flat:not(:disabled):backdrop label,
+row:selected button:link:not(:disabled):backdrop label,
+row:selected button:visited:not(:disabled):backdrop label { color: #ffffff; }
+
+row:selected button.flat:focus-visible, row:selected button:link:focus-visible,
+row:selected button:visited:focus-visible { outline-color: #ffffff; }

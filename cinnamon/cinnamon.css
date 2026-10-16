@@ -655,7 +655,7 @@ StScrollBar StButton#hhandle:active {
   padding-left: 8px;
   padding-right: 8px;
   transition-duration: 100ms;
-  /* Minimized/unfocused: low contrast, barely readable */
+  /* Minimized/unfocused: secondary text on the dark panel */
   color: #a0a0a0;
 }
 
@@ -720,11 +720,13 @@ StScrollBar StButton#hhandle:active {
 }
 
 .window-list-item-box .progress {
-  background-color: rgba(56, 122, 242, 0.7);
+  background-color: rgba(56, 122, 242, 0.25);
 }
 
 /* Urgent / attention — flash red background */
-.window-list-item-demands-attention {
+.window-list-item-demands-attention,
+.window-list-item-box.window-list-item-demands-attention {
+  color: #ffffff;
   background-gradient-direction: vertical;
   background-gradient-start: #c01c28;
   background-gradient-end: #c01c28;
@@ -895,11 +897,13 @@ StScrollBar StButton#hhandle:active {
 }
 
 .grouped-window-list-item-box .progress {
-  background-color: rgba(56, 122, 242, 0.7);
+  background-color: rgba(56, 122, 242, 0.25);
 }
 
 /* Urgent */
-.grouped-window-list-item-demands-attention {
+.grouped-window-list-item-demands-attention,
+.grouped-window-list-item-box.grouped-window-list-item-demands-attention {
+  color: #ffffff;
   background-gradient-direction: vertical;
   background-gradient-start: #c01c28;
   background-gradient-end: #c01c28;

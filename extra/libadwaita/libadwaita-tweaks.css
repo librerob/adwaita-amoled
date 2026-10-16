@@ -146,3 +146,8 @@ button:link:active, button:visited:active,
 button:link:backdrop:active, button:visited:backdrop:active {
   color: @accent_color;
 }
+
+/* Semantic flat actions retain their standalone status role. */
+button.success.suggested-action.flat:not(:disabled) { color: @success_color; }
+button.warning.suggested-action.flat:not(:disabled) { color: @warning_color; }
+button.error.suggested-action.flat:not(:disabled) { color: @error_color; }

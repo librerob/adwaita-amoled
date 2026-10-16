@@ -61,3 +61,50 @@
 .quick-toggle-has-menu .quick-toggle-menu-button:checked:active:hover {
   background-color: st-darken(-st-accent-color, 18%);
 }
+
+// Include all pressed/focused menu combinations and contrast-sensitive glyphs.
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:focus,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:focus:hover {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #ffffff;
+}
+.check-box:checked StIcon, .toggle-switch:checked {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+}
+.check-box:checked:hover StIcon, .toggle-switch:checked:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+  color: #ffffff;
+}
+.check-box:checked:active StIcon, .toggle-switch:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: #ffffff;
+}
+.calendar .calendar-week-number { color: #a0a0a0; }
+.word-suggestions StButton:checked { background-color: #3a3a3a; color: #ffffff; }
+.word-suggestions StButton:active:hover,
+.word-suggestions StButton:checked:hover,
+.word-suggestions StButton:checked:active {
+  background-color: #555555;
+  color: #ffffff;
+}
+
+// The resting scrollbar thumb must be visible against AMOLED surfaces.
+StScrollBar > .vhandle, StScrollBar > .hhandle { background-color: #808080; }
+StScrollBar > .vhandle:hover, StScrollBar > .hhandle:hover { background-color: #a0a0a0; }
+StScrollBar > .vhandle:active, StScrollBar > .hhandle:active { background-color: #c0c0c0; }
+
+// Keep placeholder text readable when the user chooses a smaller UI font.
+.message-list .message-list-placeholder { color: #a0a0a0; }
+
+// Looking Glass has a more specific switch palette than ordinary Shell switches.
+#LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+}
+#LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+#LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+}

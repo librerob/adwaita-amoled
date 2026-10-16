@@ -101,7 +101,10 @@ class ShellRuntimeTests(unittest.TestCase):
             self.assertEqual(len(result['views']), 8)
             self.assertEqual(result['transitions'], 40)
             self.assertGreater(result['styleNodes'], 1000)
-            self.assertEqual(result['accentPairs'], 432)
+            self.assertEqual(result['accentPairs'], 936)
+            self.assertEqual(result['graphicPairs'], 162)
+            self.assertGreaterEqual(result['minimumGraphicContrast'], 3)
+            self.assertEqual(result['fontPairs'], 3)
             self.assertGreaterEqual(result['minimumAccentContrast'], 4.5)
             for name in result['views']:
                 self.assertGreater((output / f'shell-{name}.png').stat().st_size, 100)

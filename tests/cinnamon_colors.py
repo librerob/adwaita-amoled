@@ -9,7 +9,13 @@ out.mkdir(parents=True, exist_ok=True)
 with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
     home = Path(temporary)
     env = dict(
-        os.environ,
+        {
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith(("GH_", "GITHUB_", "ACTIONS_"))
+            and "TOKEN" not in key
+            and "SECRET" not in key
+        },
         HOME=str(home),
         GSETTINGS_BACKEND="keyfile",
         GTK_THEME="Adwaita-AMOLED",
@@ -118,6 +124,46 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
         colors.push({name,state,foreground:n.get_foreground_color().to_string(),background:n.get_background_color().to_string()});
       }
     }
+    // Progress fills are painted behind sibling labels in both task applets.
+    // Resolve both layers, including attention gradients, instead of treating
+    // the empty progress actor's foreground as visible text.
+    const mix=(fg,bg)=>{
+      const a=parseInt(fg.slice(7,9),16)/255;
+      return '#'+[1,3,5].map(i=>Math.round(parseInt(fg.slice(i,i+2),16)*a+
+        parseInt(bg.slice(i,i+2),16)*(1-a)).toString(16).padStart(2,'0')).join('')+'ff';
+    };
+    for(const [task,attention] of [
+      ['window-list-item-box','window-list-item-demands-attention'],
+      ['grouped-window-list-item-box','grouped-window-list-item-demands-attention'],
+    ]) {
+      const panel=node(context.get_root_node(),'panel',null,null);
+      for(const state of ['', 'running','hover','active','checked','focus']) {
+        for(const urgent of [false,true]) {
+          const button=node(panel,null,[task,urgent?attention:''].filter(Boolean).join(' '),state);
+          const label=St.ThemeNode.new(context,button,theme,St.Label.$gtype,null,null,null,'',false);
+          let background=mix(button.get_background_color().to_string(),panel.get_background_color().to_string());
+          const gradient=button.get_background_gradient();
+          let backgrounds=[background];
+          if(gradient[0]!==0) {
+            const start=gradient[1].to_string(),end=gradient[2].to_string();
+            // Include both endpoints and the interior of nonuniform gradients.
+            backgrounds=Array.from({length:33},(_,i)=>{
+              const t=i/32;
+              const color='#'+[1,3,5,7].map(k=>Math.round(parseInt(start.slice(k,k+2),16)*(1-t)+
+                parseInt(end.slice(k,k+2),16)*t).toString(16).padStart(2,'0')).join('');
+              return mix(color,background);
+            });
+          }
+          for(const progress of [false,true]) {
+            const fill=node(button,null,'progress',null);
+            colors.push({name:task+(urgent?'-attention':'')+(progress?'-progress':''),state,
+              foreground:label.get_foreground_color().to_string(),
+              background:backgrounds[0],
+              backgrounds:backgrounds.map(bg=>progress?mix(fill.get_background_color().to_string(),bg):bg)});
+          }
+        }
+      }
+    }
     let styleNodes=0;
     {
       for (const cls of CLASS_NAMES) {
@@ -173,11 +219,15 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
 
             for pair in result["colors"]:
                 # Image-backed popup/dialog cards use the theme's opaque #141414 base.
-                bg = composite(pair["background"], [20, 20, 20])
-                fg = composite(pair["foreground"], bg)
-                pair["composited_background"] = bg
-                pair["contrast"] = (max(lum(fg), lum(bg)) + 0.05) / (
-                    min(lum(fg), lum(bg)) + 0.05
+                backgrounds = [
+                    composite(color, [20, 20, 20])
+                    for color in pair.get("backgrounds", [pair["background"]])
+                ]
+                pair["composited_backgrounds"] = backgrounds
+                pair["contrast"] = min(
+                    (max(lum(composite(pair["foreground"], bg)), lum(bg)) + 0.05)
+                    / (min(lum(composite(pair["foreground"], bg)), lum(bg)) + 0.05)
+                    for bg in backgrounds
                 )
             (out / "colors.json").write_text(json.dumps(result, indent=2) + "\n")
             failed = [p for p in result["colors"] if p["contrast"] < 4.5]
