@@ -38,7 +38,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#767676</string>
+				<string>#a0a0a0</string>
 				<key>fontStyle</key>
 				<string>italic</string>
 			</dict>
@@ -79,7 +79,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#387af2</string>           <!-- accent blue -->
+				<string>#8ab4f8</string>           <!-- accent blue -->
 				<key>fontStyle</key>
 				<string>bold</string>
 			</dict>
@@ -122,7 +122,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#4a8cf5</string>           <!-- accent_hover blue -->
+				<string>#aecbfa</string>           <!-- accent_hover blue -->
 				<key>fontStyle</key>
 				<string>bold</string>
 			</dict>
@@ -150,7 +150,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#387af2</string>           <!-- accent blue, bold -->
+				<string>#8ab4f8</string>           <!-- accent blue, bold -->
 				<key>fontStyle</key>
 				<string>bold</string>
 			</dict>
@@ -165,7 +165,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#c678dd</string>           <!-- magenta -->
+				<string>#d49bea</string>           <!-- magenta -->
 			</dict>
 		</dict>
 
@@ -191,7 +191,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#ff3333</string>           <!-- error red -->
+				<string>#ff7b7b</string>           <!-- error red -->
 				<key>fontStyle</key>
 				<string>bold</string>
 			</dict>
@@ -206,7 +206,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#387af2</string>
+				<string>#8ab4f8</string>
 				<key>fontStyle</key>
 				<string>bold</string>
 			</dict>
@@ -221,7 +221,7 @@
 			<key>settings</key>
 			<dict>
 				<key>foreground</key>
-				<string>#4a8cf5</string>
+				<string>#aecbfa</string>
 			</dict>
 		</dict>
 

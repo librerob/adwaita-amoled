@@ -19,5 +19,5 @@ gsettings set org.gnome.desktop.background picture-options none
 gsettings set org.gnome.desktop.background primary-color '#204060'
 gsettings set org.gnome.shell.extensions.user-theme name Adwaita-AMOLED
 exec "${GNOME_SHELL_BINARY:-gnome-shell}" --wayland --headless --no-x11 \
-    --virtual-monitor 1600x1200 --wayland-display "$WAYLAND_DISPLAY" \
+    --wayland-display "$WAYLAND_DISPLAY" \
     --automation-script "$ROOT/tests/gnome-shell/ui.js"

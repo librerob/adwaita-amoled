@@ -1,0 +1,63 @@
+// Readability adaptation, 2026-10-16. SPDX-License-Identifier: GPL-2.0-or-later
+// Retain the selected system hue. White labels need darker opaque accent fills
+// in every state; upstream dark-style hover/active lightening loses contrast.
+%default_button {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+  &:focus {
+    background-color: st-darken(-st-accent-color, 14%);
+    color: #ffffff;
+  }
+  &:hover {
+    background-color: st-darken(-st-accent-color, 10%);
+    color: #ffffff;
+  }
+  &:active {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: #ffffff;
+  }
+  &:focus:hover {
+    background-color: st-darken(-st-accent-color, 10%);
+    color: #ffffff;
+  }
+  &:active:hover {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: #ffffff;
+  }
+  &:active:focus {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: #ffffff;
+  }
+  &:active:focus:hover {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: #ffffff;
+  }
+  &:insensitive {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: #c0c0c0;
+  }
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked,
+.candidate-box:selected,
+.osd-monitor-label, .osd-break-countdown-label,
+.screenshot-ui-window-selector-window:checked .screenshot-ui-window-selector-check,
+.quick-toggle-menu .header .icon.active,
+.keyboard-key.default-key:latched, .emoji-panel .keyboard-key:latched {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: #ffffff;
+}
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:hover,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:hover {
+  background-color: st-darken(-st-accent-color, 18%);
+}

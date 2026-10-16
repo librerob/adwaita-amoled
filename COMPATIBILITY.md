@@ -28,6 +28,10 @@ development components. Those were not substituted for the stable targets.
 
 ## Reproduced defect and regression checks
 
+The following before/after measurements describe the earlier compatibility fix.
+The subsequent readability palette and expanded checks are documented in
+[COLOR_READABILITY.md](COLOR_READABILITY.md).
+
 With GTK 4.24.1 / libadwaita 1.10.0 requesting light mode, legacy accent text
 resolved to `#1c59cd` on black, approximately **3.36:1** contrast. A destructive
 button resolved to `#b91022` on a rendered `#1b0205` background, approximately
@@ -54,7 +58,9 @@ The separate `gnome-shell/` component keeps all **963 upstream style rules**,
 selectors, property names and non-color layout values from Shell 51.1. Its
 unmodified upstream Sass and SVG files are pinned by SHA-256 in `UPSTREAM.json`;
 the AMOLED palette and local asset paths are applied during a reproducible
-build. GNOME's selected system accent and privacy indicators are retained.
+build. GNOME's selected system accent hue and privacy indicators are retained.
+Subsequent color-only rules darken opaque accent fills by state for readable
+white labels; upstream layout remains unchanged.
 
 Four additional checks pass on Shell 51.0 and 51.1. They validate source hashes,
 byte-for-byte CSS reproduction, upstream layout preservation and native Shell rendering. Native theme-node

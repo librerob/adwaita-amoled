@@ -44,7 +44,8 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 - Qt5ct and Qt6ct color schemes aligned with the GTK palette
 
 See [tested upstream versions and coverage limits](COMPATIBILITY.md) for the
-latest compatibility review.
+latest compatibility review. See the [color readability audit](COLOR_READABILITY.md)
+for color roles, native measurements and the limits of contrast checks.
 
 ---
 
@@ -100,7 +101,8 @@ details](gnome-shell/README.md) for commands and update instructions.
 
 This themes the logged-in Shell session, including the panel, overview, menus,
 notifications, OSDs and dialogs. Other Shell major versions and the GDM login
-screen are outside its verified scope. GNOME's selected accent color is retained.
+screen are outside its verified scope. GNOME's selected accent hue is retained;
+opaque accent fills are darkened by state to keep white labels readable.
 
 ---
 
@@ -174,6 +176,7 @@ Additional themes are included in the `extra/` folder:
 |---|---|---|
 | **Alacritty** | Terminal color scheme aligned with the palette | Import the provided TOML; see [Alacritty setup](#alacritty) |
 | **Kitty** | Terminal color scheme | Include the `.conf` file in your `kitty.conf` |
+| **bat** | Syntax-highlighting theme | See [bat setup](#bat) below |
 | **Neovim** | Colorscheme and airline theme | See [Neovim setup](#neovim) below |
 | **Qt5ct / Qt6ct** | Full color schemes | See [Qt setup](#qt-qt5ct--qt6ct) above |
 | **Rofi** | Matching launcher theme | Pass the theme with `-theme` or set it in your config |
@@ -190,6 +193,17 @@ For recent Alacritty versions (tested with 0.15.1), add this import to your
 [general]
 import = ["~/.themes/Adwaita-AMOLED/extra/alacritty/alacritty.toml"]
 ```
+
+### bat
+
+```bash
+mkdir -p ~/.config/bat/themes
+cp ~/.themes/Adwaita-AMOLED/extra/bat/themes/adwaita-amoled.tmTheme ~/.config/bat/themes/
+bat cache --build
+```
+
+Add `--theme="adwaita-amoled"` to your existing `~/.config/bat/config`.
+On distributions that name the command `batcat`, use `batcat cache --build`.
 
 ### Zsh
 
@@ -288,14 +302,15 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 | Surface 1 | `#0f0f0f` | Cards, lists |
 | Surface 2 | `#141414` | Popovers, tooltips |
 | Hover | `#1a1a1a` | Hover state |
-| Border | `#2a2a2a` | Widget borders |
-| Accent | `#387af2` | Focus, selection, links |
+| Control border | `#808080` | Identifying control outlines |
+| Decorative border | `#2a2a2a` | Nonessential separators and depth |
+| Text accent | `#8ab4f8` | Readable accent text, links and focus |
 | Filled GTK accent | `#2d6be0` | Selected surfaces with white text |
 | Foreground | `#ffffff` | Primary text |
-| Dim | `#888888` | Secondary / inactive text |
+| Dim | `#a0a0a0` | Readable secondary text |
 
 White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
-use the brighter `#387af2` as a text background use black text (5.23:1).
+use the pale `#8ab4f8` as a text background use black text (9.96:1).
 Success surfaces use black text on `#26a269` (approximately 6.45:1).
 
 ---

@@ -16,7 +16,7 @@ menu.border.color: #151515
 menu.items.bg: flat solid 
 menu.items.bg.color:#000000
 
-menu.items.text.color:#717171
+menu.items.text.color:#c0c0c0
 menu.items.justify: left
 menu.items.disabled.text.color: #454545 
 menu.items.active.bg: gradient vertical flat
@@ -65,10 +65,10 @@ window.active.button.unpressed.bg.color:#151515
 window.active.button.*.image.color:#DDDDDD
 window.active.button.pressed.bg: parentrelative
 window.active.button.pressed.bg.color: #151515
-window.active.button.pressed.image.color:#4285F4
+window.active.button.pressed.image.color:#8ab4f8
 window.inactive.button.*.bg: flat
 window.inactive.button.*.bg.color:#151515
-window.inactive.button.*.image.color:#454545
+window.inactive.button.*.image.color:#a0a0a0
 window.inactive.button.disabled.bg: Flat
 window.inactive.button.disabled.bg.color: #151515
 window.inactive.button.disabled.bg.border.color: #151515

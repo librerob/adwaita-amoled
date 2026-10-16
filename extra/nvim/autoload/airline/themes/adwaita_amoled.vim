@@ -6,18 +6,18 @@ let s:bg        = ['#000000', 0  ]
 let s:surface   = ['#0f0f0f', 233]
 let s:hover     = ['#1a1a1a', 234]
 let s:border    = ['#333333', 236]
-" Secondary text on surface_card: #808080 gives 4.85:1 contrast.
-let s:ghost     = ['#808080', 244]
+" Secondary text on surface_card: #a0a0a0 is tested against normal and raised backgrounds.
+let s:ghost     = ['#a0a0a0', 247]
 let s:disabled  = ['#c0c0c0', 251]
 let s:fg        = ['#ffffff', 15 ]
 
-let s:blue      = ['#387af2', 69 ]
-let s:blue_h    = ['#4a8cf5', 69 ]
+let s:blue      = ['#8ab4f8', 110]
+let s:blue_h    = ['#aecbfa', 153]
 let s:green     = ['#0aeea0', 85 ]
 let s:yellow    = ['#f1ac00', 214]
-" Softened error red consistent with colorscheme.  [FIX v2]
-let s:red       = ['#ff3333', 196]
-let s:magenta   = ['#c678dd', 176]
+" Softened error red consistent with colorscheme.
+let s:red       = ['#ff7b7b', 210]
+let s:magenta   = ['#d49bea', 182]
 let s:cyan      = ['#01c1f1', 45 ]
 
 let g:airline#themes#adwaita_amoled#palette = {}
@@ -61,7 +61,7 @@ let g:airline#themes#adwaita_amoled#palette.visual_modified =
     \ g:airline#themes#adwaita_amoled#palette.normal_modified
 
 " ── Replace mode ─────────────────────────────────────────────────────────────
-" Uses softened error red #ff3333 — consistent with rest of theme.  [FIX v2]
+" Uses softened error red #ff7b7b — consistent with rest of theme.
 let s:R1 = [s:bg[0],       s:red[0],     s:bg[1],    s:red[1]    ]
 let s:R2 = [s:disabled[0], s:hover[0],   s:disabled[1], s:hover[1]]
 let s:R3 = [s:ghost[0],    s:surface[0], s:ghost[1], s:surface[1]]
@@ -73,7 +73,7 @@ let g:airline#themes#adwaita_amoled#palette.replace_modified =
     \ g:airline#themes#adwaita_amoled#palette.normal_modified
 
 " ── Inactive windows ─────────────────────────────────────────────────────────
-" All sections use ghost (#808080) on surface_card — 4.85:1.
+" All sections use ghost (#a0a0a0) on surface_card
 let s:IA = [s:ghost[0],  s:surface[0], s:ghost[1], s:surface[1], '']
 
 let g:airline#themes#adwaita_amoled#palette.inactive = {

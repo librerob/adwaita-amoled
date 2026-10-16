@@ -5,7 +5,8 @@ targets **GNOME Shell 51.x**; other major Shell versions have not been verified.
 The compiled `gnome-shell.css` and matching local SVG assets are included.
 
 The adaptation keeps upstream layout, widget states, privacy indicators and
-GNOME's selected system accent color. Panel, menu, dialog and overview bases
+GNOME's selected system accent hue. Opaque accent fills are darkened by state
+to preserve white-label contrast; standalone system accents remain lighter. Panel, menu, dialog and overview bases
 are black; raised surfaces and OSDs use the existing AMOLED depth palette.
 The desktop wallpaper remains your choice.
 
@@ -36,7 +37,9 @@ commit `33da06854e229c256afd5872fedd83c28cbfa176`.
 `UPSTREAM.json` records the original paths and SHA-256 of the unmodified Sass
 sources and SVG assets. Upstream files remain unchanged under `sass/upstream/`.
 The palette adaptation is in `sass/_amoled.scss`, loaded before upstream drawing
-and widget rules by `sass/gnome-shell.scss`.
+and widget rules by `sass/gnome-shell.scss`. Color-only overrides in
+`sass/_readability.scss` handle accent-filled control states without editing
+the pinned upstream sources. See [color readability coverage](../COLOR_READABILITY.md).
 
 Rebuild after editing the palette:
 

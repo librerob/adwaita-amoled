@@ -57,7 +57,7 @@ button, notebook > header > tabs > arrow:not(.flat) {
   border-color: @headerbar_border_color;
   box-shadow: none;
 }
-button:hover { background-color: #1f1f1f; border-color: #3a3a3a; background-image: none; }
+button:hover { background-color: #1f1f1f; border-color: #808080; background-image: none; }
 button:active, button:checked, button:checked:hover { background-color: #0c0c0c; background-image: none; }
 button:disabled, button:backdrop:disabled {
   color: @insensitive_fg_color;
@@ -66,6 +66,11 @@ button:disabled, button:backdrop:disabled {
   background-image: none;
 }
 button:backdrop { background-color: #101010; background-image: none; }
+button:backdrop:active, button:backdrop:checked {
+  color: @window_fg_color;
+  background-color: #0c0c0c;
+  background-image: none;
+}
 button.flat, windowcontrols button, .toolbar > button, headerbar button.titlebutton {
   background-color: transparent;
   background-image: none;
@@ -141,14 +146,14 @@ switch > slider, switch:hover > slider {
   border-color: transparent;
   box-shadow: none;
 }
-scrollbar > range > trough > slider { background-color: #3a3a3a; }
-scrollbar > range > trough > slider:hover { background-color: #555555; }
+scrollbar > range > trough > slider { background-color: #808080; }
+scrollbar > range > trough > slider:hover { background-color: #a0a0a0; }
 switch { background-color: #1a1a1a; background-image: none; border-color: @headerbar_border_color; }
 switch:checked { background-color: @accent_bg_color; border-color: @accent_bg_color; }
 check, radio, check:hover, radio:hover, check:active, radio:active {
   background-color: #161616;
   background-image: none;
-  border-color: #3a3a3a;
+  border-color: #808080;
   box-shadow: none;
 }
 check:checked, radio:checked, check:indeterminate, radio:indeterminate,
@@ -160,3 +165,6 @@ check:checked:hover, radio:checked:hover, check:checked:active, radio:checked:ac
   box-shadow: none;
 }
 separator { background-color: #1e1e1e; }
+
+/* GTK default progress labels otherwise inherit a faint foreground. */
+progressbar { color: #a0a0a0; }
