@@ -80,6 +80,34 @@ class InstallerTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(value.encode())
 
+    def test_old_state_upgrade_and_failed_update_remain_undoable(self):
+        self.text(
+            self.state,
+            json.dumps({"version": 1, "files": {}, "settings": {}, "options": {}}),
+        )
+        with patch.dict(os.environ, self.env, clear=True):
+            store = installer.Store(installer.roots())
+            plan = installer.Plan(store.roots, store.state)
+            path = self.config / "fail"
+            plan.put(path, b"new", "gtk")
+            original = installer.atomic
+            failed = False
+
+            def fault(target, data, mode=0o600):
+                nonlocal failed
+                if target == path and not failed:
+                    failed = True
+                    raise OSError("simulated failure during old-state upgrade")
+                return original(target, data, mode)
+
+            with patch.object(installer, "atomic", side_effect=fault):
+                with self.assertRaises(OSError):
+                    store.transact(plan)
+        self.assertEqual(json.loads(self.state.read_text())["version"], 1)
+        self.install("gtk")
+        self.assertEqual(json.loads(self.state.read_text())["version"], 2)
+        self.run_cli("uninstall", "--yes")
+
     def test_dry_run_does_not_create_user_files(self):
         self.run_cli(
             "install",

@@ -457,7 +457,6 @@ class Store:
                     for key in ["files", "settings", "options"]
                 ):
                     raise ValueError("invalid installer state structure")
-                self.state["version"] = 2
             except (ValueError, KeyError) as error:
                 raise InstallError(f"Cannot read installer state: {error}") from error
 
@@ -633,6 +632,7 @@ class Store:
                 self.state["options"] = options
             if uninstall and not self.state["files"] and not self.state["settings"]:
                 self.state["options"] = {}
+            self.state["version"] = 2
             self.save()
             backup = backups / (
                 datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")

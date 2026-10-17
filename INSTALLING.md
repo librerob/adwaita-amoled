@@ -438,6 +438,9 @@ other's files and history intact. Desktop activation, user app components and
 Flatpak setup run separately without sudo. For packaging/tests,
 `--system-root /absolute/staging-directory` places all system destinations below
 that directory; it is normally left as `/` and still requires root ownership.
+The staging root and unmanaged destination ancestors must be root-owned and
+protected from group/other writers. Existing system state must also be protected;
+setup refuses user-owned or symlinked state instead of trusting it as root.
 
 ## Coverage and other limits
 
@@ -456,6 +459,16 @@ update/undo and failure recovery. Alacritty imports are structurally checked
 with a TOML parser; Qt palette copies are verified. These checks supplement the
 existing [theme consumer tests](tests/README.md), rather than establish every
 possible desktop/app setup.
+
+The signed local Flatpak CI fixture additionally checks actual sandbox loading
+on its GTK4/libadwaita runtime before installation, after installation in light
+and dark modes, and after undo. The runtime is built from the CI machine's
+libraries; this does not establish coverage of every published Flatpak/runtime.
+System-scope tests stage all paths in temporary directories and check ownership,
+public readability, old-state restoration, failures and independent undo. The
+manual copy examples are executed across repeated updates and checked for real
+backups. Native GTK version selection alone does not prove physical display or
+application-specific correctness.
 
 
 ## Loading references
