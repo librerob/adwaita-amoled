@@ -186,7 +186,8 @@ replace_theme() (
     target=$1
     stage=''
     committed=false
-    # shellcheck disable=SC2329 # Called by the EXIT trap in this subshell.
+    # ShellCheck 0.9/0.11 miss this nested function's indirect EXIT-trap call.
+    # shellcheck disable=SC2317,SC2329
     cleanup() {
         result=$?
         trap - EXIT INT TERM
