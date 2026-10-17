@@ -74,6 +74,32 @@ other Shell major versions have not been verified.
 
 ## Remaining limits
 
+### GNOME Shell 46 follow-up — 17 October 2026
+
+A user report on GNOME 46 Wayland exposed a version mismatch: the previously
+shipped Shell stylesheet targeted 51. Loading it on 46 removes calendar hover
+feedback, omits the SVG switch knob and misstyles quick-settings split buttons.
+The old stylesheet reproduces the missing calendar hover in a native 46.0 /
+Mutter 46.2 headless Wayland session. It remains the negative control for the
+new interaction fixture.
+
+A separate AMOLED variant now uses pinned GNOME Shell 46.10 sources and assets,
+preserving their geometry and widget structures. Native 46 tests exercise real
+pointer motion/clicks and verify panel clock hover/click, calendar hover/selection,
+Do Not Disturb off/on images, Show Apps and pinned-app hover, and adjacent split-button allocations. Screenshots are
+retained as evidence. The installer selects 46 or 51 from the local Shell version,
+rechecks on automatic updates and rejects unsupported explicit Shell setup.
+Manual copying must select the matching version-specific stylesheet; source
+`gnome-shell.css` remains the 51 default. See [the Shell guide](gnome-shell/README.md).
+
+The Shell 51 fixture also exercises its panel clock, calendar, Show Apps, a pinned
+application and split buttons with pointer events. Where the mock power service
+does not expose a split button, the fixture inserts GNOME's actual QuickMenuToggle
+widget into the menu and records this in its results. Its upstream calendar no longer includes the 46
+Do Not Disturb control. This extends interaction coverage without establishing
+support for Shell 47–50, extensions that replace these controls, physical GPUs
+or complete login sessions. GTK styles and compiled GTK resources are unchanged.
+
 Headless Cinnamon and Budgie runs report missing Bluetooth, login/power or
 session services. Their stock-theme controls report the same service failures;
 Budgie also emits the same `gtk_widget_destroy` assertion with stock Adwaita.

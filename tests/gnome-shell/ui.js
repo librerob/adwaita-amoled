@@ -9,6 +9,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
+import {checkInteractions} from './interactions.js';
 
 export const METRICS = {};
 const results = {surfaces: {}, views: [], transitions: 0, styleNodes: 0};
@@ -307,6 +308,7 @@ export async function run() {
     assert(results.views.length === 8, `Expected eight rendered views, got ${results.views.length}`);
     assert(results.transitions === 40 && results.styleNodes > 1000, 'Incomplete state coverage');
     results.version = Config.PACKAGE_VERSION;
+    results.interactions = await checkInteractions();
     results.stylesheet = stylesheet.get_path();
     const output = GLib.getenv('THEME_TEST_OUTPUT');
     if (output)

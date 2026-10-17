@@ -10,7 +10,7 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 <img src="https://img.shields.io/badge/GTK3-✓-black">
 <img src="https://img.shields.io/badge/GTK4-✓-black">
 <img src="https://img.shields.io/badge/libadwaita-✓-black">
-<img src="https://img.shields.io/badge/GNOME_Shell-51-black">
+<img src="https://img.shields.io/badge/GNOME_Shell-46_%7C_51-black">
 <img src="https://img.shields.io/badge/XFCE-✓-black">
 <img src="https://img.shields.io/badge/Cinnamon-✓-black">
 <img src="https://img.shields.io/badge/Openbox-✓-black">
@@ -39,7 +39,7 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 - Refined XFCE panel with accent underline focus indicator, no flat white blocks
 - Complete GTK2 theme via the murrine engine, fully styled across all widget classes
 - GTK4 + libadwaita color overrides included
-- GNOME Shell 51 theme based on the upstream 51.1 default, with an AMOLED palette
+- GNOME Shell 46 and 51 themes based on their matching upstream defaults, with an AMOLED palette
 - Cinnamon shell theme, Openbox theme, and Metacity window decorations included
 - Qt5ct and Qt6ct color schemes aligned with the GTK palette
 
@@ -148,13 +148,21 @@ explain ownership, selection and scope. User/Flatpak setup runs without sudo.
 
 ## GNOME Shell
 
-The included Shell theme targets **GNOME Shell 51.x**, based on upstream **51.1**.
+The included Shell themes target **GNOME Shell 46.x and 51.x**, based on upstream
+**46.10 and 51.1** respectively. The installer detects the local Shell version
+and installs the matching stylesheet; other major versions are unverified.
 Install the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/)
 and log in again if needed, then choose `shell` in the wizard with desktop
 activation, or select Adwaita-AMOLED in the extension's settings.
 [Shell details](gnome-shell/README.md) explain its scope and rebuilding. The
 logged-in Shell is themed; other Shell major versions and GDM are outside its
 verified scope.
+
+For manual installation on GNOME 46, copy `gnome-shell-46.css` over
+`gnome-shell.css` **inside the installed theme's `gnome-shell/` directory**, keeping
+the complete `assets/` directory beside it. The source archive's default entry
+is GNOME 51; it must not be selected unchanged on GNOME 46. Toggle User Themes
+off/on, or log out and back in, after changing the installed stylesheet.
 
 ## Extras
 
@@ -274,7 +282,7 @@ intentional exceptions and remaining limits.
 ```
 Adwaita-AMOLED/
 ├── cinnamon/               Cinnamon shell theme
-├── gnome-shell/            GNOME Shell 51 theme, assets and Sass source
+├── gnome-shell/            GNOME Shell 46/51 themes, assets and Sass source
 ├── gtk-2.0/                GTK2 theme (murrine engine)
 ├── gtk-3.0/                GTK3 theme
 ├── gtk-4.0/                GTK4 theme

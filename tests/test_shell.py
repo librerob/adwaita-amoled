@@ -35,6 +35,7 @@ class ShellSourceTests(unittest.TestCase):
             target = Path(temporary) / 'gnome-shell.css'
             subprocess.run(['bash', str(THEME / 'build.sh'), str(target)], check=True, capture_output=True)
             self.assertEqual(target.read_bytes(), (THEME / 'gnome-shell.css').read_bytes())
+            self.assertEqual(target.read_bytes(), (THEME / 'gnome-shell-51.css').read_bytes())
 
     def test_upstream_layout_and_states_are_preserved(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -105,6 +106,7 @@ class ShellRuntimeTests(unittest.TestCase):
             self.assertEqual(result['graphicPairs'], 162)
             self.assertGreaterEqual(result['minimumGraphicContrast'], 3)
             self.assertEqual(result['fontPairs'], 3)
+            self.assertEqual(len(result['interactions']['states']), 5)
             self.assertGreaterEqual(result['minimumAccentContrast'], 4.5)
             for name in result['views']:
                 self.assertGreater((output / f'shell-{name}.png').stat().st_size, 100)

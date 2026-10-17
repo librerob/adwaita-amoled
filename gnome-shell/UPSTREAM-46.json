@@ -1,0 +1,217 @@
+{
+  "project": "GNOME Shell",
+  "version": "46.10",
+  "commit": "49fa85b2fead489d5c1ce50ecaf28a114c831f1e",
+  "source": "https://github.com/GNOME/gnome-shell/tree/46.10/data/theme",
+  "license": "GPL-2.0-or-later; LGPL-2.1 notice retained in _common.scss",
+  "files": {
+    "assets/46/calendar-today.svg": {
+      "upstream_path": "data/theme/calendar-today.svg",
+      "sha256": "6da930d3c698d0bae448e1b6b41d2fda2d2bdc30c5018f7e5309014cd216f4ad"
+    },
+    "assets/46/checkbox-focused.svg": {
+      "upstream_path": "data/theme/checkbox-focused.svg",
+      "sha256": "77608fd808b19a22fa9562f790aada61357c16e7f92f9be49873384d0524b021"
+    },
+    "assets/46/checkbox-off-focused.svg": {
+      "upstream_path": "data/theme/checkbox-off-focused.svg",
+      "sha256": "e1e953b4d2ef115899fcee40ea411a5600fd8ba1e1b2a14fb65b679fc577d88e"
+    },
+    "assets/46/checkbox-off.svg": {
+      "upstream_path": "data/theme/checkbox-off.svg",
+      "sha256": "a1598621317f3084201235704c24e5f79ab447b05af382101f392ea9eda92dea"
+    },
+    "assets/46/checkbox.svg": {
+      "upstream_path": "data/theme/checkbox.svg",
+      "sha256": "8063a7eb2421cdb666ca9fdc44340a19bd9f122ec5ce7decb05f7efb200bc167"
+    },
+    "assets/46/gnome-shell-start.svg": {
+      "upstream_path": "data/theme/gnome-shell-start.svg",
+      "sha256": "db6783c6bd3e72adc2d1d9c542f1de6e4b39dbf45de8d7c449bd4c9ddc43771b"
+    },
+    "assets/46/toggle-off.svg": {
+      "upstream_path": "data/theme/toggle-off.svg",
+      "sha256": "66671d3837f0b778e1710028300722bb9db8156adbcb1d950d38af6b88fe06e0"
+    },
+    "assets/46/toggle-on.svg": {
+      "upstream_path": "data/theme/toggle-on.svg",
+      "sha256": "2e26c296c54ae2fa9b686f7e39702004e1d9699efbf3c47e75d82c10b426233d"
+    },
+    "assets/46/workspace-placeholder.svg": {
+      "upstream_path": "data/theme/workspace-placeholder.svg",
+      "sha256": "98345cc36b7af9a60a57fc8b6ad1048803357faa87705cfbdfe4f48780e2be67"
+    },
+    "sass/46/upstream/COPYING": {
+      "upstream_path": "data/theme/gnome-shell-sass/COPYING",
+      "sha256": "0f52f4acf166e2dfb9da74b90fa8ff122cd2b6868539e83c9733440de5e1343b"
+    },
+    "sass/46/upstream/NEWS": {
+      "upstream_path": "data/theme/gnome-shell-sass/NEWS",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sass/46/upstream/README.md": {
+      "upstream_path": "data/theme/gnome-shell-sass/README.md",
+      "sha256": "0f683a049fc474c1a22bb69e10a9f8d16900f9fcc9d8ec3c1da74a6f7858bf06"
+    },
+    "sass/46/upstream/_colors.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_colors.scss",
+      "sha256": "e2be3828f813858bbeb98599b1b952255beda745afdbfeea0b909c9f5cc7b206"
+    },
+    "sass/46/upstream/_common.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_common.scss",
+      "sha256": "6f80099ef93ae4b7f2b74079c0e78e6d6e6fd1a7a0ca6b7e37c5a4a2ec39d00c"
+    },
+    "sass/46/upstream/_default-colors.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_default-colors.scss",
+      "sha256": "6f0da975ef1ee3fa1a1f197f833620115dd675bf412b9d8b5a74f834df6d6d76"
+    },
+    "sass/46/upstream/_drawing.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_drawing.scss",
+      "sha256": "7d1062163d580ab5ac5c1d258bf792b10f70ebcd34eea2df00a3d3c548478f1f"
+    },
+    "sass/46/upstream/_high-contrast-colors.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_high-contrast-colors.scss",
+      "sha256": "3669e39a47cff5cca7bc22c03d5366e76b975ad9180e9c5c55885999031db389"
+    },
+    "sass/46/upstream/_palette.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_palette.scss",
+      "sha256": "9aa10517dbd6816c3c161c684c2c5dcdc46a9f4f570c1f7270b2cc6ca5ad8fd8"
+    },
+    "sass/46/upstream/_widgets.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/_widgets.scss",
+      "sha256": "33605cf0bca91d673be005d19f46b868db2f48029de775f4ce3a92cf0e1063a0"
+    },
+    "sass/46/upstream/gnome-shell-sass.doap": {
+      "upstream_path": "data/theme/gnome-shell-sass/gnome-shell-sass.doap",
+      "sha256": "92fd438b98ef52f70aa8eaa2436ff278b4ca4d5ff14ad9ddd3c452fe839761a6"
+    },
+    "sass/46/upstream/widgets/_a11y.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_a11y.scss",
+      "sha256": "59e859b6dc3289dec6099f1c933e870a4c155c0209c19289be5b9f491a52e0de"
+    },
+    "sass/46/upstream/widgets/_app-grid.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_app-grid.scss",
+      "sha256": "b12b754c186b84b7e0d0fc657ad78f6d9254c5ed79221d187d77675baad70019"
+    },
+    "sass/46/upstream/widgets/_base.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_base.scss",
+      "sha256": "b586dd9dfd893aad7874ee86d42c68acd7bcee90551923f85acf908b55b30947"
+    },
+    "sass/46/upstream/widgets/_buttons.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_buttons.scss",
+      "sha256": "e4170ac57d8dcbce1526f8065623e3cd7257b843d4b146eb78a4c35d7d49a588"
+    },
+    "sass/46/upstream/widgets/_calendar.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_calendar.scss",
+      "sha256": "9281376d75382fc6199b877b215d5c086478b70c25a04ed2bf75823c67cdd04f"
+    },
+    "sass/46/upstream/widgets/_check-box.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_check-box.scss",
+      "sha256": "4e4e9a29e8c82a5a4d09797498ad13b79edec4185ff334fed0fbddb15743dbc4"
+    },
+    "sass/46/upstream/widgets/_corner-ripple.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_corner-ripple.scss",
+      "sha256": "65b8af13ad67d798d2939e45709cf85fc817e01ee8fea4de3192120696151302"
+    },
+    "sass/46/upstream/widgets/_dash.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_dash.scss",
+      "sha256": "bc2dc041f662df513e910cb76f9a46404d084492a28dac533b55c340cba28566"
+    },
+    "sass/46/upstream/widgets/_dialogs.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_dialogs.scss",
+      "sha256": "8f2ba97b19b5ad64df56543ad1beba50025cb63a6b1349bc7b06dc9fea916c12"
+    },
+    "sass/46/upstream/widgets/_entries.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_entries.scss",
+      "sha256": "0de6f902946f4c2df2398fcf06658445aec58ac2a04f93f750ede076e93573f4"
+    },
+    "sass/46/upstream/widgets/_ibus-popup.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_ibus-popup.scss",
+      "sha256": "987616b96e9169d0e4bd901fcaad2ab8bd88de6cf60569069f69842680dc289f"
+    },
+    "sass/46/upstream/widgets/_keyboard.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_keyboard.scss",
+      "sha256": "bc0e85b573f85c9e7f91773fec993784d54495010d7024afd5c3a3485dab466f"
+    },
+    "sass/46/upstream/widgets/_login-lock.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_login-lock.scss",
+      "sha256": "33d00edf6d45eef139f48477f011cd826413db72d4789a8d555270782bb0ee84"
+    },
+    "sass/46/upstream/widgets/_looking-glass.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_looking-glass.scss",
+      "sha256": "e9ff418dc9854f3e366f72203dda0c245572738178062634aae1d14507538aac"
+    },
+    "sass/46/upstream/widgets/_message-list.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_message-list.scss",
+      "sha256": "5322cf87abdc3d52c7593d41dec0c5227415f6a7a9ca3b804e253403ae4bc17e"
+    },
+    "sass/46/upstream/widgets/_misc.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_misc.scss",
+      "sha256": "124594d0d1c0e5fb7bcf92ab9fd500765676ca0876d830f1fb81722f801f9755"
+    },
+    "sass/46/upstream/widgets/_notifications.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_notifications.scss",
+      "sha256": "d78c0509ae67de17fcf6a1b68a7c5ff0bce1089f2c2582e27e73c160a08e3011"
+    },
+    "sass/46/upstream/widgets/_osd.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_osd.scss",
+      "sha256": "20fe395b43c0a35d1ed77946a062d0add77e7fd8d82da31ece02f0b99f3f06c3"
+    },
+    "sass/46/upstream/widgets/_overview.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_overview.scss",
+      "sha256": "0d26d4aaafc8b3e0d067a33b0fc0a89ac9e9d947dafe4c38a85238352aafc58c"
+    },
+    "sass/46/upstream/widgets/_panel.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_panel.scss",
+      "sha256": "4fdb51de13771257b99999ff9d4ab17ff5040f4f8a4242ecfa2ee1eed1b25096"
+    },
+    "sass/46/upstream/widgets/_popovers.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_popovers.scss",
+      "sha256": "bb9478ec543c689bd81357ded32402de4f465043c6f9a97b16f8145ffdaf7be3"
+    },
+    "sass/46/upstream/widgets/_quick-settings.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_quick-settings.scss",
+      "sha256": "007f9c58fce93a7d8fdb9ce610cee3c37977c6adc7a0e46a8dc88049a160842d"
+    },
+    "sass/46/upstream/widgets/_screenshot.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_screenshot.scss",
+      "sha256": "db0be758df07a5b88fc1a09a49e6defb891426c0d74fcc740feb2b158b4a17b5"
+    },
+    "sass/46/upstream/widgets/_scrollbars.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_scrollbars.scss",
+      "sha256": "708a4b9563f8c8f4a02f6f4bffe4f7127ef6edaf836d5a13826c48a5c03861df"
+    },
+    "sass/46/upstream/widgets/_search-entry.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_search-entry.scss",
+      "sha256": "463259fd577bf32ea43eba97b76603fdb0966333e073a520f34385e4e3d991b9"
+    },
+    "sass/46/upstream/widgets/_search-results.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_search-results.scss",
+      "sha256": "ddf89e4d327fe292c670a5b400acf992216b3e87864c90fe3d8d68ef092a9ad6"
+    },
+    "sass/46/upstream/widgets/_slider.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_slider.scss",
+      "sha256": "bb67ad00cbdccdd26c070feffa35c4f32276d84549c2787a96989c9f090f28e3"
+    },
+    "sass/46/upstream/widgets/_switcher-popup.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_switcher-popup.scss",
+      "sha256": "5386d5f7d4ec9dfd1d6ed029044845f2cebe0963d6a6c13ecbb461a0d2754770"
+    },
+    "sass/46/upstream/widgets/_switches.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_switches.scss",
+      "sha256": "b6b980a8a2c5390ba41d953b374d6a436b7e628c8e85b11b1b3962475d28cc0a"
+    },
+    "sass/46/upstream/widgets/_window-picker.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_window-picker.scss",
+      "sha256": "38eb148dca26fc1c42f8dc8a50a14f07ad9603504703c4c9bad96891a0ae0aef"
+    },
+    "sass/46/upstream/widgets/_workspace-switcher.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_workspace-switcher.scss",
+      "sha256": "9253161efa1a33491fc8729a97113e3e1d82831a76822c158e7f42b6454fb3e6"
+    },
+    "sass/46/upstream/widgets/_workspace-thumbnails.scss": {
+      "upstream_path": "data/theme/gnome-shell-sass/widgets/_workspace-thumbnails.scss",
+      "sha256": "e7d7f32a8e1aefa63f7242f78e5558c59b6ed3bfc0b50a21eef20b9bea6b6859"
+    }
+  }
+}

@@ -62,7 +62,7 @@ COMPONENTS = {
     "rofi": "Add a managed theme import to config.rasi.",
     "zsh": "Source the prompt/completion/highlighting snippet after existing configuration.",
     "wallpaper": "Copy the supplied wallpaper into the user backgrounds directory.",
-    "shell": "Select the installed theme in an existing GNOME Shell 51 User Themes extension.",
+    "shell": "Install the matching GNOME Shell 46/51 theme; optional User Themes activation.",
 }
 
 
@@ -660,7 +660,26 @@ def components(value):
     return selected
 
 
-def runtime(plan, target):
+def shell_variant(requested="auto", required=False):
+    if requested != "auto":
+        return requested
+    if shutil.which("gnome-shell"):
+        version = command(["gnome-shell", "--version"])
+        match = re.search(r"\b(\d+)\.", version)
+        if match and match[1] in {"46", "51"}:
+            return match[1]
+        if required:
+            raise InstallError(
+                f"Unsupported Shell version: {version}. Bundled variants target 46.x and 51.x."
+            )
+    elif required:
+        raise InstallError(
+            "Cannot detect GNOME Shell. Use --shell-version 46 or 51 after checking the target desktop."
+        )
+    return "51"
+
+
+def runtime(plan, target, shell_version="51"):
     legacy = plan.roots["home"] / ".themes" / THEME
     if not plan.system and legacy.exists() and legacy.resolve() != target.resolve():
         raise InstallError(
@@ -679,6 +698,8 @@ def runtime(plan, target):
         "tools/flatpak_support.py",
         "tools/legacy-gtk4.json",
         "install.sh",
+        "gnome-shell/gnome-shell-46.css",
+        "gnome-shell/gnome-shell-51.css",
     ]
     if plan.system:
         plan.directory_roots.append(target)
@@ -693,12 +714,18 @@ def runtime(plan, target):
             continue
         if path.is_symlink():
             raise InstallError(f"Unexpected link in the theme package: {name}")
-        if path == target / name:
+        if path == target / name and name != Path("gnome-shell/gnome-shell.css"):
             continue
         mode = 0o755 if path.stat().st_mode & 0o111 else 0o644
-        plan.put(target / name, path.read_bytes(), "theme", mode=mode)
+        data = path.read_bytes()
+        if name == Path("gnome-shell/gnome-shell.css"):
+            data = (ROOT / f"gnome-shell/gnome-shell-{shell_version}.css").read_bytes()
+        plan.put(target / name, data, "theme", mode=mode)
     plan.messages.append(
         f"GTK2 requires Murrine from your distribution. Theme destination: {target}"
+    )
+    plan.messages.append(
+        f"Bundled Shell stylesheet selected: GNOME {shell_version}. Auto selection supports 46.x and 51.x; other major versions are unverified."
     )
 
 
@@ -1034,13 +1061,11 @@ def activation(plan, selected, enabled, desktop):
             )
     if "shell" in selected:
         if "GNOME" not in desktop.upper():
-            raise InstallError(
-                "Shell activation is only supported inside GNOME Shell 51."
-            )
+            raise InstallError("Shell activation is only supported inside GNOME Shell.")
         version = command(["gnome-shell", "--version"])
-        if not re.search(r"\b51\.", version):
+        if not re.search(r"\b(?:46|51)\.", version):
             raise InstallError(
-                "The bundled Shell theme is verified for GNOME Shell 51.x only."
+                "The bundled Shell theme supports GNOME Shell 46.x and 51.x only."
             )
         extension = "user-theme@gnome-shell-extensions.gcampax.github.com"
         if extension not in command(["gnome-extensions", "list"]).splitlines():
@@ -1263,6 +1288,12 @@ def main(argv=None):
         "--gtk4-mode", choices=["auto", "modern", "legacy"], default=None
     )
     parser.add_argument(
+        "--shell-version",
+        choices=["auto", "46", "51"],
+        default=None,
+        help="Select the matching Shell stylesheet; auto detects the local gnome-shell version.",
+    )
+    parser.add_argument(
         "--activate",
         action="store_true",
         help="Select the theme for the current supported desktop; Shell requires its component.",
@@ -1339,6 +1370,11 @@ def main(argv=None):
             ):
                 differences.append(name)
         print("Components: " + ", ".join(store.state["options"].get("components", [])))
+        if store.state["options"].get("shell_variant"):
+            print(
+                "Installed Shell stylesheet: GNOME "
+                + store.state["options"]["shell_variant"]
+            )
         if store.state["options"].get("flatpak"):
             print(
                 "Flatpak apps: " + ", ".join(sorted(store.state["options"]["flatpak"]))
@@ -1443,7 +1479,15 @@ def main(argv=None):
         if args.system and "libadwaita" in selected:
             plan.directory_roots.append(directories["config"] / "gtk-4.0")
         target = directories["data"] / "themes" / THEME
-        runtime(plan, target)
+        shell_mode = args.shell_version or previous.get("shell_version", "auto")
+        shell_version = shell_variant(shell_mode, "shell" in selected)
+        if enabled and "shell" in selected:
+            detected = shell_variant("auto", True)
+            if detected != shell_version:
+                raise InstallError(
+                    "The requested Shell stylesheet does not match the local GNOME Shell version."
+                )
+        runtime(plan, target, shell_version)
         if "libadwaita" in selected:
             libadwaita(plan, target, mode)
         extras(plan, target, selected)
@@ -1456,6 +1500,8 @@ def main(argv=None):
         options = {
             "components": sorted(selected),
             "gtk4_mode": mode,
+            "shell_version": shell_mode,
+            "shell_variant": shell_version,
             "activate": enabled,
             "source": str(ROOT),
             "flatpak": flatpaks,

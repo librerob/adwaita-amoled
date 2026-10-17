@@ -23,7 +23,7 @@ jobs:
             libgtk2.0-0t64 gtk2-engines-murrine
       - name: Check shell syntax
         run: |
-          shellcheck install.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh
+          shellcheck install.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh tests/gnome-shell/session46.sh
           zsh -n extra/zsh/.zshrc
       - name: Check resources, installation and extras
         run: |
@@ -107,6 +107,29 @@ jobs:
         with:
           name: gnome-shell-rendering
           path: ${{ runner.temp }}/theme-test-output-shell
+          if-no-files-found: ignore
+
+  gnome-shell-46:
+    runs-on: ubuntu-24.04
+    container: ubuntu:24.04
+    steps:
+      - name: Install native GNOME 46 Wayland test tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            git ca-certificates gnome-shell gnome-shell-extensions mutter-14-tests \
+            python3-dbusmock python3-dbus sassc pipewire wireplumber librsvg2-common
+      - uses: actions/checkout@v7
+      - name: Check GNOME 46 source and actual pointer interactions
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-shell46
+        run: python3 tests/test_shell46.py
+      - name: Upload GNOME 46 interaction evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gnome-shell-46-interactions
+          path: ${{ runner.temp }}/theme-test-output-shell46
           if-no-files-found: ignore
 
   cinnamon:
