@@ -98,7 +98,30 @@ does not expose a split button, the fixture inserts GNOME's actual QuickMenuTogg
 widget into the menu and records this in its results. Its upstream calendar no longer includes the 46
 Do Not Disturb control. This extends interaction coverage without establishing
 support for Shell 47–50, extensions that replace these controls, physical GPUs
-or complete login sessions. GTK styles and compiled GTK resources are unchanged.
+or complete login sessions.
+
+### Decorative GTK borders — 17 October 2026
+
+The readability update applied `#808080` too broadly to ordinary button frames,
+toolbar/header separators and named border aliases. In Cinnamon, Nemo's title
+separator, breadcrumb/view buttons and lower toolbar therefore showed bright
+outlines; Software Manager's ordinary Gtk.Button package cards inherited the
+same borders. These decorative edges now use `#2a2a2a` in GTK3 and plain GTK4,
+with matching header/sidebar aliases in the native GTK4/libadwaita overrides.
+Text-field and switch boundaries have a separate identifying-control token.
+Checkbox/radio borders, slider handles, text colors, accent fills and keyboard
+focus remain unchanged.
+
+Native Cairo checks reproduce the bright edge pixels on the previous theme and
+verify subtle decorative pixels plus at least 3:1 text-field edge contrast on
+the changed theme, including hover/backdrop states. GTK3 focus outline visibility
+is checked separately. Actual Nemo 6.6.4 under Cinnamon 6.6.9/Muffin 6.6.3 was
+captured before/after: the title separator and multiple toolbar edges changed
+from RGB 128 to RGB 42 without changing their geometry. Software Manager's
+Gtk.Button card structure is covered by the native fixture; its complete
+catalog/backend was not run. The existing text/state/graphic tests remain the
+regression guard for controls that still need identifying contrast. Both GTK
+resource bundles are rebuilt from the changed source.
 
 Headless Cinnamon and Budgie runs report missing Bluetooth, login/power or
 session services. Their stock-theme controls report the same service failures;

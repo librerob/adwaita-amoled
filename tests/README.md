@@ -117,6 +117,15 @@ The same service-mock/hardware/login boundaries apply as for the 51 fixture.
 
 ## Color readability coverage
 
+`xvfb-run -a python3 tests/test_borders.py` checks native GTK3/GTK4 frame pixels
+for ordinary package-card buttons, toolbar buttons, header/location separators
+and text fields in normal, hover and backdrop states. Decorative edges stay
+subtle while field boundaries retain at least 3:1 contrast; GTK3 keyboard focus
+is checked separately. `THEME_TEST_OUTPUT` retains JSON measurements and a GTK3
+gallery matching Software Manager's basic Gtk.Button card structure. The fixture
+does not run Software Manager's complete catalog/backend. `border_native.py`'s
+`--record-only` mode records the previous theme for before/after comparison.
+
 `test_readability.py` checks terminal text, faint compositing, selected matches,
 bat syntax across supported backgrounds, Qt active/inactive roles and alpha
 placeholders, optional Qt scrollbar handles, Openbox labels/buttons, Zsh ANSI

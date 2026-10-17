@@ -34,6 +34,10 @@ jobs:
           python3 tests/test_readability.py
       - name: Check root-owned system installation and undo in temporary staging roots
         run: sudo --preserve-env=GITHUB_ACTIONS xvfb-run -a python3 tests/test_system_installer.py
+      - name: Check subtle decoration and visible GTK input edges
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/borders
+        run: xvfb-run -a python3 tests/test_borders.py
       - name: Check GNOME, Budgie and Xfce preference activation and undo
         run: dbus-run-session -- python3 tests/test_install_settings.py DesktopSettingTests.test_gnome_and_budgie_activation_and_undo DesktopSettingTests.test_xfce_activation_and_undo
       - name: Check installed native applications and undo
@@ -78,6 +82,10 @@ jobs:
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern
         run: xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_runtime.py
+      - name: Check modern GTK decorative and identifying edges
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern/borders
+        run: xvfb-run -a python3 tests/test_borders.py BorderTests.test_gtk4_decorative_borders_and_input_edges
       - name: Upload modern rendering evidence
         if: always()
         uses: actions/upload-artifact@v7

@@ -10,6 +10,7 @@
 @define-color surface_popover #141414;
 @define-color surface_hover   #1a1a1a;
 @define-color border_color    #2a2a2a;
+@define-color control_border_color #808080; /* Identifying control edges only. */
 @define-color border_darker   #1e1e1e;
 @define-color accent_hover    #aecbfa;
 @define-color accent_fill_hover #2862cf;
@@ -418,7 +419,7 @@ entry:disabled {
 spinbutton:backdrop:not(.vertical),
 entry:backdrop {
     color: #fafafa;
-    border-color: @unfocused_borders;
+    border-color: @control_border_color;
     background-color: #000000;
     box-shadow: none;
     transition: 200ms ease-out;
@@ -804,8 +805,8 @@ button {
     transition: all 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #111111, #1a1a1a);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
@@ -846,8 +847,8 @@ notebook > header > tabs > arrow:hover,
 button:hover {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #1a1a1a, #222222);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
@@ -861,7 +862,7 @@ button:active,
 button:checked {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#1c1c1c);
     box-shadow: inset 0 1px rgba(0, 0, 0, 0.6);
     text-shadow: none;
@@ -937,7 +938,7 @@ button.flat:backdrop:disabled {
 notebook > header > tabs > arrow:disabled,
 button:disabled {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -949,7 +950,7 @@ notebook > header > tabs > arrow:disabled:checked,
 button:disabled:active,
 button:disabled:checked {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -1310,7 +1311,7 @@ button.suggested-action.flat:backdrop:disabled {
 
 button.suggested-action:disabled {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1484,7 +1485,7 @@ button.destructive-action.flat:backdrop:disabled {
 
 button.destructive-action:disabled {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1666,8 +1667,8 @@ stacksidebar row.needs-attention > label:dir(rtl),
 .inline-toolbar toolbutton > button {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #111111, #1a1a1a);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
@@ -1677,8 +1678,8 @@ stacksidebar row.needs-attention > label:dir(rtl),
 .inline-toolbar toolbutton > button:hover {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #1a1a1a, #222222);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
@@ -1689,7 +1690,7 @@ stacksidebar row.needs-attention > label:dir(rtl),
 .inline-toolbar toolbutton > button:checked {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#1c1c1c);
     box-shadow: inset 0 1px rgba(0, 0, 0, 0.6);
     text-shadow: none;
@@ -1698,7 +1699,7 @@ stacksidebar row.needs-attention > label:dir(rtl),
 
 .inline-toolbar toolbutton > button:disabled {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -1708,7 +1709,7 @@ stacksidebar row.needs-attention > label:dir(rtl),
 .inline-toolbar toolbutton > button:disabled:active,
 .inline-toolbar toolbutton > button:disabled:checked {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 }
@@ -1922,8 +1923,8 @@ list row button.image-button:not(.flat) {
 list row button.image-button:not(.flat):hover {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #1a1a1a 0%, #222222 100%);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
@@ -1934,7 +1935,7 @@ list row button.image-button:not(.flat):active,
 list row button.image-button:not(.flat):checked {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#1c1c1c);
     box-shadow: inset 0 1px rgba(0, 0, 0, 0.6);
     text-shadow: none;
@@ -2366,7 +2367,7 @@ searchbar > revealer > box {
 searchbar > revealer > box,
 .location-bar {
     border-style: solid;
-    border-color: #808080;
+    border-color: @border_color;
     background-color: #0f0f0f;
 }
 
@@ -2388,7 +2389,7 @@ headerbar {
     min-height: 46px;
     border-width: 0 0 1px;
     border-style: solid;
-    border-color: #808080;
+    border-color: @border_color;
     border-radius: 0;
     background: #0e0e0e linear-gradient(to top, #080808, #111111);
     box-shadow: inset 0 1px rgba(238, 238, 236, 0.07), 0 1px 0 rgba(0, 0, 0, 0.5);
@@ -2639,7 +2640,7 @@ headerbar.selection-mode button:disabled:checked {
 headerbar.selection-mode button.suggested-action {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-bottom-color: #808080;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #111111, #1a1a1a);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
@@ -2653,7 +2654,7 @@ headerbar.selection-mode button.suggested-action {
 headerbar.selection-mode button.suggested-action:hover {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-bottom-color: #808080;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #1a1a1a, #222222);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
@@ -3157,7 +3158,7 @@ treeview.view header button:active {
     padding: 0 6px;
     background-image: none;
     border-style: none solid solid none;
-    border-color: #808080;
+    border-color: @border_color;
     border-radius: 0;
     text-shadow: none;
 }
@@ -3456,7 +3457,7 @@ popover.background list separator {
 
 notebook > header {
     padding: 1px;
-    border-color: #808080;
+    border-color: @border_color;
     border-width: 1px;
     background-color: #0c0c0c;
 }
@@ -4036,7 +4037,7 @@ switch:disabled {
 
 switch:backdrop {
     color: #c0c0c0;
-    border-color: @unfocused_borders;
+    border-color: @control_border_color;
     background-color: #0f0f0f;
     text-shadow: none;
     transition: 200ms ease-out;
@@ -5596,7 +5597,7 @@ separator {
 list {
     color: white;
     background-color: #0f0f0f;
-    border-color: #808080;
+    border-color: @border_color;
 }
 
 list:backdrop {
@@ -6144,8 +6145,8 @@ infobar.warning button,
 infobar.error button {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #111111, #1a1a1a);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.834353);
@@ -6158,8 +6159,8 @@ infobar.warning button:hover,
 infobar.error button:hover {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
-    border-bottom-color: #808080;
+    border-color: @border_color;
+    border-bottom-color: @border_color;
     background-image: linear-gradient(to top, #1a1a1a 0%, #222222 100%);
     text-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
     -gtk-icon-shadow: 0 -1px rgba(0, 0, 0, 0.786353);
@@ -6176,7 +6177,7 @@ infobar.error button:active,
 infobar.error button:checked {
     color: #ffffff;
     outline-color: rgba(238, 238, 236, 0.3);
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#1c1c1c);
     box-shadow: inset 0 1px rgba(0, 0, 0, 0.6);
     text-shadow: none;
@@ -6188,7 +6189,7 @@ infobar.question button:disabled,
 infobar.warning button:disabled,
 infobar.error button:disabled {
     color: #c0c0c0;
-    border-color: #808080;
+    border-color: @border_color;
     background-image: image(#000000);
     text-shadow: none;
     -gtk-icon-shadow: none;
@@ -6204,7 +6205,7 @@ infobar.error button:backdrop {
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #808080;
+    border-color: @border_color;
 }
 
 infobar.info button:backdrop:disabled,
@@ -6216,7 +6217,7 @@ infobar.error button:backdrop:disabled {
     text-shadow: none;
     -gtk-icon-shadow: none;
     box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-    border-color: #808080;
+    border-color: @border_color;
 }
 
 infobar.info button:backdrop label,
@@ -6743,7 +6744,7 @@ cursor-handle {
     color: #ffffff;
     background-color: #0f0f0f;
     border: 1px solid;
-    border-color: #808080;
+    border-color: @border_color;
     border-radius: 5px;
     box-shadow: inset 0 -3px #000000;
     font-size: smaller;
@@ -6961,12 +6962,12 @@ insensitive color on backdrop windows*/
 /*
 widgets main borders color */
 
-@define-color borders #808080;
+@define-color borders @border_color;
 
 /*
 widgets main borders color on backdrop windows */
 
-@define-color unfocused_borders #808080;
+@define-color unfocused_borders @border_color;
 
 /*
 these are pretty self explicative */

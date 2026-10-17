@@ -246,6 +246,11 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 | Foreground | `#ffffff` | Primary text |
 | Dim | `#a0a0a0` | Readable secondary text |
 
+Ordinary button/card outlines and header/sidebar separators use the subtle
+decorative border. Text-field boundaries, checkbox/radio outlines and slider
+handles retain identifying contrast; keyboard focus uses its separate accent
+outline. Decorative lines are not all forced to the control-edge brightness.
+
 White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
 use the pale `#8ab4f8` as a text background use black text (9.96:1).
 Success surfaces use black text on `#26a269` (approximately 6.45:1).
