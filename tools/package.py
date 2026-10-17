@@ -39,6 +39,8 @@ def main():
         "INSTALLING.md",
         "gtk-3.0/gtk.gresource",
         "gtk-4.0/gtk.gresource",
+        "gnome-shell/gnome-shell-46.css",
+        "gnome-shell/gnome-shell-51.css",
     ]:
         if not any(str(name) == required for name, _, _ in files):
             parser.error("incomplete runtime: " + required)

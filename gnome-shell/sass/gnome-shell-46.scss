@@ -1,0 +1,17 @@
+// Adwaita-AMOLED GNOME Shell 46 adaptation, 2026-10-17.
+// SPDX-License-Identifier: GPL-2.0-or-later
+$variant: 'dark';
+$contrast: 'normal';
+@import '46/upstream/colors';
+@import 'amoled';
+$selected_bg_color: #2d6be0;
+$selected_fg_color: #ffffff;
+$selected_borders_color: #8ab4f8;
+$link_color: #8ab4f8;
+$link_visited_color: #aecbfa;
+$focus_color: #8ab4f8;
+$focus_border_color: transparentize($focus_color, 0.5);
+@import '46/upstream/drawing';
+@import '46/upstream/common';
+@import '46/upstream/widgets';
+@import 'readability-46';

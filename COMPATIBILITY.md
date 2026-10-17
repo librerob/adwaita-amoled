@@ -74,6 +74,55 @@ other Shell major versions have not been verified.
 
 ## Remaining limits
 
+### GNOME Shell 46 follow-up — 17 October 2026
+
+A user report on GNOME 46 Wayland exposed a version mismatch: the previously
+shipped Shell stylesheet targeted 51. Loading it on 46 removes calendar hover
+feedback, omits the SVG switch knob and misstyles quick-settings split buttons.
+The old stylesheet reproduces the missing calendar hover in a native 46.0 /
+Mutter 46.2 headless Wayland session. It remains the negative control for the
+new interaction fixture.
+
+A separate AMOLED variant now uses pinned GNOME Shell 46.10 sources and assets,
+preserving their geometry and widget structures. Native 46 tests exercise real
+pointer motion/clicks and verify panel clock hover/click, calendar hover/selection,
+Do Not Disturb off/on images, Show Apps and pinned-app hover, and adjacent split-button allocations. Screenshots are
+retained as evidence. The installer selects 46 or 51 from the local Shell version,
+rechecks on automatic updates and rejects unsupported explicit Shell setup.
+Manual copying must select the matching version-specific stylesheet; source
+`gnome-shell.css` remains the 51 default. See [the Shell guide](gnome-shell/README.md).
+
+The Shell 51 fixture also exercises its panel clock, calendar, Show Apps, a pinned
+application and split buttons with pointer events. Where the mock power service
+does not expose a split button, the fixture inserts GNOME's actual QuickMenuToggle
+widget into the menu and records this in its results. Its upstream calendar no longer includes the 46
+Do Not Disturb control. This extends interaction coverage without establishing
+support for Shell 47–50, extensions that replace these controls, physical GPUs
+or complete login sessions.
+
+### Decorative GTK borders — 17 October 2026
+
+The readability update applied `#808080` too broadly to ordinary button frames,
+toolbar/header separators and named border aliases. In Cinnamon, Nemo's title
+separator, breadcrumb/view buttons and lower toolbar therefore showed bright
+outlines; Software Manager's ordinary Gtk.Button package cards inherited the
+same borders. These decorative edges now use `#2a2a2a` in GTK3 and plain GTK4,
+with matching header/sidebar aliases in the native GTK4/libadwaita overrides.
+Text-field and switch boundaries have a separate identifying-control token.
+Checkbox/radio borders, slider handles, text colors, accent fills and keyboard
+focus remain unchanged.
+
+Native Cairo checks reproduce the bright edge pixels on the previous theme and
+verify subtle decorative pixels plus at least 3:1 text-field edge contrast on
+the changed theme, including hover/backdrop states. GTK3 focus outline visibility
+is checked separately. Actual Nemo 6.6.4 under Cinnamon 6.6.9/Muffin 6.6.3 was
+captured before/after: the title separator and multiple toolbar edges changed
+from RGB 128 to RGB 42 without changing their geometry. Software Manager's
+Gtk.Button card structure is covered by the native fixture; its complete
+catalog/backend was not run. The existing text/state/graphic tests remain the
+regression guard for controls that still need identifying contrast. Both GTK
+resource bundles are rebuilt from the changed source.
+
 Headless Cinnamon and Budgie runs report missing Bluetooth, login/power or
 session services. Their stock-theme controls report the same service failures;
 Budgie also emits the same `gtk_widget_destroy` assertion with stock Adwaita.

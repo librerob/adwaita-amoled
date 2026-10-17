@@ -87,7 +87,44 @@ The fixture uses upstream GNOME service mocks; it does not test real login,
 authentication, power management or physical GPU hardware. Missing Shell 51 or
 test dependencies fail the check rather than skipping it.
 
+The Shell 51 fixture additionally uses real pointer events on the panel clock,
+calendar days, Show Apps, a pinned application icon and quick-settings split buttons. Its upstream calendar
+no longer has the Do Not Disturb control present in 46. Interaction
+screenshots are saved separately from the original eight views.
+When the mock power service does not expose a split button, the fixture inserts
+GNOME's actual `QuickMenuToggle` widget into the menu and records that fact.
+
+### GNOME Shell 46
+
+On Ubuntu 24.04, use its separate upstream-matched variant and native session:
+
+```bash
+sudo apt install gnome-shell gnome-shell-extensions mutter-14-tests \
+  python3-dbusmock python3-dbus sassc pipewire wireplumber librsvg2-common
+python3 tests/test_shell46.py
+```
+
+These checks verify all 52 pinned GNOME 46.10 source/assets, reproduce its CSS,
+retain upstream geometry, and install the automatically selected 46 stylesheet
+into an isolated home. A test-only extension drives a real headless Wayland
+session with virtual pointer motion/clicks. Assertions cover panel clock hover/click,
+calendar hover and selection, Do Not Disturb SVG states, Show Apps and a pinned
+application's hover, and non-overlapping split
+button geometry. Set `THEME_TEST_OUTPUT` to retain screenshots, logs and JSON.
+As a negative control, setting `THEME_TEST_SHELL_VERSION=51` deliberately installs
+the incompatible stylesheet; the GNOME 46 interaction test must fail.
+The same service-mock/hardware/login boundaries apply as for the 51 fixture.
+
 ## Color readability coverage
+
+`xvfb-run -a python3 tests/test_borders.py` checks native GTK3/GTK4 frame pixels
+for ordinary package-card buttons, toolbar buttons, header/location separators
+and text fields in normal, hover and backdrop states. Decorative edges stay
+subtle while field boundaries retain at least 3:1 contrast; GTK3 keyboard focus
+is checked separately. `THEME_TEST_OUTPUT` retains JSON measurements and a GTK3
+gallery matching Software Manager's basic Gtk.Button card structure. The fixture
+does not run Software Manager's complete catalog/backend. `border_native.py`'s
+`--record-only` mode records the previous theme for before/after comparison.
 
 `test_readability.py` checks terminal text, faint compositing, selected matches,
 bat syntax across supported backgrounds, Qt active/inactive roles and alpha

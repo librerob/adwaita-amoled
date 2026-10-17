@@ -57,7 +57,7 @@ button, notebook > header > tabs > arrow:not(.flat) {
   border-color: @headerbar_border_color;
   box-shadow: none;
 }
-button:hover { background-color: #1f1f1f; border-color: #808080; background-image: none; }
+button:hover { background-color: #1f1f1f; border-color: @headerbar_border_color; background-image: none; }
 button:active, button:checked, button:checked:hover { background-color: #0c0c0c; background-image: none; }
 button:disabled, button:backdrop:disabled {
   color: @insensitive_fg_color;
@@ -97,7 +97,7 @@ entry, spinbutton:not(.vertical), spinbutton:not(.vertical) > text, combobox ent
   color: @view_fg_color;
   background-color: @view_bg_color;
   background-image: none;
-  border-color: @headerbar_border_color;
+  border-color: @control_border_color;
   box-shadow: none;
 }
 entry:focus-within, spinbutton:focus-within { border-color: @accent_bg_color; }
@@ -148,7 +148,7 @@ switch > slider, switch:hover > slider {
 }
 scrollbar > range > trough > slider { background-color: #808080; }
 scrollbar > range > trough > slider:hover { background-color: #a0a0a0; }
-switch { background-color: #1a1a1a; background-image: none; border-color: @headerbar_border_color; }
+switch { background-color: #1a1a1a; background-image: none; border-color: @control_border_color; }
 switch:checked { background-color: @accent_bg_color; border-color: @accent_bg_color; }
 check, radio, check:hover, radio:hover, check:active, radio:active {
   background-color: #161616;

@@ -300,6 +300,37 @@ class InstallerTests(unittest.TestCase):
         self.run_cli("uninstall", "--yes", env=env)
         self.assertEqual(path.read_text(), "font_size 15\n")
 
+    def test_shell_variant_detection_upgrade_and_installed_copy(self):
+        directory = self.base / "bin"
+        directory.mkdir()
+        executable = directory / "gnome-shell"
+        executable.write_text("#!/bin/sh\nprintf 'GNOME Shell 46.10\\n'\n")
+        executable.chmod(0o755)
+        env = dict(self.env, PATH=str(directory) + os.pathsep + os.environ["PATH"])
+        self.run_cli("install", "--components", "shell", "--yes", env=env)
+        target = self.data / "themes/Adwaita-AMOLED"
+        css = target / "gnome-shell/gnome-shell.css"
+        self.assertEqual(
+            css.read_bytes(), (ROOT / "gnome-shell/gnome-shell-46.css").read_bytes()
+        )
+        executable.write_text("#!/bin/sh\nprintf 'GNOME Shell 51.1\\n'\n")
+        self.run_cli("update", "--yes", env=env, root=target)
+        self.assertEqual(
+            css.read_bytes(), (ROOT / "gnome-shell/gnome-shell-51.css").read_bytes()
+        )
+        self.run_cli("status", env=env, root=target)
+        self.run_cli("uninstall", "--yes", env=env, root=target)
+        self.assertFalse(css.exists())
+
+    def test_unverified_shell_version_stops_explicit_shell_setup(self):
+        with patch.dict(os.environ, self.env, clear=True), patch.object(
+            installer.shutil, "which", return_value="gnome-shell"
+        ), patch.object(installer, "command", return_value="GNOME Shell 47.0"):
+            with self.assertRaisesRegex(
+                installer.InstallError, "Unsupported Shell version"
+            ):
+                installer.shell_variant("auto", True)
+
     def test_dual_neovim_init_is_rejected_before_writes(self):
         self.text(self.config / "nvim/init.lua", "-- lua\n")
         self.text(self.config / "nvim/init.vim", '" vim\n')

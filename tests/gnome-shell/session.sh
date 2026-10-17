@@ -7,6 +7,15 @@ export XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=GNOME
 export WAYLAND_DISPLAY=amoled-gnome-test GSETTINGS_BACKEND=keyfile
 unset DISPLAY
 mkdir -p "$XDG_DATA_HOME/themes"
+mkdir -p "$XDG_DATA_HOME/applications"
+cat > "$XDG_DATA_HOME/applications/amoled-theme-test.desktop" <<'DESKTOP'
+[Desktop Entry]
+Type=Application
+Name=Theme test
+Exec=/usr/bin/true
+Icon=system-file-manager
+DESKTOP
+gsettings set org.gnome.shell favorite-apps "['amoled-theme-test.desktop']"
 ln -s "$ROOT" "$XDG_DATA_HOME/themes/Adwaita-AMOLED"
 gsettings set org.gnome.shell enabled-extensions "['user-theme@gnome-shell-extensions.gcampax.github.com']"
 gsettings set org.gnome.shell disable-user-extensions false

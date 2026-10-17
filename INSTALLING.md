@@ -22,7 +22,7 @@ to select the theme for the current desktop, and displays every destination and
 preference before applying anything. Pressing Enter at the components question
 selects `gtk,libadwaita` on a first installation. Type a comma-separated list to
 choose extras. `all` selects every component; bat must then be installed, and
-Shell activation requires GNOME Shell 51 and User Themes.
+Shell activation requires GNOME Shell 46.x or 51.x and User Themes.
 
 If you followed the former instructions and have
 `~/.themes/Adwaita-AMOLED`, move that directory somewhere outside `~/.themes`
@@ -69,7 +69,7 @@ shared directory. Source GTK files, tests and Git metadata are not copied.
 | `rofi` | Adds a marked absolute theme import to `CONFIG/rofi/config.rasi`. | An explicit command-line theme can override it. |
 | `zsh` | Adds a marked `source` to `$ZDOTDIR/.zshrc`, or `~/.zshrc` when `ZDOTDIR` is unset. | Changes prompt, completion colors, terminal title hook and optional highlighting/autosuggestion colors. Load optional plugins before the managed block. Does not install plugins or change your login shell. |
 | `wallpaper` | Copies the supplied picture to `DATA/backgrounds/Adwaita-AMOLED/blackmount.png`. | Select it in background settings. The installer does not change wallpaper preferences. |
-| `shell` | The Shell files are already in `THEME/gnome-shell`; with `--activate`, enables User Themes and selects Adwaita-AMOLED. | GNOME Shell **51.x**, installed/detected [User Themes](https://extensions.gnome.org/extension/19/user-themes/), and globally enabled user extensions. Log in again after installing the extension. |
+| `shell` | Installs the matching Shell 46/51 stylesheet in `THEME/gnome-shell`; with `--activate`, enables User Themes and selects Adwaita-AMOLED. | GNOME Shell **46.x or 51.x**, installed/detected [User Themes](https://extensions.gnome.org/extension/19/user-themes/), and globally enabled user extensions. Log in again after installing the extension. |
 
 ### Desktop activation
 
@@ -94,12 +94,21 @@ For GNOME Shell, explicitly choose `shell` as well:
 ./install.sh install --components gtk,libadwaita,shell --activate --yes
 ```
 
-Setup checks the running Shell major version and installed extension, enables
+Setup checks the locally installed Shell major version and installed extension, enables
 User Themes without changing unrelated extension membership, and sets its
 `name` preference. It finds user-local extension schemas as well as system
 schemas. Globally disabled extensions require your deliberate choice in the
 Extensions app first. Toggle User Themes or log in again to reload an already
 selected stylesheet after an update. This does not theme GDM.
+
+The shared runtime copy also selects the local Shell 46/51 variant when Shell
+is detected, even when `shell` activation is not requested. The version-specific
+CSS files and assets remain installed. `--shell-version 46` or `--shell-version 51`
+can select an explicit target for copying/staging; activation refuses a version
+that differs from the local Shell. The default `auto` choice is saved and checks
+again on updates. Explicit Shell setup stops on unsupported major versions.
+When Shell is unavailable and only GTK is requested, the bundled default remains
+51; this does not establish support for the destination's Shell version.
 
 ### GTK4 and libadwaita: why one import
 
@@ -231,6 +240,17 @@ Cinnamon, MATE and Xfce use their own preferences listed in
 [Desktop activation](#desktop-activation). Select Openbox's theme through its
 settings. GNOME Shell requires User Themes and a separate Shell theme selection;
 see [the Shell guide](gnome-shell/README.md). No Xfwm4 decoration theme is included.
+
+On GNOME 46, after the manual copy above, select its matching stylesheet:
+
+```bash
+cp "$amoled_theme/gnome-shell/gnome-shell-46.css" "$amoled_theme/gnome-shell/gnome-shell.css"
+```
+
+Keep all `gnome-shell/assets/` files installed. On GNOME 51, the equivalent source
+is `gnome-shell-51.css`. Toggle User Themes off/on after changing the installed
+CSS, or log out and back in. The source default is 51 and must not be used
+unchanged on 46. Neither variant is verified for other Shell major versions.
 
 ### GTK4 and libadwaita overrides
 

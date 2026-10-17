@@ -1,5 +1,14 @@
 # Repository-wide color follow-up — 2026-10-16
 
+**17 October follow-up:** decorative button/card frames, header/sidebar and
+toolbar separators now use the subtle border palette after a Cinnamon user
+report showed that identifying-control brightness had been applied too broadly.
+Input edges, checkbox/radio outlines, slider handles and focus retain their
+separate visibility roles. Native before/after evidence and current regression
+coverage are described in [the compatibility report](COMPATIBILITY.md#decorative-gtk-borders--17-october-2026).
+The measurements below record the earlier audit rather than every subsequent
+appearance change.
+
 This follow-up starts from v1.2.0 (`ed1c29b63f2312e2818145e0f10cf5f59c4be3e9`).
 The earlier readability tests passed, but their coverage missed several inherited
 and compound states. The new tests reproduce those failures against v1.2.0 and
