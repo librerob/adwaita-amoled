@@ -1,8 +1,8 @@
 # Installing Adwaita-AMOLED
 
 The installer uses the included, already compiled theme. It requires Linux,
-Bash and **Python 3.11 or newer**. Run it as your normal desktop user, without
-`sudo`. No compiler, rsync, network access or Python package installation is
+Bash and **Python 3.11 or newer**. Run the default user setup as your normal desktop user, without
+`sudo`. The explicit system-wide scope below uses administrative privileges. No compiler, rsync, network access or Python package installation is
 needed. GTK2 applications additionally need your distribution's **Murrine**
 engine (`gtk2-engines-murrine` on Debian/Ubuntu).
 
@@ -163,7 +163,7 @@ reapply configuration; obtaining a newer source/package is necessary to update
 its theme files.
 
 `status` and `doctor` currently provide the same read-only integrity report:
-native GTK version, detected desktop, selected components, missing/edited files,
+native GTK version, detected desktop, selected components and Flatpak apps, missing/edited paths,
 changed managed desktop preferences, state and backup locations. They return a
 nonzero status for detected differences or an interrupted transaction. They do
 not render your applications or diagnose hardware.
@@ -171,7 +171,7 @@ not render your applications or diagnose hardware.
 ### Backups and preservation
 
 State lives in `$XDG_STATE_HOME/adwaita-amoled` (default
-`~/.local/state/adwaita-amoled`). `state.json` records original bytes, permissions,
+`~/.local/state/adwaita-amoled`). `state.json` records original bytes, file modes,
 symlinks, managed fragments and desktop preference values. Each applied
 transaction retains a dated JSON record under `backups/`; its before-images
 contain file bytes encoded as base64, not a separate theme-only tarball. Records
@@ -200,15 +200,250 @@ symlinks are replaced by backed-up regular files without editing their target;
 undo restores the link. Nested symlinked configuration directories are refused;
 use their real XDG root or configure that component manually.
 
-## Flatpak and other limits
+## Manual installation
 
-Setup changes **native host** configuration. Flatpak apps have independent
-runtimes, theme extensions, paths and permissions; the host GTK version may not
-match their GTK. A host file import can be inaccessible inside the sandbox.
-The installer does not change Flatpak permissions or promise sandbox coverage.
-Prefer a matching runtime theme extension where available; per-app overrides
-need separate runtime-aware testing. The same caution applies to Snap and other
-sandboxes, custom config-file command-line options, and app-supplied CSS.
+The compiled theme can also be installed manually. These commands do not require
+Python or a compiler. Run them from the extracted theme/repository directory as
+your normal user. GTK2 still needs Murrine.
+
+### Theme files and desktop selection
+
+Keep a backup of an existing installed theme before replacing its files. Avoid
+keeping a second copy named Adwaita-AMOLED in `~/.themes`, because different
+desktop components search the legacy and XDG locations in different orders.
+
+```bash
+amoled_data="${XDG_DATA_HOME:-$HOME/.local/share}"
+amoled_theme="$amoled_data/themes/Adwaita-AMOLED"
+mkdir -p "$amoled_theme"
+cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
+cp index.theme LICENSE "$amoled_theme/"
+```
+
+Select **Adwaita-AMOLED** in your desktop's Appearance settings. For GNOME/Budgie,
+the GTK setting can also be selected with:
+
+```bash
+gsettings set org.gnome.desktop.interface gtk-theme Adwaita-AMOLED
+```
+
+Cinnamon, MATE and Xfce use their own preferences listed in
+[Desktop activation](#desktop-activation). Select Openbox's theme through its
+settings. GNOME Shell requires User Themes and a separate Shell theme selection;
+see [the Shell guide](gnome-shell/README.md). No Xfwm4 decoration theme is included.
+
+### GTK4 and libadwaita overrides
+
+Manual copying replaces the active GTK4 override files. Back up the existing
+directory first; custom CSS can be merged back afterward. Use **`gtk-modern.css`
+for GTK 4.16+**, or **`gtk.css` for older GTK4**. Check the GTK4 package version
+installed by your distribution; the relevant version is GTK, not GNOME's version.
+The installer performs this choice automatically if you prefer not to manage it.
+
+```bash
+amoled_theme="${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED"
+amoled_gtk4="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
+if [ -e "$amoled_gtk4" ]; then
+  amoled_gtk4_backup=$(mktemp -d "$amoled_gtk4.backup.XXXXXX")
+  cp -a "$amoled_gtk4/." "$amoled_gtk4_backup/"
+fi
+mkdir -p "$amoled_gtk4/assets"
+cp "$amoled_theme/extra/libadwaita/gtk-dark.css" "$amoled_gtk4/"
+cp "$amoled_theme/extra/libadwaita/libadwaita-tweaks.css" "$amoled_gtk4/"
+cp -R "$amoled_theme/extra/libadwaita/assets/." "$amoled_gtk4/assets/"
+```
+
+Then run **one** of these, according to your GTK version:
+
+```bash
+# GTK 4.16 or newer:
+cp "$amoled_theme/extra/libadwaita/gtk-modern.css" "$amoled_gtk4/gtk.css"
+```
+
+```bash
+# Older GTK4:
+cp "$amoled_theme/extra/libadwaita/gtk.css" "$amoled_gtk4/gtk.css"
+```
+
+Restart applications. Repeat these copies when updating the theme. To undo a
+manual override, restore the directory backup you made. The installer's undo
+only manages files it recorded; it cannot undo untracked manual changes.
+Do not combine manual replacement with a tracked installer-managed file; undo
+the managed setup first or use `update` to keep its history consistent.
+
+### Manual extras
+
+These examples use the same `amoled_theme` variable above and default XDG paths;
+adjust application-specific locations if you use a custom profile or config.
+Merge the indicated line into the existing configuration rather than replacing
+that configuration wholesale.
+
+| Extra | Manual installation/selection |
+|---|---|
+| Kitty | Add `include /absolute/path/to/Adwaita-AMOLED/extra/kitty/adwaita-amoled.conf` to the active `kitty.conf`. The snippet changes cursor/tab settings and dimming as well as colors. |
+| Alacritty | Merge `import = ["/absolute/path/to/Adwaita-AMOLED/extra/alacritty/alacritty.toml"]` into `[general]` in the active TOML file. Preserve existing imports. Local colors take precedence. |
+| bat | Copy `extra/bat/themes/adwaita-amoled.tmTheme` into the `themes/` subdirectory reported by `bat --config-dir`; add `--theme="adwaita-amoled"` to its config, then run `bat cache --build` (or `batcat`). |
+| Neovim | Copy `extra/nvim/colors/adwaita-amoled.vim` into your profile's `colors/` directory. Enable true color and select the colorscheme as shown below. |
+| Airline | Copy `extra/nvim/autoload/airline/themes/adwaita_amoled.vim` into the corresponding Neovim `autoload/airline/themes/` directory; set `g:airline_theme` to `adwaita_amoled`. Airline itself is optional. |
+| Rofi | Add `@import "/absolute/path/to/Adwaita-AMOLED/extra/rofi/adwaita-dark.rasi"` to `config.rasi`, or pass that file with `-theme`. |
+| Zsh | Source `extra/zsh/.zshrc` from your existing `.zshrc`, after any optional highlighting/autosuggestion plugins. This changes prompt, completion styling and the title hook as well as plugin colors. |
+| Wallpaper | Select `extra/wallpaper/blackmount.png` in background settings. |
+
+For Neovim, add to **your existing** `init.vim`:
+
+```vim
+set termguicolors
+colorscheme adwaita-amoled
+let g:airline_theme = 'adwaita_amoled'
+```
+
+Or use the corresponding lines in **your existing** `init.lua`:
+
+```lua
+vim.opt.termguicolors = true
+vim.cmd('colorscheme adwaita-amoled')
+vim.g.airline_theme = 'adwaita_amoled'
+```
+
+Do not create a second init file alongside the one you already use.
+
+For Qt, copy the palettes and optional QSS, then select them through the matching
+Qt configuration app as explained in [Qt selection](#qt-selection):
+
+```bash
+amoled_config="${XDG_CONFIG_HOME:-$HOME/.config}"
+for amoled_qt in qt5ct qt6ct; do
+  mkdir -p "$amoled_config/$amoled_qt/colors" "$amoled_config/$amoled_qt/qss"
+  cp "$amoled_theme/extra/$amoled_qt/colors/Adwaita-AMOLED.conf" "$amoled_config/$amoled_qt/colors/"
+  cp "$amoled_theme/extra/$amoled_qt/qss/fusion-simple-scrollbar.qss" "$amoled_config/$amoled_qt/qss/"
+done
+```
+
+## Selected Flatpak applications
+
+Flatpak setup is **optional and per application**. It requires Flatpak and an
+already installed GTK application. It runs as your normal user, separately from
+system-wide installation:
+
+```bash
+./install.sh install --components gtk,libadwaita --flatpak APP_ID --dry-run
+./install.sh install --components gtk,libadwaita --flatpak APP_ID --yes
+# Repeat --flatpak for additional application IDs.
+```
+
+Replace `APP_ID` with an actual ID such as the one shown by `flatpak list --app`.
+The user installation remains in `DATA/themes/Adwaita-AMOLED`. For each selected
+application, setup:
+
+1. Queries the installed app/runtime locations through Flatpak. It checks the
+   app's standard bundled GTK4 libraries first, then its runtime's libraries.
+   GTK's upstream shared-library version convention determines the GTK version;
+   no host GTK library is used to choose a sandbox stylesheet.
+2. Creates a managed theme selection in
+   `~/.var/app/APP_ID/config/gtk-3.0/settings.ini`. Desktop/portal settings may
+   take precedence over GTK3's config, so keep the desktop GTK theme selected too.
+3. For GTK4, manages its own import in
+   `~/.var/app/APP_ID/config/gtk-4.0/gtk.css`, selecting modern CSS on GTK 4.16+
+   and legacy CSS on older GTK4. Its other custom CSS is retained.
+4. Adds two **read-only**, app-specific filesystem entries: the XDG theme
+   subdirectory, which Flatpak also maps into the app's data directory, and the
+   absolute installed theme path used by the CSS import. Flatpak's own parser
+   encodes the entries. Existing permissions/environment settings are retained.
+
+No global Flatpak override is changed. No `GTK_THEME` environment variable is
+exported. No app/runtime is installed or downloaded. Qt and other non-GTK Flatpak
+applications need their own toolkit integration.
+
+If a runtime uses unversioned/repacked GTK libraries or an unusual loader path,
+check its actual GTK version and choose explicitly:
+
+```bash
+./install.sh install --components gtk --flatpak APP_ID=modern --yes
+./install.sh install --components gtk --flatpak APP_ID=legacy --yes
+./install.sh install --components gtk --flatpak APP_ID=gtk3 --yes
+```
+
+`gtk3` installs theme access and GTK3 selection without a GTK4 override. A detected
+older GTK4 library refuses forced modern CSS. Custom loaders, command-line
+sandbox options and app-supplied CSS can still need app-specific testing.
+
+An existing mapping of host `xdg-config` or `xdg-config/gtk-4.0` into the app can
+hide its own per-app stylesheet. Setup detects such mappings and stops for you
+to resolve them first. It also refuses a custom `XDG_CONFIG_HOME` override rather
+than writing a configuration the app would never read. Do not add the old global
+host-config sharing command on top of this per-app setup.
+
+The Flatpak installation/override directory honors `FLATPAK_USER_DIR`. State and
+before-images remain in the normal user installer history. To remove **only** a
+selected app's managed configuration and theme permission entries:
+
+```bash
+./install.sh uninstall --flatpak APP_ID --dry-run
+./install.sh uninstall --flatpak APP_ID --yes
+```
+
+This keeps the native installation and other selected apps. Uninstalling the
+whole user installation also undoes all tracked Flatpak setup. Later unrelated
+Flatpak/Flatseal permission and environment changes survive update and undo;
+a later change to one of our exact theme permission entries stops with a
+conflict instead of overwriting it. Remove tracked setup for an uninstalled app
+before updating the remaining apps; undo does not require the app to be installed.
+
+## System-wide theme and root GTK4
+
+This is a separate scope with its own history. Review the command's plan, then
+run with administrative privileges:
+
+```bash
+sudo ./install.sh install --system --dry-run
+sudo ./install.sh install --system --yes
+```
+
+It copies the included runtime to
+`/usr/local/share/themes/Adwaita-AMOLED`. Installed files/directories are owned by
+root, files are readable by all users and directories are traversable. Existing
+files, file modes and ownership are backed up; undo restores them. Source
+executability is retained. Files are copied rather than linked into a user's
+home directory. New empty directories may remain after undo.
+
+This makes the theme available for selection by all users and conventional root
+GTK applications. It does not select the theme for every account, change GDM or
+configure all users' libadwaita overrides. Many administrative apps already draw
+their GUI as the normal user and only elevate a backend.
+
+For a GUI that actually runs as root, root's GTK4/libadwaita override can also be
+selected explicitly:
+
+```bash
+sudo ./install.sh install --system --root-gtk4 --dry-run
+sudo ./install.sh install --system --root-gtk4 --yes
+```
+
+This manages an import in root's own `~/.config/gtk-4.0/gtk.css`, using the root
+home recorded in the system account database (normally `/root`). It ignores
+`sudo`'s inherited user HOME/XDG paths, preserves root's custom CSS, and references
+the root-owned shared theme. GTK2/3 theme selection for root remains separate.
+This option does not enable root GUI access to Wayland/X11 or bypass authentication.
+
+```bash
+sudo ./install.sh update --system --yes
+sudo ./install.sh status --system
+sudo ./install.sh uninstall --system --dry-run
+sudo ./install.sh uninstall --system --yes
+```
+
+System state/backups live under `/var/lib/adwaita-amoled` with private records.
+The user and system scopes update/undo independently; removing one leaves the
+other's files and history intact. Desktop activation, user app components and
+Flatpak setup run separately without sudo. For packaging/tests,
+`--system-root /absolute/staging-directory` places all system destinations below
+that directory; it is normally left as `/` and still requires root ownership.
+
+## Coverage and other limits
+
+Snap and other sandboxes need their own setup; Flatpak filesystem options do not
+apply to them. App-supplied CSS and explicit custom config-file/loader arguments
+can override theme settings.
 
 Firefox's `widget.gtk.libadwaita-colors.enabled` preference can affect its color
 integration; change it yourself if needed. Browser preferences, Brave, actual

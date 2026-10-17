@@ -23,6 +23,10 @@ import subprocess
 import tempfile
 import tomllib
 import uuid
+import pwd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import flatpak_support as sandbox
 
 THEME = "Adwaita-AMOLED"
 ROOT = Path(__file__).resolve().parents[1]
@@ -119,11 +123,18 @@ def summary(snap):
     return {k: v for k, v in snap.items() if k != "data"}
 
 
-def snapshot(path):
+def snapshot(path, ownership=False):
+    owner = (
+        {"uid": path.lstat().st_uid, "gid": path.lstat().st_gid}
+        if ownership and os.path.lexists(path)
+        else {}
+    )
     if path.is_symlink():
-        return {"kind": "symlink", "target": os.readlink(path)}
+        return {"kind": "symlink", "target": os.readlink(path), **owner}
     if not path.exists():
         return {"kind": "absent"}
+    if path.is_dir():
+        return {"kind": "directory", "mode": stat.S_IMODE(path.stat().st_mode), **owner}
     if not path.is_file():
         raise InstallError(f"Expected a regular file: {path}")
     data = path.read_bytes()
@@ -132,6 +143,7 @@ def snapshot(path):
         "sha256": digest(data),
         "mode": stat.S_IMODE(path.stat().st_mode),
         "data": base64.b64encode(data).decode("ascii"),
+        **owner,
     }
 
 
@@ -174,9 +186,12 @@ def atomic(path, data, mode=0o600):
 def restore(path, snap):
     if snap["kind"] == "absent":
         if os.path.lexists(path):
-            path.unlink()
+            path.rmdir() if path.is_dir() and not path.is_symlink() else path.unlink()
     elif snap["kind"] == "file":
         atomic(path, base64.b64decode(snap["data"]), snap["mode"])
+    elif snap["kind"] == "directory":
+        path.mkdir(parents=True, exist_ok=True)
+        path.chmod(snap["mode"])
     elif snap["kind"] == "symlink":
         path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         temporary = path.parent / (".amoled-link-" + uuid.uuid4().hex)
@@ -188,6 +203,8 @@ def restore(path, snap):
                 temporary.unlink()
     else:
         raise InstallError("Unsupported snapshot type.")
+    if snap.get("uid") is not None:
+        os.chown(path, snap["uid"], snap["gid"], follow_symlinks=False)
 
 
 def read_text(path):
@@ -264,18 +281,67 @@ def setting_set(spec, value):
 
 
 class Plan:
-    def __init__(self, directories, state):
-        self.roots, self.state = directories, state
+    def __init__(self, directories, state, system=False):
+        self.roots, self.state, self.system = directories, state, system
+        self.directory_roots = []
         self.allowed = list(directories.values())
         self.operations, self.messages, self.settings = {}, [], []
         self.bat = None
         self.forget_files, self.forget_settings = set(), set()
 
-    def put(self, path, data, component, fragments=None, mode=None):
+    def ensure_parents(self, path):
+        if not self.system:
+            return
+        parents = []
+        for parent in [path.parent, *path.parent.parents]:
+            guard(parent / ".directory", self.allowed)
+            adopted = any(parent.is_relative_to(base) for base in self.directory_roots)
+            if parent.exists() and not adopted:
+                boundary = self.roots["system_root"]
+                for ancestor in [parent, *parent.parents]:
+                    if not ancestor.is_relative_to(boundary):
+                        break
+                    info = ancestor.lstat()
+                    if (
+                        ancestor.is_symlink()
+                        or info.st_uid != 0
+                        or stat.S_IMODE(info.st_mode) & 0o022
+                    ):
+                        raise InstallError(
+                            f"System destination ancestors must be root-owned and protected from other writers: {ancestor}"
+                        )
+                    if ancestor == boundary:
+                        break
+                break
+            parents.append(parent)
+        for parent in reversed(parents):
+            before = snapshot(parent, True)
+            if before["kind"] not in ["absent", "directory"]:
+                raise InstallError(
+                    f"System directory must be a real directory: {parent}"
+                )
+            after = {"kind": "directory", "mode": 0o755, "uid": 0, "gid": 0}
+            self.operations[str(parent)] = {
+                "path": parent,
+                "after": after,
+                "component": "system-directory",
+                "ownership": True,
+                "expected_before": summary(before),
+            }
+
+    def put(self, path, data, component, fragments=None, mode=None, metadata=None):
         guard(path, self.allowed)
-        before = snapshot(path)
+        self.ensure_parents(path)
+        before = snapshot(path, self.system)
+        if before["kind"] == "directory":
+            raise InstallError(f"Expected a regular file: {path}")
         previous = self.state.get("files", {}).get(str(path))
-        if previous and not fragments and summary(before) != previous["after"]:
+        if (
+            previous
+            and not fragments
+            and metadata is None
+            and summary(before) != previous["after"]
+        ):
             if before.get("sha256") != digest(data):
                 raise InstallError(
                     f"Installed file has local edits; keeping it unchanged: {path}"
@@ -287,8 +353,12 @@ class Plan:
             "data": data,
             "mode": mode,
             "component": component,
-            "after": desired(data, mode),
+            "after": dict(
+                desired(data, mode), **({"uid": 0, "gid": 0} if self.system else {})
+            ),
             "fragments": fragments,
+            "ownership": self.system,
+            "metadata": metadata,
             "expected_before": summary(before),
         }
 
@@ -332,7 +402,10 @@ class Plan:
     def show(self):
         changed = 0
         for item in self.operations.values():
-            if summary(snapshot(item["path"])) != item["after"]:
+            if (
+                summary(snapshot(item["path"], item.get("ownership", False)))
+                != item["after"]
+            ):
                 print(f"  [{item['component']}] {item['path']}")
                 changed += 1
         for spec in self.settings:
@@ -340,7 +413,7 @@ class Plan:
                 f"  [{spec['component']}] {spec['schema']} / {spec['key']} -> {spec['after']}"
             )
         print(
-            f"{changed} file(s) to write; {len(self.settings)} desktop preference(s)."
+            f"{changed} path(s) to write; {len(self.settings)} desktop preference(s)."
         )
         for message in self.messages:
             print("  Note: " + message)
@@ -353,17 +426,38 @@ class Store:
         self.file = self.directory / "state.json"
         self.pending = self.directory / "pending.json"
         guard(self.file, list(directories.values()))
-        self.state = {"version": 1, "files": {}, "settings": {}, "options": {}}
+        if "system_root" in directories:
+            for path in [
+                self.directory,
+                self.file,
+                self.pending,
+                self.directory / "lock",
+                self.directory / "backups",
+            ]:
+                if os.path.lexists(path):
+                    info = path.lstat()
+                    if (
+                        path.is_symlink()
+                        or info.st_uid != 0
+                        or stat.S_IMODE(info.st_mode) & 0o022
+                    ):
+                        raise InstallError(
+                            f"System installer state must be root-owned, without symlinks or group/other write access: {path}"
+                        )
+        self.state = {"version": 2, "files": {}, "settings": {}, "options": {}}
         if self.file.exists():
             try:
                 self.state = json.loads(self.file.read_text())
-                if not isinstance(self.state, dict) or self.state.get("version") != 1:
+                if not isinstance(self.state, dict) or self.state.get(
+                    "version"
+                ) not in [1, 2]:
                     raise ValueError("unsupported state version")
                 if any(
                     not isinstance(self.state.get(key), dict)
                     for key in ["files", "settings", "options"]
                 ):
                     raise ValueError("invalid installer state structure")
+                self.state["version"] = 2
             except (ValueError, KeyError) as error:
                 raise InstallError(f"Cannot read installer state: {error}") from error
 
@@ -387,7 +481,9 @@ class Store:
                         ]
                         + list(self.roots.values()),
                     )
-                    actual = summary(snapshot(path))
+                    actual = summary(
+                        snapshot(path, entry["after"].get("uid") is not None)
+                    )
                     if actual not in [summary(entry["before"]), entry["after"]]:
                         raise InstallError(f"Changed after interruption: {path}")
                     restore(path, entry["before"])
@@ -428,7 +524,7 @@ class Store:
         def write(item):
             path = item["path"]
             guard(path, plan.allowed)
-            before = snapshot(path)
+            before = snapshot(path, item.get("ownership", False))
             if (
                 item.get("expected_before") is not None
                 and summary(before) != item["expected_before"]
@@ -447,15 +543,23 @@ class Store:
                 journal_save()
                 if "restore" in item:
                     restore(path, item["restore"])
+                elif after["kind"] == "directory":
+                    restore(path, after)
                 else:
                     atomic(path, item["data"], item["mode"])
+                    if item.get("ownership"):
+                        os.chown(path, after["uid"], after["gid"])
             if uninstall:
                 self.state["files"].pop(str(path), None)
             else:
                 origin = self.state["files"].get(str(path), {}).get("before", before)
                 old = self.state["files"].get(str(path), {})
                 edited = old.get("external_edits", False) or (
-                    bool(old.get("fragments")) and summary(before) != old.get("after")
+                    (
+                        bool(old.get("fragments"))
+                        or bool((old.get("metadata") or {}).get("flatpak"))
+                    )
+                    and summary(before) != old.get("after")
                 )
                 self.state["files"][str(path)] = {
                     "before": origin,
@@ -463,6 +567,8 @@ class Store:
                     "component": item["component"],
                     "fragments": item.get("fragments"),
                     "external_edits": edited,
+                    "ownership": item.get("ownership", False),
+                    "metadata": item.get("metadata"),
                 }
 
         journal_save()
@@ -556,7 +662,7 @@ def components(value):
 
 def runtime(plan, target):
     legacy = plan.roots["home"] / ".themes" / THEME
-    if legacy.exists() and legacy.resolve() != target.resolve():
+    if not plan.system and legacy.exists() and legacy.resolve() != target.resolve():
         raise InstallError(
             f"An older theme directory can shadow the new installation: {legacy}. Move it outside ~/.themes (keep it as a backup), then rerun setup. No theme files were changed."
         )
@@ -570,9 +676,12 @@ def runtime(plan, target):
         "gtk-4.0/gtk.gresource",
         "extra/libadwaita/gtk.css",
         "tools/install.py",
+        "tools/flatpak_support.py",
         "tools/legacy-gtk4.json",
         "install.sh",
     ]
+    if plan.system:
+        plan.directory_roots.append(target)
     for name in required:
         if not (ROOT / name).is_file():
             raise InstallError("Incomplete theme package: missing " + name)
@@ -593,7 +702,7 @@ def runtime(plan, target):
     )
 
 
-def libadwaita(plan, target, mode):
+def libadwaita(plan, target, mode, path=None, component="libadwaita"):
     version = gtk_version()
     if mode == "auto":
         if version is None:
@@ -606,7 +715,7 @@ def libadwaita(plan, target, mode):
         / "extra/libadwaita"
         / ("gtk-modern.css" if mode == "modern" else "gtk.css")
     )
-    path = plan.roots["config"] / "gtk-4.0/gtk.css"
+    path = path or plan.roots["config"] / "gtk-4.0/gtk.css"
     text = plan.base_text(path)
     fingerprints = json.loads((ROOT / "tools/legacy-gtk4.json").read_text())
     originals = [
@@ -627,13 +736,14 @@ def libadwaita(plan, target, mode):
     offset = charset.end() if charset else 0
     updated = text[:offset] + added + text[offset:]
     fragments = [{"block": added, "restore": original, "update_restore": ""}]
-    plan.put(path, updated.encode(), "libadwaita", fragments)
+    plan.put(path, updated.encode(), component, fragments)
     plan.messages.append(
-        f"Native GTK4 override: {mode}; restart applications after installing/updating. Existing custom CSS remains and can override the palette."
+        f"{component} GTK4 override: {mode}; restart applications after installing/updating. Existing custom CSS remains and can override the palette."
     )
-    plan.messages.append(
-        "Flatpak runtimes are separate; this option changes native GTK4 configuration only."
-    )
+    if component == "libadwaita":
+        plan.messages.append(
+            "This import configures native GTK4. Flatpak apps use their own --flatpak option."
+        )
 
 
 def config_dirs():
@@ -1026,15 +1136,46 @@ def string_array(raw):
         raise InstallError("Cannot safely read GNOME extension preferences.") from error
 
 
-def undo_plan(store):
-    plan = Plan(store.roots, store.state)
-    for name, record in store.state.get("files", {}).items():
+def undo_plan(store, system=False, flatpaks=None):
+    plan = Plan(store.roots, store.state, system=system)
+    entries = list(store.state.get("files", {}).items())
+    entries.sort(
+        key=lambda item: (
+            item[1]["after"]["kind"] == "directory",
+            -len(Path(item[0]).parts),
+        )
+    )
+    for name, record in entries:
         path = Path(name)
-        if record["component"] in ["zsh", "bat", "bat-cache", "kitty"]:
+        if flatpaks is not None:
+            app = ((record.get("metadata") or {}).get("flatpak") or {}).get("app")
+            app_config = record["component"] == "flatpak-css" and any(
+                path.is_relative_to(
+                    store.roots["home"] / ".var/app" / selected / "config"
+                )
+                for selected in flatpaks
+            )
+            if app not in flatpaks and not app_config:
+                continue
+        if record["component"] in [
+            "zsh",
+            "bat",
+            "bat-cache",
+            "kitty",
+            "flatpak-override",
+        ]:
             plan.allowed.append(path.parent)
         guard(path, plan.allowed)
-        current = snapshot(path)
-        if summary(current) == record["after"] and not record.get("external_edits"):
+        current = snapshot(path, record.get("ownership", False))
+        if (
+            record["after"]["kind"] == "directory"
+            and record["before"]["kind"] == "absent"
+        ):
+            plan.forget_files.add(name)
+            continue
+        if record.get("metadata", {}) and record["metadata"].get("flatpak"):
+            wanted = sandbox.undo_override(globals(), path, record, current)
+        elif summary(current) == record["after"] and not record.get("external_edits"):
             wanted = record["before"]
         elif record.get("fragments") and current["kind"] == "file":
             text = remove_fragments(read_text(path), record["fragments"])
@@ -1058,8 +1199,11 @@ def undo_plan(store):
             "after": summary(wanted),
             "component": record["component"],
             "expected_before": summary(current),
+            "ownership": record.get("ownership", False),
         }
-    for identity, old in store.state.get("settings", {}).items():
+    for identity, old in (
+        store.state.get("settings", {}).items() if flatpaks is None else []
+    ):
         current = setting_get(old)
         wanted = old["before"]
         if "list_added" in old:
@@ -1086,9 +1230,25 @@ def ask(message, default=False):
     return reply in ["y", "yes"] or (not reply and default)
 
 
+def system_roots(staging="/"):
+    root = Path(staging).expanduser()
+    if not root.is_absolute() or any(c in str(root) for c in "\n\r\0"):
+        raise InstallError("--system-root must be an absolute staging directory.")
+    root = root.resolve()
+    home = root / pwd.getpwuid(0).pw_dir.lstrip("/")
+    return {
+        "system_root": root,
+        "home": home,
+        "data": root / "usr/local/share",
+        "config": home / ".config",
+        "cache": root / "var/cache",
+        "state": root / "var/lib",
+    }
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="User-level Adwaita-AMOLED setup. No sudo, compilation or automatic downloads."
+        description="Reversible Adwaita-AMOLED setup. System scope requires explicit --system and root; no automatic downloads."
     )
     parser.add_argument(
         "action",
@@ -1117,8 +1277,44 @@ def main(argv=None):
         action="store_true",
         help="Show all planned paths/settings without modifying anything.",
     )
+    parser.add_argument(
+        "--system",
+        action="store_true",
+        help="Install a root-owned theme in /usr/local/share/themes, using separate system backups.",
+    )
+    parser.add_argument(
+        "--system-root",
+        default="/",
+        help="Stage system paths below this directory (requires --system); normally leave as /.",
+    )
+    parser.add_argument(
+        "--root-gtk4",
+        action="store_true",
+        help="With --system, also manage root user GTK4/libadwaita CSS.",
+    )
+    parser.add_argument(
+        "--flatpak",
+        action="append",
+        metavar="APP_ID[=auto|modern|legacy|gtk3]",
+        help="Configure a selected installed Flatpak with per-app CSS and read-only theme access; repeat for more apps.",
+    )
     args = parser.parse_args(argv)
-    directories = roots()
+    if not args.system and (args.system_root != "/" or args.root_gtk4):
+        raise InstallError("--system-root and --root-gtk4 require --system.")
+    if args.system:
+        if os.geteuid() != 0:
+            raise InstallError(
+                "System scope requires root: use sudo ./install.sh ... --system."
+            )
+        if (
+            args.flatpak
+            or args.activate
+            or (args.components and components(args.components) - {"gtk", "libadwaita"})
+        ):
+            raise InstallError(
+                "System scope installs shared theme files and optional root GTK4 CSS; run user app/Flatpak/desktop setup separately without sudo."
+            )
+    directories = system_roots(args.system_root) if args.system else roots()
     store = Store(directories)
     if args.action in ["status", "doctor"]:
         print(f"Installer state: {store.file}")
@@ -1137,11 +1333,18 @@ def main(argv=None):
             return 0
         differences = []
         for name, record in store.state["files"].items():
-            if summary(snapshot(Path(name))) != record["after"]:
+            if (
+                summary(snapshot(Path(name), record.get("ownership", False)))
+                != record["after"]
+            ):
                 differences.append(name)
         print("Components: " + ", ".join(store.state["options"].get("components", [])))
+        if store.state["options"].get("flatpak"):
+            print(
+                "Flatpak apps: " + ", ".join(sorted(store.state["options"]["flatpak"]))
+            )
         print(
-            f'{len(store.state["files"])} tracked files; {len(differences)} missing/edited files.'
+            f'{len(store.state["files"])} tracked paths; {len(differences)} missing/edited files.'
         )
         for name in differences:
             print("  " + name)
@@ -1151,9 +1354,9 @@ def main(argv=None):
                 print("  Changed setting: " + spec["id"])
         print("Backups: " + str(store.directory / "backups"))
         return int(bool(differences))
-    if os.environ.get("SUDO_USER"):
+    if os.environ.get("SUDO_USER") and not args.system:
         raise InstallError("Run this installer as your normal user, without sudo.")
-    interactive = args.action is None and sys.stdin.isatty()
+    interactive = args.action is None and sys.stdin.isatty() and not args.system
     if args.action is None and not interactive and not args.dry_run:
         parser.print_help()
         return 2
@@ -1176,16 +1379,40 @@ def main(argv=None):
         store = Store(directories)
         store.recover()
     if action == "uninstall":
-        plan = undo_plan(store)
-        options = None
+        flatpaks = (
+            set(sandbox.selections(args.flatpak, {}, InstallError))
+            if args.flatpak
+            else None
+        )
+        if flatpaks is not None:
+            unknown = flatpaks - store.state["options"].get("flatpak", {}).keys()
+            if unknown:
+                raise InstallError(
+                    "No tracked Flatpak setup for: " + ", ".join(sorted(unknown))
+                )
+        plan = undo_plan(store, system=args.system, flatpaks=flatpaks)
+        options = (
+            copy.deepcopy(store.state["options"]) if flatpaks is not None else None
+        )
+        if options is not None:
+            options["flatpak"] = {
+                app: mode
+                for app, mode in options.get("flatpak", {}).items()
+                if app not in flatpaks
+            }
     else:
         previous = store.state.get("options", {})
         selected = (
             components(args.components)
             if args.components is not None
-            else set(previous.get("components") or ["gtk", "libadwaita"])
+            else set(
+                previous.get("components")
+                or (["gtk"] if args.system else ["gtk", "libadwaita"])
+            )
         )
         selected |= set(previous.get("components", []))
+        if args.root_gtk4:
+            selected.add("libadwaita")
         mode = args.gtk4_mode or previous.get("gtk4_mode", "auto")
         enabled = args.activate or previous.get("activate", False)
         if interactive:
@@ -1199,18 +1426,40 @@ def main(argv=None):
                 "Select the theme for your current desktop?",
                 bool(os.environ.get("XDG_CURRENT_DESKTOP")),
             )
-        plan = Plan(directories, store.state)
+            print(
+                "Flatpak setup is optional and applies only to the app IDs entered below."
+            )
+            value = input(
+                "Flatpak app IDs, comma-separated; optional =modern/=legacy/=gtk3 [none]: "
+            ).strip()
+            if value:
+                args.flatpak = (args.flatpak or []) + [
+                    item.strip() for item in value.split(",") if item.strip()
+                ]
+            print(
+                "System-wide installation is separate: sudo ./install.sh install --system --dry-run"
+            )
+        plan = Plan(directories, store.state, system=args.system)
+        if args.system and "libadwaita" in selected:
+            plan.directory_roots.append(directories["config"] / "gtk-4.0")
         target = directories["data"] / "themes" / THEME
         runtime(plan, target)
         if "libadwaita" in selected:
             libadwaita(plan, target, mode)
         extras(plan, target, selected)
         activation(plan, selected, enabled, os.environ.get("XDG_CURRENT_DESKTOP", ""))
+        flatpaks = sandbox.selections(
+            args.flatpak, previous.get("flatpak", {}), InstallError
+        )
+        if flatpaks:
+            sandbox.configure(globals(), plan, target, flatpaks)
         options = {
             "components": sorted(selected),
             "gtk4_mode": mode,
             "activate": enabled,
             "source": str(ROOT),
+            "flatpak": flatpaks,
+            "system": args.system,
         }
     print(f"\n{action.capitalize()} plan:")
     plan.show()
@@ -1222,7 +1471,7 @@ def main(argv=None):
         return 2
     store.transact(plan, options=options, uninstall=action == "uninstall")
     print(
-        "Finished. Restart affected applications. Backups are retained; no system packages, icon/cursor theme, GDM or Flatpak permissions were changed."
+        "Finished. Restart affected applications. Backups are retained. Only the displayed user/system files, desktop preferences and explicitly selected Flatpak permissions were managed; no system packages or GDM configuration were changed."
     )
     return 0
 

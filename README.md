@@ -53,8 +53,11 @@ fixes and the expanded file/paint review.
 
 ## Installation
 
-The compiled theme is included. Use Linux, Bash and **Python 3.11 or newer**;
-GTK2 apps also require your distribution's Murrine engine.
+The compiled theme is included. Choose the installer or the manual route below.
+The installer needs Linux, Bash and **Python 3.11 or newer**; manual installation
+needs no Python or compiler. GTK2 apps require your distribution's Murrine engine.
+
+### Installation script
 
 ```bash
 git clone https://github.com/librerob/adwaita-amoled.git
@@ -82,8 +85,8 @@ CSS. Restart apps after updating. XDG directory overrides are honored.
 
 See [the complete installation guide](INSTALLING.md) for **every component,
 destination, setting, prerequisite, backup and undo behavior**. In particular,
-Qt palettes need selection in qt5ct/qt6ct, and Flatpak apps need separate
-runtime-aware setup; the installer does not change sandbox permissions.
+Qt palettes need selection in qt5ct/qt6ct. Flatpak and system-wide installation
+are separate, explicit options described below.
 
 ```bash
 # Run from a newer downloaded checkout/release to update:
@@ -93,6 +96,55 @@ runtime-aware setup; the installer does not change sandbox permissions.
 # Undo the tracked installation while retaining backups:
 ./install.sh uninstall --yes
 ```
+
+### Manual installation
+
+From the extracted theme/repository directory, copy the compiled theme folders:
+
+```bash
+amoled_theme="${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED"
+mkdir -p "$amoled_theme"
+cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
+cp index.theme LICENSE "$amoled_theme/"
+```
+
+Back up an existing installation first, and keep only one active copy named
+Adwaita-AMOLED across `~/.themes` and the XDG theme directory. Select it in your
+desktop's Appearance settings. For **GTK4/libadwaita**, follow the
+[manual override instructions](INSTALLING.md#gtk4-and-libadwaita-overrides), which
+back up your existing config and select the entry point for your GTK version.
+[Manual extras](INSTALLING.md#manual-extras) cover each supplied application.
+Manual copying is updated/undone manually; the script only undoes tracked changes.
+
+### Optional Flatpak and system-wide setup
+
+For an already installed GTK Flatpak app, configure that app's own GTK stylesheet
+and grant read-only access to the theme:
+
+```bash
+./install.sh install --components gtk,libadwaita --flatpak APP_ID --dry-run
+./install.sh install --components gtk,libadwaita --flatpak APP_ID --yes
+# Undo only this app's setup:
+./install.sh uninstall --flatpak APP_ID --yes
+```
+
+Replace `APP_ID` with the app's ID. Its GTK library version selects modern/legacy
+CSS independently of the host. Unusual runtimes can need an explicit mode.
+See [Flatpak configuration and permission undo](INSTALLING.md#selected-flatpak-applications).
+
+To make a root-owned copy available system-wide:
+
+```bash
+sudo ./install.sh install --system --dry-run
+sudo ./install.sh install --system --yes
+# Undo the separate system installation:
+sudo ./install.sh uninstall --system --yes
+```
+
+This installs into `/usr/local/share/themes/Adwaita-AMOLED`, with independent
+backups under `/var/lib/adwaita-amoled`. Root GTK4/libadwaita CSS is an additional
+explicit `--root-gtk4` option. [System-wide and root details](INSTALLING.md#system-wide-theme-and-root-gtk4)
+explain ownership, selection and scope. User/Flatpak setup runs without sudo.
 
 ## GNOME Shell
 
@@ -189,6 +241,31 @@ A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
 White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
 use the pale `#8ab4f8` as a text background use black text (9.96:1).
 Success surfaces use black text on `#26a269` (approximately 6.45:1).
+
+### Why these colors
+
+The palette separates standalone accent text from filled controls so that both
+remain readable on AMOLED surfaces:
+
+| Use | Foreground / background | Defined sRGB contrast |
+|---|---|---|
+| Accent text and links on black | `#8ab4f8` / `#000000` | 9.96:1 |
+| Accent text on a raised surface | `#8ab4f8` / `#141414` | 8.74:1 |
+| Filled blue controls | `#ffffff` / `#2d6be0` | 4.89:1 |
+| Pale selections in applicable extras | `#000000` / `#8ab4f8` | 9.96:1 |
+
+White text on the pale blue would reach only 2.11:1, so pale selections use black
+labels. Dark blue buttons keep white labels. Focus/identifying graphics are
+checked separately from text; disabled states and decorative separators have
+different roles. GNOME Shell retains the system-selected accent hue and uses
+state-specific filled colors.
+
+These choices address measured contrast issues while retaining AMOLED black and
+Adwaita's layout. They are not a claim that one blue is universally best, that
+all users/displays see colors identically, or that contrast ratios alone prove
+complete accessibility. The [readability audit](COLOR_READABILITY.md) and
+[broader color follow-up](COLOR_COMPLETENESS.md) document native state tests,
+intentional exceptions and remaining limits.
 
 ---
 

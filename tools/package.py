@@ -34,6 +34,7 @@ def main():
     for required in [
         "install.sh",
         "tools/install.py",
+        "tools/flatpak_support.py",
         "tools/legacy-gtk4.json",
         "INSTALLING.md",
         "gtk-3.0/gtk.gresource",
