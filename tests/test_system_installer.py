@@ -44,6 +44,16 @@ class SystemInstallerTests(unittest.TestCase):
             self.run_cli("--system", "--dest", str(dest), *args, success=False)
             self.assertFalse(dest.exists())
 
+    def test_new_shared_parent_is_accessible_with_restrictive_root_umask(self):
+        self.assertEqual(os.geteuid(), 0)
+        dest = self.base / "shared/themes"
+        original = os.umask(0o077)
+        try:
+            self.run_cli("--system", "--dest", str(dest))
+        finally:
+            os.umask(original)
+        self.assertEqual(dest.stat().st_mode & 0o777, 0o755)
+
 
 if __name__ == "__main__":
     from report import main

@@ -212,6 +212,7 @@ if $ACTIVATE && ! $REMOVE; then
 fi
 
 if $REMOVE; then printf 'Removing %s\n' "$THEME"; else printf 'Installing %s\n' "$THEME"; fi
+if $SYSTEM && ! $REMOVE; then run mkdir -p -m 755 -- "$DEST"; fi
 if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
     for target in "${TARGETS[@]}"; do
         printf 'Theme: %s\n' "$target"
