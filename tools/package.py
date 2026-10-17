@@ -7,7 +7,28 @@ import io
 from pathlib import Path
 import tarfile
 
-import install
+ROOT = Path(__file__).resolve().parents[1]
+THEME = "Adwaita-AMOLED"
+DIRS = {
+    "cinnamon",
+    "gnome-shell",
+    "gtk-2.0",
+    "gtk-3.0",
+    "gtk-4.0",
+    "metacity-1",
+    "openbox-3",
+    "extra",
+}
+FILES = {
+    "index.theme",
+    "LICENSE",
+    "README.md",
+    "INSTALLING.md",
+    "COMPATIBILITY.md",
+    "COLOR_READABILITY.md",
+    "COLOR_COMPLETENESS.md",
+    "install.sh",
+}
 
 
 def main():
@@ -17,12 +38,12 @@ def main():
     )
     args = parser.parse_args()
     output = args.output.expanduser().resolve()
-    if output.is_relative_to(install.ROOT):
+    if output.is_relative_to(ROOT):
         parser.error("write the archive outside the checkout")
     files = []
-    for path in sorted(install.ROOT.rglob("*")):
-        name = path.relative_to(install.ROOT)
-        if name.parts[0] not in install.DIRS and str(name) not in install.FILES:
+    for path in sorted(ROOT.rglob("*")):
+        name = path.relative_to(ROOT)
+        if name.parts[0] not in DIRS and str(name) not in FILES:
             continue
         if "__pycache__" in name.parts or not path.is_file():
             continue
@@ -33,9 +54,6 @@ def main():
         )
     for required in [
         "install.sh",
-        "tools/install.py",
-        "tools/flatpak_support.py",
-        "tools/legacy-gtk4.json",
         "INSTALLING.md",
         "gtk-3.0/gtk.gresource",
         "gtk-4.0/gtk.gresource",
@@ -57,7 +75,7 @@ def main():
         fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT
     ) as archive:
         for name, data, mode in files:
-            info = tarfile.TarInfo(str(Path(install.THEME) / name))
+            info = tarfile.TarInfo(str(Path(THEME) / name))
             info.size, info.mode, info.mtime = len(data), mode, 0
             info.uid = info.gid = 0
             info.uname = info.gname = ""

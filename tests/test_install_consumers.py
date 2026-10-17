@@ -1,4 +1,4 @@
-"""End-to-end installed configuration through real native consumers; use Xvfb."""
+"""Bash-installed theme files through real native consumers; use Xvfb."""
 
 import json
 import os
@@ -21,7 +21,7 @@ class InstalledConsumerTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return result
 
-    def test_native_gtk4_automatic_loading_and_undo(self):
+    def test_native_gtk4_automatic_loading_and_removal(self):
         with tempfile.TemporaryDirectory(prefix="amoled-native-install-") as temporary:
             home = Path(temporary) / "home # % ü"
             home.mkdir()
@@ -39,12 +39,9 @@ class InstalledConsumerTests(unittest.TestCase):
                 env.pop(name, None)
             self.run_program(
                 [
-                    sys.executable,
-                    str(ROOT / "tools/install.py"),
-                    "install",
-                    "--components",
-                    "gtk,libadwaita",
-                    "--yes",
+                    "bash",
+                    str(ROOT / "install.sh"),
+                    "-l",
                 ],
                 env,
             )
@@ -55,7 +52,7 @@ class InstalledConsumerTests(unittest.TestCase):
                 )
                 self.assertTrue(json.loads(result.stdout)["automatic_user_css"])
             self.run_program(
-                [sys.executable, str(ROOT / "tools/install.py"), "uninstall", "--yes"],
+                ["bash", str(ROOT / "install.sh"), "--remove", "-l"],
                 env,
             )
             self.assertFalse((home / "config/gtk-4.0/gtk.css").exists())
@@ -99,16 +96,22 @@ class InstalledConsumerTests(unittest.TestCase):
                 p.write_text(text)
             result = self.run_program(
                 [
-                    sys.executable,
-                    str(ROOT / "tools/install.py"),
-                    "install",
-                    "--components",
-                    "qt,kitty,alacritty,bat,nvim,rofi,zsh,wallpaper",
-                    "--yes",
+                    "bash",
+                    str(ROOT / "install.sh"),
+                    "--extras",
+                    "all",
                 ],
                 env,
             )
+            for name, text in originals.items():
+                self.assertEqual((home / "config" / name).read_text(), text)
             kitty = home / "config/kitty/kitty.conf"
+            with kitty.open("a") as stream:
+                stream.write(
+                    "include "
+                    + str(home / "config/kitty/themes/adwaita-amoled.conf")
+                    + "\n"
+                )
             code = (
                 "from kitty.config import load_config; c=load_config("
                 + repr(str(kitty))
@@ -126,7 +129,13 @@ class InstalledConsumerTests(unittest.TestCase):
             self.assertIn(
                 "\x1b[",
                 self.run_program(
-                    [bat, "--color=always", "--style=plain", str(ROOT / "build.sh")],
+                    [
+                        bat,
+                        "--theme=adwaita-amoled",
+                        "--color=always",
+                        "--style=plain",
+                        str(ROOT / "build.sh"),
+                    ],
                     env,
                 ).stdout,
             )
@@ -137,6 +146,10 @@ class InstalledConsumerTests(unittest.TestCase):
                     "-i",
                     "NONE",
                     "-c",
+                    "set termguicolors",
+                    "-c",
+                    "colorscheme adwaita-amoled",
+                    "-c",
                     'lua assert(vim.g.colors_name=="adwaita-amoled"); assert(vim.o.number)',
                     "-c",
                     "qa!",
@@ -146,8 +159,8 @@ class InstalledConsumerTests(unittest.TestCase):
             rofi = self.run_program(
                 [
                     "rofi",
-                    "-config",
-                    str(home / "config/rofi/config.rasi"),
+                    "-theme",
+                    str(home / "config/rofi/themes/adwaita-amoled.rasi"),
                     "-dump-theme",
                 ],
                 env,
@@ -159,7 +172,7 @@ class InstalledConsumerTests(unittest.TestCase):
                     "zsh",
                     "-f",
                     "-c",
-                    'source "$HOME/.zshrc"; [[ "$PROMPT" == *8ab4f8* ]]',
+                    'source "$XDG_CONFIG_HOME/zsh/adwaita-amoled.zsh"; [[ "$PROMPT" == *8ab4f8* ]]',
                 ],
                 env,
             )
@@ -167,20 +180,32 @@ class InstalledConsumerTests(unittest.TestCase):
                 (home / "config/alacritty/alacritty.toml").read_text()
             )
             self.assertEqual(config["font"]["size"], 14)
-            self.assertTrue(Path(config["general"]["import"][-1]).is_file())
+            self.assertNotIn("general", config)
+            self.assertIn(
+                "colors",
+                tomllib.loads(
+                    (home / "config/alacritty/themes/adwaita-amoled.toml").read_text()
+                ),
+            )
             for qt in ["qt5ct", "qt6ct"]:
                 self.assertEqual(
                     (home / f"config/{qt}/colors/Adwaita-AMOLED.conf").read_bytes(),
                     (ROOT / f"extra/{qt}/colors/Adwaita-AMOLED.conf").read_bytes(),
                 )
             self.run_program(
-                [sys.executable, str(ROOT / "tools/install.py"), "uninstall", "--yes"],
+                ["bash", str(ROOT / "install.sh"), "--remove", "--extras", "all"],
                 env,
+            )
+            # The installer leaves the explicitly added test include alone.
+            originals["kitty/kitty.conf"] += (
+                "include "
+                + str(home / "config/kitty/themes/adwaita-amoled.conf")
+                + "\n"
             )
             for name, text in originals.items():
                 self.assertEqual((home / "config" / name).read_text(), text)
             print(
-                "Native installed consumers: Kitty, bat, Neovim, Rofi, Zsh; Qt palettes and Alacritty imports verified."
+                "Bash-installed app themes: Kitty, bat, Neovim, Rofi and Zsh loaded explicitly; Qt palettes and Alacritty TOML verified."
             )
 
 

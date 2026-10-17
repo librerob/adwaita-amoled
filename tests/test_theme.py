@@ -211,28 +211,16 @@ class ThemeTests(unittest.TestCase):
                        XDG_CACHE_HOME=str(base / 'cache'))
             env.pop('SUDO_USER', None)
             for _ in range(2):
-                result = run('bash', str(source / 'build.sh'), '--install', env=env)
+                result = run('bash', str(source / 'build.sh'), '--install', '-l', '--gtk4-mode', 'legacy', env=env)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             installed = base / 'data/themes/Adwaita-AMOLED'
             self.assertFalse((installed / 'src').exists())
-            self.assertIn((installed / 'extra/libadwaita').as_uri(),
-                          (base / 'config/gtk-4.0/gtk.css').read_text())
-            self.assertEqual((base / 'config/gtk-4.0/gtk.css').read_text().count('BEGIN Adwaita-AMOLED'), 1)
+            self.assertEqual((base / 'config/gtk-4.0/gtk.css').resolve(),
+                             installed / 'extra/libadwaita/gtk.css')
             for version in ('3.0', '4.0'):
                 self.assertEqual((installed / f'gtk-{version}/gtk.gresource').read_bytes(),
                                  (source / f'gtk-{version}/gtk.gresource').read_bytes())
 
-    def test_missing_python_fails_before_building(self):
-        with tempfile.TemporaryDirectory() as temporary:
-            path = Path(temporary)
-            for name in ('dirname', 'glib-compile-resources'):
-                (path / name).symlink_to(shutil.which(name))
-            before = [(ROOT / f'gtk-{v}/gtk.gresource').stat().st_mtime_ns for v in ('3.0', '4.0')]
-            result = run('/bin/bash', str(ROOT / 'build.sh'), '--install', env=dict(os.environ, PATH=temporary))
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn('python3 not found', result.stdout)
-            after = [(ROOT / f'gtk-{v}/gtk.gresource').stat().st_mtime_ns for v in ('3.0', '4.0')]
-            self.assertEqual(before, after)
 
 
 if __name__ == '__main__':
