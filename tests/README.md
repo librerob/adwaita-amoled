@@ -31,8 +31,8 @@ references, selected-text contrast, Kitty's native parser, clean-shell Zsh
 loading with an insecure completion-path fixture and hook preservation, Neovim
 highlight loading, and repeatable
 installation into temporary XDG directories through `build.sh --install`. It
-also checks that a missing Python interpreter fails before rebuilding anything.
-The installer has separate preservation and native loading checks below. Contrast checks cover the
+checks the Bash installer without Python in its PATH.
+The installer has separate file-copy, removal and native loading checks below. Contrast checks cover the
 success foreground/background pair, Openbox titles and secondary editor text;
 Neovim's actual loaded highlights are checked as well.
 
@@ -183,74 +183,44 @@ See [the repository-wide follow-up](../COLOR_COMPLETENESS.md) for the
 reproduced failures, full inventory scope and limits.
 
 
-## Reversible user installer
+## Direct Bash installer
 
-`test_installer.py` uses isolated HOME/XDG roots to check repeat/update/undo,
-original bytes and permissions, known legacy CSS migration, custom edits across
-updates, CRLF preservation, config leaf symlinks and directory-link refusal,
-legacy theme shadowing, Alacritty import/fallback preservation, custom Kitty/Neovim/Zsh profiles,
-preflight conflicts, edits after plan display, write/cache/desktop-setting failure
-rollback, interrupted transaction recovery, changed desktop preference and
-extension-list preservation, backup-directory protection, dry-run behavior and
-installation from a runtime-only package without source/build tools.
+`test_installer.py` runs the actual Bash script with isolated HOME/XDG roots.
+It checks fresh copies, overwrite updates despite changed files/modes and old
+state, GTK4 links for both entry points, no-Python PATH installation, absent
+state/backups, dry runs, duplicate legacy copies, explicit destinations/profiles,
+selected extras without changes to personal configs, Shell 46/51 selection,
+unsupported options and reproducible runtime-only archives. The archive contains
+no Python installer or source/build dependency.
 
-`test_install_consumers.py` runs the actual installer in temporary directories
-with spaces, `#`, `%` and Unicode in their paths. Real GTK/libadwaita apps then
-load user CSS automatically, without a test-added provider, in light and dark
-modes; native text nodes and a Cairo-rendered black background must match the
-palette. The second case reads installed configs with Kitty, bat, Neovim, Rofi
-and Zsh, checks Alacritty TOML and Qt palette copies, then undoes the installation
-and compares original user settings. CI runs both on Ubuntu 24.04 and the GTK4
-case again on Ubuntu 26.10. This does not establish Flatpak runtime access or
-real desktop/login and hardware behavior.
+`test_install_consumers.py` runs the script, then checks automatically loaded
+GTK4/libadwaita user CSS in both light/dark modes on older/current GTK. Its extras
+case explicitly selects the copied files in real Kitty, bat, Neovim, Rofi and
+Zsh, checks Qt palette bytes/Alacritty TOML, and verifies app settings remain
+untouched by installation and removal. It does not claim the script activates
+extras automatically.
 
+`test_install_settings.py` checks actual GSettings selection for isolated
+GNOME/Budgie, Cinnamon and MATE users, and xfconf selection in a private D-Bus
+session for Xfce. Removal intentionally leaves preferences selected. A local
+Shell schema case uses real GSettings with simulated Shell/extension commands;
+the separate native Shell sessions test actual User Themes loading.
 
-`test_install_settings.py` additionally uses real GSettings schemas with isolated
-keyfile-backed users for GNOME/Budgie, Cinnamon and MATE, plus a private D-Bus
-session for Xfce's xfconf. It tests desktop selection and restoration; it does
-not start those desktop sessions. Its Shell case simulates only session metadata
-and uses actual GSettings/schema loading, checking a user-local extension schema
-and preservation of a subsequently added extension during undo. Install the
-corresponding desktop schemas/tools before running all cases:
-
-```bash
-dbus-run-session -- python3 tests/test_install_settings.py
-```
-
-CI runs GNOME/Budgie/Xfce cases in the regression job and Cinnamon in its existing
-container. The full set, including MATE and the local Shell schema, can be run
-in the compatibility environment. Runtime packaging is checked for byte-identical
-repeat builds, no source-tree dependency and working install/undo.
-
-
-## Flatpak and system-wide installation
-
-`test_flatpak_installer.py` uses declared app/runtime metadata fixtures and the
-**real Flatpak override command/GLib parser**. It covers independent runtime CSS
-selection, incompatible CSS refusal, unknown-library handling, GTK3-only mode,
-invalid IDs, existing host-config mappings, escaped paths, exact and selective
-undo, rollback, and preservation of later Flatpak permission/environment edits.
-It does not claim to render a sandboxed app.
-
-`test_system_installer.py` requires root and stages every destination under a
-fresh temporary directory. It checks root ownership, public readability and
-directory traversal, byte-preserved resources, repeated updates, independent
-state, pre-existing ownership/mode restoration, root-account home selection,
-dry-run behavior and refusal of symlinked directories or mixed user/system scopes.
-Its root GTK4 case also launches actual libadwaita windows in light/dark modes
-and checks automatic loading, text colors and the rendered black background.
-It never installs into the test host's actual `/usr/local` or root home.
-
-`test_manual_installation.py` executes the README/guide copy commands, checks
-repeated runtime/asset updates and both GTK4 entry points, and verifies that
-unique backups retain existing custom CSS.
+`test_system_installer.py` runs as root and stages the shared installation in a
+temporary parent. It checks owner/public read/traversal permissions, resource
+bytes, repeated replacement, removal and refusal of mixed personal/shared scope.
+`test_flatpak_installer.py` checks per-app command arguments and link paths using
+a Flatpak command fixture; actual sandbox loading is covered separately below.
+`test_manual_installation.py` executes the documented copy commands and both
+GTK4 entry points; its optional manual backup examples remain separate from the
+Bash installer, which creates no backups.
 
 The `flatpak-sandbox` CI job builds a tiny GTK4/libadwaita application and a minimal
 runtime from the runner's installed libraries, signs both with a temporary GPG
 key, installs them from a local verified repository, and runs the actual app in
 Flatpak. It checks the unmodified background first, black background/pale accent
-in light and dark modes after installation, runtime-specific stylesheet
-selection, selective undo and retention of later permissions. It downloads no
+in light and dark modes after installation, explicit runtime-specific stylesheet
+selection, per-app removal and retention of unrelated later permissions. It downloads no
 third-party app/runtime and disables no signature checks. Required tools:
 
 ```bash
@@ -260,7 +230,7 @@ sudo dbus-run-session -- xvfb-run -a python3 tests/test_flatpak_runtime.py
 ```
 
 A restricted local environment can run `--prepare-only` to check signed export,
-installation, discovery, configuration/update/undo without a sandbox launch.
+installation, explicit runtime selection, configuration/update/removal without a sandbox launch.
 That mode is explicitly rejected in CI. A successful preparation run does not
 establish rendered Flatpak coverage; the full CI case must also pass. These
 fixtures do not cover every Flatpak runtime, application, device or GUI session.

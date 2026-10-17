@@ -21,8 +21,8 @@ Install GNOME's [User Themes extension](https://extensions.gnome.org/extension/1
 and log in again if it was just installed. The installer can enable/select it:
 
 ```bash
-./install.sh install --components gtk,libadwaita,shell --activate --dry-run
-./install.sh install --components gtk,libadwaita,shell --activate --yes
+./install.sh -l --shell --activate --dry-run
+./install.sh -l --shell --activate
 ```
 
 Alternatively, enable and select it manually:

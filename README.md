@@ -53,11 +53,8 @@ fixes and the expanded file/paint review.
 
 ## Installation
 
-The compiled theme is included. Choose the installer or the manual route below.
-The installer needs Linux, Bash and **Python 3.11 or newer**; manual installation
-needs no Python or compiler. GTK2 apps require your distribution's Murrine engine.
-
-### Installation script
+The compiled theme is included. The installer is plain **Bash**: no Python,
+compiler, downloads or saved installer state.
 
 ```bash
 git clone https://github.com/librerob/adwaita-amoled.git
@@ -65,37 +62,29 @@ cd adwaita-amoled
 ./install.sh
 ```
 
-The terminal wizard lets you choose GTK/libadwaita and optional app themes,
-shows the exact paths and desktop preferences, and backs up changes for undo.
-Run it as your normal user, without `sudo`. If you previously installed into
-`~/.themes/Adwaita-AMOLED`, move that directory outside `~/.themes` first and
-keep it as a backup, so it cannot shadow the updated installation.
-
-For a preview without changes, or a noninteractive installation:
+This copies the theme into `~/.local/share/themes/Adwaita-AMOLED`. Select it in
+Appearance settings, or also apply native GTK4/libadwaita and desktop selection:
 
 ```bash
-./install.sh install --components gtk,libadwaita --activate --dry-run
-./install.sh install --components gtk,libadwaita --activate --yes
+./install.sh -l --activate
 ```
 
-The theme goes to `~/.local/share/themes/Adwaita-AMOLED` by default. The native
-GTK4/libadwaita option manages one import in `~/.config/gtk-4.0/gtk.css`, selects
-the appropriate stylesheet for your installed GTK version, and preserves custom
-CSS. Restart apps after updating. XDG directory overrides are honored.
-
-See [the complete installation guide](INSTALLING.md) for **every component,
-destination, setting, prerequisite, backup and undo behavior**. In particular,
-Qt palettes need selection in qt5ct/qt6ct. Flatpak and system-wide installation
-are separate, explicit options described below.
+Run user setup without sudo. `-l` replaces the GTK4 CSS/assets overrides with
+symlinks to the theme; **no backups are made**. Rerun from a newer download with
+the same options to update. Old installer state and locally changed installed
+files do not block copying. Restart affected apps afterward.
 
 ```bash
-# Run from a newer downloaded checkout/release to update:
-./install.sh update --dry-run
-./install.sh update --yes
-./install.sh status
-# Undo the tracked installation while retaining backups:
-./install.sh uninstall --yes
+./install.sh --extras qt,kitty,nvim  # Copy optional app theme files
+./install.sh --dry-run             # Preview file operations
+sudo ./install.sh --system         # Shared theme, without user configuration
+./install.sh --remove -l           # Remove theme and its native GTK4 links
 ```
+
+Extras create missing folders but leave existing app settings alone; select or
+include their theme files in each app. XDG directory overrides are honored.
+[The installation guide](INSTALLING.md) explains every destination, optional
+per-app Flatpak setup, GNOME Shell selection and manual configuration.
 
 ### Manual installation
 
@@ -108,43 +97,9 @@ cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$
 cp index.theme LICENSE "$amoled_theme/"
 ```
 
-Back up an existing installation first, and keep only one active copy named
-Adwaita-AMOLED across `~/.themes` and the XDG theme directory. Select it in your
-desktop's Appearance settings. For **GTK4/libadwaita**, follow the
-[manual override instructions](INSTALLING.md#gtk4-and-libadwaita-overrides), which
-back up your existing config and select the entry point for your GTK version.
-[Manual extras](INSTALLING.md#manual-extras) cover each supplied application.
-Manual copying is updated/undone manually; the script only undoes tracked changes.
-
-### Optional Flatpak and system-wide setup
-
-For an already installed GTK Flatpak app, configure that app's own GTK stylesheet
-and grant read-only access to the theme:
-
-```bash
-./install.sh install --components gtk,libadwaita --flatpak APP_ID --dry-run
-./install.sh install --components gtk,libadwaita --flatpak APP_ID --yes
-# Undo only this app's setup:
-./install.sh uninstall --flatpak APP_ID --yes
-```
-
-Replace `APP_ID` with the app's ID. Its GTK library version selects modern/legacy
-CSS independently of the host. Unusual runtimes can need an explicit mode.
-See [Flatpak configuration and permission undo](INSTALLING.md#selected-flatpak-applications).
-
-To make a root-owned copy available system-wide:
-
-```bash
-sudo ./install.sh install --system --dry-run
-sudo ./install.sh install --system --yes
-# Undo the separate system installation:
-sudo ./install.sh uninstall --system --yes
-```
-
-This installs into `/usr/local/share/themes/Adwaita-AMOLED`, with independent
-backups under `/var/lib/adwaita-amoled`. Root GTK4/libadwaita CSS is an additional
-explicit `--root-gtk4` option. [System-wide and root details](INSTALLING.md#system-wide-theme-and-root-gtk4)
-explain ownership, selection and scope. User/Flatpak setup runs without sudo.
+Select it in Appearance settings. See [manual GTK4 overrides](INSTALLING.md#gtk4-and-libadwaita-overrides)
+and [manual extras](INSTALLING.md#manual-extras) for application configuration.
+GTK2 apps require the Murrine engine. No Xfwm4 decoration theme is included.
 
 ## GNOME Shell
 
@@ -152,8 +107,8 @@ The included Shell themes target **GNOME Shell 46.x and 51.x**, based on upstrea
 **46.10 and 51.1** respectively. The installer detects the local Shell version
 and installs the matching stylesheet; other major versions are unverified.
 Install the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/)
-and log in again if needed, then choose `shell` in the wizard with desktop
-activation, or select Adwaita-AMOLED in the extension's settings.
+and log in again if needed, then run `./install.sh --shell --activate`, or select Adwaita-AMOLED in the
+extension's settings.
 [Shell details](gnome-shell/README.md) explain its scope and rebuilding. The
 logged-in Shell is themed; other Shell major versions and GDM are outside its
 verified scope.
@@ -166,20 +121,20 @@ off/on, or log out and back in, after changing the installed stylesheet.
 
 ## Extras
 
-Choose these names in the wizard or `--components` list:
+Copy these optional theme files with `--extras LIST`, then select them in each app:
 
 | Component | Effect |
 |---|---|
 | `qt` | Install Qt5ct/Qt6ct palettes and optional scrollbar QSS; select through Qt settings |
-| `kitty` | Include terminal colors, cursor and tab settings in the existing config |
-| `alacritty` | Add a theme import to current TOML configuration |
-| `bat` | Install/select the syntax theme and rebuild bat's cache |
-| `nvim` | Install/select the Neovim and optional Airline themes |
-| `rofi` | Import the launcher theme |
-| `zsh` | Source prompt, completion and optional plugin colors after existing config |
+| `kitty` | Copy terminal colors, cursor and tab settings for inclusion in Kitty |
+| `alacritty` | Copy the TOML theme for import from your existing configuration |
+| `bat` | Copy the syntax theme and rebuild bat's cache when installed |
+| `nvim` | Copy the Neovim and optional Airline themes for selection |
+| `rofi` | Copy the launcher theme for selection/import |
+| `zsh` | Copy prompt/completion/plugin colors for sourcing from your existing .zshrc |
 | `wallpaper` | Copy the wallpaper for selection in background settings |
 
-[INSTALLING.md](INSTALLING.md#every-component-and-destination) explains the exact
+[INSTALLING.md](INSTALLING.md#every-extra-and-destination) explains the exact
 paths and effects. Optional applications/plugins are not installed automatically.
 
 ---
@@ -201,9 +156,9 @@ sudo pacman -S glib2
 ./build.sh --install
 ```
 
-`--install` builds the GTK bundles, then delegates to the reversible installer
-with `--yes`. Additional installer options can follow `--install`. It requires
-Python 3.11+ and uses the same GTK4 import and backups as `install.sh`.
+`--install` builds the GTK bundles, then runs the Bash installer. Additional
+installer options can follow `--install`, for example `./build.sh --install -l`.
+No Python is required to build GTK resources or install the theme.
 After editing `src/`, rebuild and commit the updated `gtk.gresource` bundles
 together with their source changes.
 
@@ -296,7 +251,7 @@ Adwaita-AMOLED/
 ├── extra/
 │   ├── alacritty/          Alacritty terminal theme
 │   ├── kitty/              Kitty terminal theme
-│   ├── libadwaita/         Native GTK4 entry points, managed by install.sh
+│   ├── libadwaita/         Native GTK4 entry points, linked with install.sh -l
 │   ├── logo/               Theme logo
 │   ├── nvim/               Neovim colorscheme and airline theme
 │   ├── qt5ct/              Qt5 color scheme
@@ -305,9 +260,9 @@ Adwaita-AMOLED/
 │   ├── screenshot/         Preview image
 │   ├── wallpaper/          Matching wallpaper
 │   └── zsh/                Zsh autosuggestions & syntax highlighting config
-├── install.sh              Interactive/reversible user installer
-├── tools/                  Installer implementation and migration hashes
-├── INSTALLING.md           Complete installation and undo guide
+├── install.sh              Direct Bash installer
+├── tools/                  Development archive builder
+├── INSTALLING.md           Installation and manual configuration guide
 └── index.theme
 ```
 

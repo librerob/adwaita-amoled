@@ -33,12 +33,7 @@ fi
 
 # Check installer prerequisites before rebuilding anything.
 if [[ "${1:-}" == "--install" ]]; then
-    if ! command -v python3 &>/dev/null; then
-        echo "ERROR: python3 not found. Installation requires Python 3.11 or newer."
-        exit 1
-    fi
-    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 or newer is required.")'
-    if [[ ! -f "$THEME_DIR/tools/install.py" ]]; then
+    if [[ ! -f "$THEME_DIR/install.sh" ]]; then
         echo "ERROR: installer is missing from this checkout."
         exit 1
     fi
@@ -65,5 +60,5 @@ echo "Build complete."
 # ── Optional install ──────────────────────────────────────────────────────────
 if [[ "${1:-}" == "--install" ]]; then
     shift
-    exec bash "$THEME_DIR/install.sh" install --yes "$@"
+    exec bash "$THEME_DIR/install.sh" "$@"
 fi

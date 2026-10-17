@@ -219,7 +219,14 @@ class FlatpakRuntimeTests(unittest.TestCase):
                 ],
                 env,
             )
-            cli = ["python3", str(ROOT / "tools/install.py")]
+            cli = ["bash", str(ROOT / "install.sh")]
+            gtk_version = command(["pkg-config", "--modversion", "gtk4"], env)
+            app_mode = (
+                "modern"
+                if tuple(map(int, gtk_version.split(".")[:2])) >= (4, 16)
+                else "legacy"
+            )
+            app_selection = app_name + "=" + app_mode
 
             def probe(light=False):
                 output = command(
@@ -231,8 +238,7 @@ class FlatpakRuntimeTests(unittest.TestCase):
                 before = probe()
                 self.assertNotEqual(before["background"], [0, 0, 0])
             command(
-                cli
-                + ["install", "--components", "gtk", "--flatpak", app_name, "--yes"],
+                cli + ["--flatpak", app_selection],
                 env,
             )
             app_css = home / ".var/app" / app_name / "config/gtk-4.0/gtk.css"
@@ -243,7 +249,7 @@ class FlatpakRuntimeTests(unittest.TestCase):
                     self.assertEqual(painted["background"], [0, 0, 0], painted)
                     self.assertEqual(painted["accent"], [138, 180, 248], painted)
                     self.assertEqual(
-                        "gtk-modern.css" in app_css.read_text(),
+                        "gtk-modern.css" in str(app_css.resolve()),
                         tuple(painted["gtk"]) >= (4, 16, 0),
                     )
                     print("Actual sandbox:", json.dumps(painted), "light=", light)
@@ -258,19 +264,21 @@ class FlatpakRuntimeTests(unittest.TestCase):
                 ],
                 env,
             )
-            command(cli + ["update", "--yes"], env)
-            command(cli + ["uninstall", "--flatpak", app_name, "--yes"], env)
+            command(cli + ["--flatpak", app_selection], env)
+            command(cli + ["--remove", "--flatpak", app_selection], env)
             self.assertFalse(app_css.exists())
             override = Path(env["FLATPAK_USER_DIR"]) / "overrides" / app_name
             self.assertIn("xdg-music:ro", override.read_text())
             self.assertIn("LATER_USER_SETTING=keep", override.read_text())
-            self.assertNotIn("themes/Adwaita-AMOLED", override.read_text())
+            self.assertIn(
+                "!" + str(home / "data/themes/Adwaita-AMOLED"), override.read_text()
+            )
             self.assertTrue((home / "data/themes/Adwaita-AMOLED/index.theme").exists())
             if not PREPARE_ONLY:
                 self.assertNotEqual(probe()["background"], [0, 0, 0])
-            command(cli + ["uninstall", "--yes"], env)
+            command(cli + ["--remove"], env)
             print(
-                "Signed repository, real Flatpak install, automatic runtime discovery, permissions, update and selective undo passed. Sandbox executed:",
+                "Signed repository, real Flatpak install, explicit runtime selection, permissions, update and per-app removal passed. Sandbox executed:",
                 not PREPARE_ONLY,
             )
 

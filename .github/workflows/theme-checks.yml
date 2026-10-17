@@ -32,15 +32,15 @@ jobs:
           python3 tests/test_manual_installation.py
           python3 tests/test_theme.py
           python3 tests/test_readability.py
-      - name: Check root-owned system installation and undo in temporary staging roots
+      - name: Check root-owned shared installation in temporary staging roots
         run: sudo --preserve-env=GITHUB_ACTIONS xvfb-run -a python3 tests/test_system_installer.py
       - name: Check subtle decoration and visible GTK input edges
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/borders
         run: xvfb-run -a python3 tests/test_borders.py
-      - name: Check GNOME, Budgie and Xfce preference activation and undo
-        run: dbus-run-session -- python3 tests/test_install_settings.py DesktopSettingTests.test_gnome_and_budgie_activation_and_undo DesktopSettingTests.test_xfce_activation_and_undo
-      - name: Check installed native applications and undo
+      - name: Check GNOME, Budgie and Xfce preference activation
+        run: dbus-run-session -- python3 tests/test_install_settings.py DesktopSettingTests.test_gnome_and_budgie_activation DesktopSettingTests.test_xfce_activation
+      - name: Check Bash-installed native applications
         run: xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_install_consumers.py
       - name: Check native parsing and rendering
         env:
@@ -76,8 +76,8 @@ jobs:
             git ca-certificates python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
             gir1.2-adw-1 libmetacity3 xvfb xauth
       - uses: actions/checkout@v7
-      - name: Check automatic modern GTK4 installation and undo
-        run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk4_automatic_loading_and_undo
+      - name: Check automatic modern GTK4 links and removal
+        run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk4_automatic_loading_and_removal
       - name: Check modern native parsing, rendering and text colors
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern
@@ -152,8 +152,8 @@ jobs:
             python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 \
             xvfb xauth libgl1-mesa-dri
       - uses: actions/checkout@v7
-      - name: Check Cinnamon preference activation and undo
-        run: python3 tests/test_install_settings.py DesktopSettingTests.test_cinnamon_activation_and_undo
+      - name: Check Cinnamon preference activation
+        run: python3 tests/test_install_settings.py DesktopSettingTests.test_cinnamon_activation
       - name: Check native Cinnamon colors and task overlays
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'
@@ -180,5 +180,5 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             flatpak gnupg pax-utils gcc pkg-config libgtk-4-dev libadwaita-1-dev \
             fonts-dejavu-core gsettings-desktop-schemas xvfb xauth dbus-x11
-      - name: Check signed local Flatpak runtime, actual CSS loading and selective undo
+      - name: Check signed local Flatpak runtime, actual CSS loading and per-app removal
         run: sudo --preserve-env=GITHUB_ACTIONS dbus-run-session -- xvfb-run -a python3 tests/test_flatpak_runtime.py
