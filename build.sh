@@ -18,15 +18,11 @@
 
 set -euo pipefail
 
-THEME_NAME="Adwaita-AMOLED"
 THEME_DIR="$(cd "$(dirname "$0")" && pwd)"
 SRC3="$THEME_DIR/src/gtk-3.0"
 SRC4="$THEME_DIR/src/gtk-4.0"
 OUT3="$THEME_DIR/gtk-3.0"
 OUT4="$THEME_DIR/gtk-4.0"
-INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/themes/$THEME_NAME"
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0"
-
 # ── Dependency check ──────────────────────────────────────────────────────────
 if ! command -v glib-compile-resources &>/dev/null; then
     echo "ERROR: glib-compile-resources not found."
@@ -35,10 +31,17 @@ if ! command -v glib-compile-resources &>/dev/null; then
     exit 1
 fi
 
-# Check install-only tools before rebuilding or creating installation files.
-if [[ "${1:-}" == "--install" ]] && ! command -v rsync &>/dev/null; then
-    echo "ERROR: rsync not found. Install rsync to use --install."
-    exit 1
+# Check installer prerequisites before rebuilding anything.
+if [[ "${1:-}" == "--install" ]]; then
+    if ! command -v python3 &>/dev/null; then
+        echo "ERROR: python3 not found. Installation requires Python 3.11 or newer."
+        exit 1
+    fi
+    python3 -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else "Python 3.11 or newer is required.")'
+    if [[ ! -f "$THEME_DIR/tools/install.py" ]]; then
+        echo "ERROR: installer is missing from this checkout."
+        exit 1
+    fi
 fi
 
 # ── GTK3 ──────────────────────────────────────────────────────────────────────
@@ -61,20 +64,6 @@ echo "Build complete."
 
 # ── Optional install ──────────────────────────────────────────────────────────
 if [[ "${1:-}" == "--install" ]]; then
-    echo ""
-    echo "Installing to $INSTALL_DIR ..."
-    mkdir -p "$INSTALL_DIR"
-    # Copy everything except the src/ directory (that stays in your repo)
-    rsync -a --exclude='src/' --exclude='.git/' "$THEME_DIR/" "$INSTALL_DIR/"
-
-    # ~/.config/gtk-4.0/ — libadwaita user override path
-    # NOTE: GTK4 only reads gtk.css here; it does NOT scan for or register
-    # a gtk.gresource in this directory.  resource:// URIs would silently
-    # fail. Copy source CSS directly so apps can load it without registering
-    # the theme's resources.
-    mkdir -p "$CONFIG_DIR"
-    cp "$SRC4/gtk-main.css" "$CONFIG_DIR/gtk.css"
-    echo "  → $INSTALL_DIR"
-    echo "  → $CONFIG_DIR/gtk.css (source CSS, not a resource redirect)"
-    echo "Done. Restart your apps to see changes."
+    shift
+    exec bash "$THEME_DIR/install.sh" install --yes "$@"
 fi

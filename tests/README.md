@@ -6,14 +6,16 @@ Install the tools on Debian/Ubuntu:
 ```bash
 sudo apt install libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
   python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
-  libmetacity3 xvfb xauth bat rofi librsvg2-bin python3-pyqt5 python3-pyqt6 \
+  libmetacity3 xvfb xauth bat rofi xfconf dbus-x11 librsvg2-bin python3-pyqt5 python3-pyqt6 \
   libgtk2.0-0t64 gtk2-engines-murrine
 ```
 
 From the repository root:
 
 ```bash
-shellcheck build.sh
+shellcheck install.sh build.sh
+python3 tests/test_installer.py
+xvfb-run -a python3 tests/test_install_consumers.py
 zsh -n extra/zsh/.zshrc
 python3 tests/test_theme.py
 python3 tests/test_readability.py
@@ -25,10 +27,9 @@ xvfb-run -a python3 tests/test_consumers.py
 references, selected-text contrast, Kitty's native parser, clean-shell Zsh
 loading with an insecure completion-path fixture and hook preservation, Neovim
 highlight loading, and repeatable
-installation into temporary XDG directories. It also checks that a missing
-`rsync` fails before rebuilding or installing anything.
-The documented libadwaita copy commands are executed across repeated asset
-updates to catch nested directories and stale files. Contrast checks cover the
+installation into temporary XDG directories through `build.sh --install`. It
+also checks that a missing Python interpreter fails before rebuilding anything.
+The installer has separate preservation and native loading checks below. Contrast checks cover the
 success foreground/background pair, Openbox titles and secondary editor text;
 Neovim's actual loaded highlights are checked as well.
 
@@ -140,3 +141,43 @@ and focus outlines 3:1. Selected-row tests use actual widgets; some GTK3
 compound checks deliberately construct CSS nodes to exercise specific selectors.
 See [the repository-wide follow-up](../COLOR_COMPLETENESS.md) for the
 reproduced failures, full inventory scope and limits.
+
+
+## Reversible user installer
+
+`test_installer.py` uses isolated HOME/XDG roots to check repeat/update/undo,
+original bytes and permissions, known legacy CSS migration, custom edits across
+updates, CRLF preservation, config leaf symlinks and directory-link refusal,
+legacy theme shadowing, Alacritty import preservation, custom Neovim/Zsh profiles,
+preflight conflicts, edits after plan display, write/cache/desktop-setting failure
+rollback, interrupted transaction recovery, changed desktop preference and
+extension-list preservation, backup-directory protection, dry-run behavior and
+installation from a runtime-only package without source/build tools.
+
+`test_install_consumers.py` runs the actual installer in temporary directories
+with spaces, `#`, `%` and Unicode in their paths. Real GTK/libadwaita apps then
+load user CSS automatically, without a test-added provider, in light and dark
+modes; native text nodes and a Cairo-rendered black background must match the
+palette. The second case reads installed configs with Kitty, bat, Neovim, Rofi
+and Zsh, checks Alacritty TOML and Qt palette copies, then undoes the installation
+and compares original user settings. CI runs both on Ubuntu 24.04 and the GTK4
+case again on Ubuntu 26.10. This does not establish Flatpak runtime access or
+real desktop/login and hardware behavior.
+
+
+`test_install_settings.py` additionally uses real GSettings schemas with isolated
+keyfile-backed users for GNOME/Budgie, Cinnamon and MATE, plus a private D-Bus
+session for Xfce's xfconf. It tests desktop selection and restoration; it does
+not start those desktop sessions. Its Shell case simulates only session metadata
+and uses actual GSettings/schema loading, checking a user-local extension schema
+and preservation of a subsequently added extension during undo. Install the
+corresponding desktop schemas/tools before running all cases:
+
+```bash
+dbus-run-session -- python3 tests/test_install_settings.py
+```
+
+CI runs GNOME/Budgie/Xfce cases in the regression job and Cinnamon in its existing
+container. The full set, including MATE and the local Shell schema, can be run
+in the compatibility environment. Runtime packaging is checked for byte-identical
+repeat builds, no source-tree dependency and working install/undo.

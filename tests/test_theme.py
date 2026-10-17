@@ -121,26 +121,6 @@ class ThemeTests(unittest.TestCase):
                     # QPalette::Highlight and HighlightedText, stripping opaque ARGB alpha.
                     self.assertGreaterEqual(contrast('#' + colors[13][3:], '#' + colors[12][3:]), 4.5)
 
-    def test_readme_libadwaita_copy_updates_existing_assets(self):
-        section = (ROOT / 'README.md').read_text().split('## GTK4 & libadwaita', 1)[1]
-        commands = re.search(r'```bash\n(.*?)```', section, re.S)[1]
-        with tempfile.TemporaryDirectory() as temporary:
-            home = Path(temporary)
-            source = home / '.themes/Adwaita-AMOLED/extra/libadwaita'
-            shutil.copytree(ROOT / 'extra/libadwaita', source)
-            asset = next((source / 'assets').glob('*.svg'))
-            destination = home / '.config/gtk-4.0'
-            env = dict(os.environ, HOME=str(home))
-            for update in range(3):
-                with asset.open('a') as stream:
-                    stream.write(f'\n<!-- Update {update} -->\n')
-                result = run('bash', '--noprofile', '--norc', '-c', commands, env=env)
-                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-                self.assertEqual((destination / 'assets' / asset.name).read_bytes(), asset.read_bytes())
-                self.assertFalse((destination / 'assets/assets').exists())
-                for name in ('gtk.css', 'gtk-dark.css', 'libadwaita-tweaks.css'):
-                    self.assertEqual((destination / name).read_bytes(), (source / name).read_bytes())
-
     def test_success_color_pair_contrast(self):
         pairs = []
         for name in ('src/gtk-4.0/gtk-main.css', 'extra/libadwaita/gtk.css', 'extra/libadwaita/gtk-dark.css'):
@@ -226,19 +206,23 @@ class ThemeTests(unittest.TestCase):
             base = Path(temporary)
             source = base / 'checkout'
             shutil.copytree(ROOT, source, ignore=shutil.ignore_patterns('.git', '__pycache__'))
-            env = dict(os.environ, XDG_DATA_HOME=str(base / 'data'), XDG_CONFIG_HOME=str(base / 'config'))
+            env = dict(os.environ, HOME=str(base / 'home'), XDG_DATA_HOME=str(base / 'data'),
+                       XDG_CONFIG_HOME=str(base / 'config'), XDG_STATE_HOME=str(base / 'state'),
+                       XDG_CACHE_HOME=str(base / 'cache'))
+            env.pop('SUDO_USER', None)
             for _ in range(2):
                 result = run('bash', str(source / 'build.sh'), '--install', env=env)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             installed = base / 'data/themes/Adwaita-AMOLED'
             self.assertFalse((installed / 'src').exists())
-            self.assertEqual((base / 'config/gtk-4.0/gtk.css').read_bytes(),
-                             (source / 'src/gtk-4.0/gtk-main.css').read_bytes())
+            self.assertIn((installed / 'extra/libadwaita').as_uri(),
+                          (base / 'config/gtk-4.0/gtk.css').read_text())
+            self.assertEqual((base / 'config/gtk-4.0/gtk.css').read_text().count('BEGIN Adwaita-AMOLED'), 1)
             for version in ('3.0', '4.0'):
                 self.assertEqual((installed / f'gtk-{version}/gtk.gresource').read_bytes(),
                                  (source / f'gtk-{version}/gtk.gresource').read_bytes())
 
-    def test_missing_rsync_fails_before_building(self):
+    def test_missing_python_fails_before_building(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary)
             for name in ('dirname', 'glib-compile-resources'):
@@ -246,7 +230,7 @@ class ThemeTests(unittest.TestCase):
             before = [(ROOT / f'gtk-{v}/gtk.gresource').stat().st_mtime_ns for v in ('3.0', '4.0')]
             result = run('/bin/bash', str(ROOT / 'build.sh'), '--install', env=dict(os.environ, PATH=temporary))
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn('rsync not found', result.stdout)
+            self.assertIn('python3 not found', result.stdout)
             after = [(ROOT / f'gtk-{v}/gtk.gresource').stat().st_mtime_ns for v in ('3.0', '4.0')]
             self.assertEqual(before, after)
 
