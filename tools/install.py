@@ -636,8 +636,61 @@ def libadwaita(plan, target, mode):
     )
 
 
+def config_dirs():
+    return [
+        Path(p)
+        for p in os.environ.get("XDG_CONFIG_DIRS", "/etc/xdg").split(":")
+        if Path(p).is_absolute()
+    ]
+
+
+def alacritty_config(plan):
+    config, home = plan.roots["config"], plan.roots["home"]
+    # Match Alacritty 0.15's installed_config search, including shared XDG paths.
+    bases = [config, *config_dirs()]
+    candidates = [p / "alacritty/alacritty.toml" for p in bases]
+    candidates += [p / "alacritty.toml" for p in bases]
+    candidates += [home / ".config/alacritty/alacritty.toml", home / ".alacritty.toml"]
+    selected = next((p for p in candidates if p.exists() or p.is_symlink()), None)
+    if selected:
+        if not any(selected.is_relative_to(p) for p in [config, home]):
+            raise InstallError(
+                f"Alacritty is loading a shared config: {selected}. Create a user config importing it, or add the theme import manually; setup will not replace shared configuration."
+            )
+        return selected
+    for candidate in candidates:
+        for suffix in [".yml", ".yaml"]:
+            if candidate.with_suffix(suffix).exists():
+                raise InstallError(
+                    "Migrate the existing Alacritty YAML configuration to current TOML before selecting alacritty."
+                )
+    return candidates[0]
+
+
+def kitty_config(plan):
+    custom = os.environ.get("KITTY_CONFIG_DIRECTORY")
+    if custom:
+        directory = location(custom, "KITTY_CONFIG_DIRECTORY")
+        plan.allowed.append(directory)
+        return directory / "kitty.conf"
+    candidates = [
+        plan.roots["config"] / "kitty/kitty.conf",
+        plan.roots["home"] / ".config/kitty/kitty.conf",
+    ]
+    selected = next((p for p in candidates if p.exists() or p.is_symlink()), None)
+    if selected:
+        return selected
+    for directory in config_dirs():
+        shared = directory / "kitty/kitty.conf"
+        if shared.exists() and shared != Path("/etc/xdg/kitty/kitty.conf"):
+            raise InstallError(
+                f"Kitty is loading a shared config: {shared}. Choose KITTY_CONFIG_DIRECTORY explicitly or add the theme include manually."
+            )
+    return candidates[0]
+
+
 def alacritty(plan, target):
-    path = plan.roots["config"] / "alacritty/alacritty.toml"
+    path = alacritty_config(plan)
     text = plan.base_text(path)
     try:
         data = tomllib.loads(text)
@@ -733,7 +786,7 @@ def extras(plan, target, selected):
         )
     if "kitty" in selected:
         plan.append(
-            config / "kitty/kitty.conf",
+            kitty_config(plan),
             "include " + str(target / "extra/kitty/adwaita-amoled.conf"),
             "kitty",
         )
@@ -977,7 +1030,7 @@ def undo_plan(store):
     plan = Plan(store.roots, store.state)
     for name, record in store.state.get("files", {}).items():
         path = Path(name)
-        if record["component"] in ["zsh", "bat", "bat-cache"]:
+        if record["component"] in ["zsh", "bat", "bat-cache", "kitty"]:
             plan.allowed.append(path.parent)
         guard(path, plan.allowed)
         current = snapshot(path)

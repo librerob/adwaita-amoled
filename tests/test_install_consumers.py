@@ -80,9 +80,12 @@ class InstalledConsumerTests(unittest.TestCase):
                 "NVIM_APPNAME",
                 "BAT_CONFIG_PATH",
                 "BAT_CACHE_PATH",
+                "BAT_THEME",
+                "KITTY_CONFIG_DIRECTORY",
                 "GTK_THEME",
             ]:
                 env.pop(name, None)
+            env["XDG_CONFIG_DIRS"] = str(home / "empty-system-config")
             originals = {
                 "bat/config": "--style=numbers\n--theme=Monokai\n",
                 "kitty/kitty.conf": "font_size 14\n",

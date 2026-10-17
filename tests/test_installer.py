@@ -41,9 +41,12 @@ class InstallerTests(unittest.TestCase):
             "NVIM_APPNAME",
             "BAT_CONFIG_PATH",
             "BAT_CACHE_PATH",
+            "BAT_THEME",
+            "KITTY_CONFIG_DIRECTORY",
             "GTK_THEME",
         ]:
             self.env.pop(name, None)
+        self.env["XDG_CONFIG_DIRS"] = str(self.home / "empty-system-config")
         self.config = self.home / "config"
         self.data = self.home / "data"
         self.state = self.home / "state/adwaita-amoled/state.json"
@@ -248,6 +251,26 @@ class InstallerTests(unittest.TestCase):
         self.run_cli("uninstall", "--yes", env=env)
         for path, text in paths.items():
             self.assertEqual(path.read_text(), text)
+
+    def test_alacritty_existing_fallback_is_preserved(self):
+        path = self.home / ".alacritty.toml"
+        self.text(path, "[font]\nsize=15\n")
+        self.install("alacritty")
+        self.assertIn("BEGIN Adwaita-AMOLED", path.read_text())
+        self.assertFalse((self.config / "alacritty/alacritty.toml").exists())
+        self.run_cli("uninstall", "--yes")
+        self.assertEqual(path.read_text(), "[font]\nsize=15\n")
+
+    def test_kitty_explicit_config_directory_is_preserved(self):
+        directory = self.base / "external kitty"
+        path = directory / "kitty.conf"
+        self.text(path, "font_size 15\n")
+        env = dict(self.env, KITTY_CONFIG_DIRECTORY=str(directory))
+        self.install("kitty", env=env)
+        self.assertIn("BEGIN Adwaita-AMOLED", path.read_text())
+        self.assertFalse((self.config / "kitty/kitty.conf").exists())
+        self.run_cli("uninstall", "--yes", env=env)
+        self.assertEqual(path.read_text(), "font_size 15\n")
 
     def test_dual_neovim_init_is_rejected_before_writes(self):
         self.text(self.config / "nvim/init.lua", "-- lua\n")

@@ -148,7 +148,7 @@ reproduced failures, full inventory scope and limits.
 `test_installer.py` uses isolated HOME/XDG roots to check repeat/update/undo,
 original bytes and permissions, known legacy CSS migration, custom edits across
 updates, CRLF preservation, config leaf symlinks and directory-link refusal,
-legacy theme shadowing, Alacritty import preservation, custom Neovim/Zsh profiles,
+legacy theme shadowing, Alacritty import/fallback preservation, custom Kitty/Neovim/Zsh profiles,
 preflight conflicts, edits after plan display, write/cache/desktop-setting failure
 rollback, interrupted transaction recovery, changed desktop preference and
 extension-list preservation, backup-directory protection, dry-run behavior and
