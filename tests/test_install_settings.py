@@ -14,14 +14,19 @@ class DesktopSettingTests(unittest.TestCase):
     setUp = base.InstallerTests.setUp
     run_cli = base.InstallerTests.run_cli
 
+    def native(self, args, env):
+        result = subprocess.run(
+            args, env=env, text=True, capture_output=True, timeout=60
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return result.stdout.strip()
+
     # Reuse isolated HOME/CLI helpers without inheriting the unit-test cases.
     def check_desktop(self, desktop, specifications):
         env = dict(self.env, XDG_CURRENT_DESKTOP=desktop, GSETTINGS_BACKEND="keyfile")
 
         def get(schema, key):
-            return subprocess.check_output(
-                ["gsettings", "get", schema, key], env=env, text=True
-            ).strip()
+            return self.native(["gsettings", "get", schema, key], env)
 
         original = {(schema, key): get(schema, key) for schema, key in specifications}
         self.run_cli("install", "--components", "gtk", "--activate", "--yes", env=env)
@@ -75,20 +80,11 @@ class DesktopSettingTests(unittest.TestCase):
             capture_output=True,
         )
         query = ["xfconf-query", "-c", "xsettings", "-p", "/Net/ThemeName"]
-        subprocess.run(
-            query + ["--create", "-t", "string", "-s", "Original"],
-            env=env,
-            check=True,
-            capture_output=True,
-        )
+        self.native(query + ["--create", "-t", "string", "-s", "Original"], env)
         self.run_cli("install", "--components", "gtk", "--activate", "--yes", env=env)
-        self.assertEqual(
-            subprocess.check_output(query, env=env, text=True).strip(), installer.THEME
-        )
+        self.assertEqual(self.native(query, env), installer.THEME)
         self.run_cli("uninstall", "--yes", env=env)
-        self.assertEqual(
-            subprocess.check_output(query, env=env, text=True).strip(), "Original"
-        )
+        self.assertEqual(self.native(query, env), "Original")
 
     def test_user_local_shell_schema_and_extension_membership_undo(self):
         env = dict(self.env, XDG_CURRENT_DESKTOP="GNOME", GSETTINGS_BACKEND="keyfile")
