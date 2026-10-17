@@ -53,222 +53,139 @@ fixes and the expanded file/paint review.
 
 ## Installation
 
-GTK2 applications require the **Murrine** theme engine. On Debian/Ubuntu:
+The compiled theme is included. Choose the installer or the manual route below.
+The installer needs Linux, Bash and **Python 3.11 or newer**; manual installation
+needs no Python or compiler. GTK2 apps require your distribution's Murrine engine.
+
+### Installation script
 
 ```bash
-sudo apt install gtk2-engines-murrine
+git clone https://github.com/librerob/adwaita-amoled.git
+cd adwaita-amoled
+./install.sh
 ```
 
-The compiled GTK3/GTK4 bundles are included, so cloning does not require a build.
+The terminal wizard lets you choose GTK/libadwaita and optional app themes,
+shows the exact paths and desktop preferences, and backs up changes for undo.
+Run it as your normal user, without `sudo`. If you previously installed into
+`~/.themes/Adwaita-AMOLED`, move that directory outside `~/.themes` first and
+keep it as a backup, so it cannot shadow the updated installation.
+
+For a preview without changes, or a noninteractive installation:
 
 ```bash
-# Clone the repo
-git clone https://github.com/librerob/Adwaita-AMOLED.git ~/.themes/Adwaita-AMOLED
+./install.sh install --components gtk,libadwaita --activate --dry-run
+./install.sh install --components gtk,libadwaita --activate --yes
 ```
 
-Then set the theme through your desktop's appearance settings, or via the terminal:
+The theme goes to `~/.local/share/themes/Adwaita-AMOLED` by default. The native
+GTK4/libadwaita option manages one import in `~/.config/gtk-4.0/gtk.css`, selects
+the appropriate stylesheet for your installed GTK version, and preserves custom
+CSS. Restart apps after updating. XDG directory overrides are honored.
+
+See [the complete installation guide](INSTALLING.md) for **every component,
+destination, setting, prerequisite, backup and undo behavior**. In particular,
+Qt palettes need selection in qt5ct/qt6ct. Flatpak and system-wide installation
+are separate, explicit options described below.
 
 ```bash
-# GTK (XFCE / Cinnamon / GNOME)
-gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-AMOLED"
+# Run from a newer downloaded checkout/release to update:
+./install.sh update --dry-run
+./install.sh update --yes
+./install.sh status
+# Undo the tracked installation while retaining backups:
+./install.sh uninstall --yes
 ```
 
-For a Flatpak application, install a matching GTK theme extension if one is
-available for its runtime. Otherwise, expose the cloned theme and the GTK
-configuration to that application (replace `APP_ID` with its application ID):
+### Manual installation
+
+From the extracted theme/repository directory, copy the compiled theme folders:
 
 ```bash
-flatpak override --user \
-  --filesystem="$HOME/.themes:ro" \
-  --filesystem=xdg-config/gtk-3.0:ro \
-  --filesystem=xdg-config/gtk-4.0:ro \
-  APP_ID
+amoled_theme="${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED"
+mkdir -p "$amoled_theme"
+cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
+cp index.theme LICENSE "$amoled_theme/"
 ```
 
-The GTK4 overrides below must also be copied if you use libadwaita applications.
-Flatpak runtimes and desktop theme detection vary; exposing the directories
-alone does not select a theme or install a missing theme engine in the sandbox.
+Back up an existing installation first, and keep only one active copy named
+Adwaita-AMOLED across `~/.themes` and the XDG theme directory. Select it in your
+desktop's Appearance settings. For **GTK4/libadwaita**, follow the
+[manual override instructions](INSTALLING.md#gtk4-and-libadwaita-overrides), which
+back up your existing config and select the entry point for your GTK version.
+[Manual extras](INSTALLING.md#manual-extras) cover each supplied application.
+Manual copying is updated/undone manually; the script only undoes tracked changes.
 
-> **Firefox users:** Open `about:config` and set `widget.gtk.libadwaita-colors.enabled` to `false`.
+### Optional Flatpak and system-wide setup
 
----
+For an already installed GTK Flatpak app, configure that app's own GTK stylesheet
+and grant read-only access to the theme:
+
+```bash
+./install.sh install --components gtk,libadwaita --flatpak APP_ID --dry-run
+./install.sh install --components gtk,libadwaita --flatpak APP_ID --yes
+# Undo only this app's setup:
+./install.sh uninstall --flatpak APP_ID --yes
+```
+
+Replace `APP_ID` with the app's ID. Its GTK library version selects modern/legacy
+CSS independently of the host. Unusual runtimes can need an explicit mode.
+See [Flatpak configuration and permission undo](INSTALLING.md#selected-flatpak-applications).
+
+To make a root-owned copy available system-wide:
+
+```bash
+sudo ./install.sh install --system --dry-run
+sudo ./install.sh install --system --yes
+# Undo the separate system installation:
+sudo ./install.sh uninstall --system --yes
+```
+
+This installs into `/usr/local/share/themes/Adwaita-AMOLED`, with independent
+backups under `/var/lib/adwaita-amoled`. Root GTK4/libadwaita CSS is an additional
+explicit `--root-gtk4` option. [System-wide and root details](INSTALLING.md#system-wide-theme-and-root-gtk4)
+explain ownership, selection and scope. User/Flatpak setup runs without sudo.
 
 ## GNOME Shell
 
-The included Shell theme targets **GNOME Shell 51.x** and is based on the
-upstream **51.1** default. Install the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/),
-enable it, and select **Adwaita-AMOLED** in its settings. Selecting the GTK
-theme does not activate the Shell theme. See [Shell installation and source
-details](gnome-shell/README.md) for commands and update instructions.
-
-This themes the logged-in Shell session, including the panel, overview, menus,
-notifications, OSDs and dialogs. Other Shell major versions and the GDM login
-screen are outside its verified scope. GNOME's selected accent hue is retained;
-opaque accent fills are darkened by state to keep white labels readable.
-
----
-
-## GTK4 & libadwaita
-
-libadwaita apps ignore GTK themes by default. To apply the overrides:
-
-```bash
-mkdir -p ~/.config/gtk-4.0
-cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk.css ~/.config/gtk-4.0/gtk.css
-cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk-dark.css ~/.config/gtk-4.0/gtk-dark.css
-mkdir -p ~/.config/gtk-4.0/assets
-cp -r ~/.themes/Adwaita-AMOLED/extra/libadwaita/assets/. ~/.config/gtk-4.0/assets/
-cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/libadwaita-tweaks.css ~/.config/gtk-4.0/libadwaita-tweaks.css
-
-```
-
-For **GTK 4.16 or newer** (libadwaita 1.6 or newer), then select the modern
-entry point:
-
-```bash
-cp ~/.themes/Adwaita-AMOLED/extra/libadwaita/gtk-modern.css ~/.config/gtk-4.0/gtk.css
-```
-
-Keep `gtk-dark.css` and `libadwaita-tweaks.css` from the first block beside it.
-The modern entry point imports them and maps libadwaita's standalone text
-variables to the AMOLED colors. This prevents dark accent, status and destructive
-text when an application requests light mode over the black surfaces. Repeat
-both blocks after updating the theme or running `build.sh --install`.
-On GTK 4.14 and older, use only the first block; those releases cannot parse
-CSS variables.
-
-> **Chromium / Brave:** recent builds prefer GTK4 on GNOME under Wayland (elsewhere it is opt-in via `--gtk-version=4`), so the GTK4 part of the theme matters there too. Choose the GTK option in the browser's Appearance settings. The `libadwaita-tweaks.css` you copy above is a copy, not a link: after updating the theme, copy it again and fully restart the browser.
-
----
-
-## Qt (qt5ct / qt6ct)
-
-```bash
-# Qt5
-mkdir -p ~/.config/qt5ct/colors
-cp ~/.themes/Adwaita-AMOLED/extra/qt5ct/colors/Adwaita-AMOLED.conf ~/.config/qt5ct/colors/
-
-# Qt6
-mkdir -p ~/.config/qt6ct/colors
-cp ~/.themes/Adwaita-AMOLED/extra/qt6ct/colors/Adwaita-AMOLED.conf ~/.config/qt6ct/colors/
-```
-
-Then open `qt5ct` / `qt6ct`, go to **Appearance → Color scheme**, and select **Adwaita-AMOLED**.
-
-Install the corresponding `qt5ct` / `qt6ct` platform-theme plugin. If your
-desktop does not already select it, launch an application with the matching
-Qt version's integration:
-
-```bash
-QT_QPA_PLATFORMTHEME=qt5ct your-qt5-application
-QT_QPA_PLATFORMTHEME=qt6ct your-qt6-application
-```
-
-Choose the appropriate value for each application; one global value does not
-select both plugins. KDE and other desktops may already provide their own Qt
-integration, which you should configure through their appearance settings.
-
----
+The included Shell theme targets **GNOME Shell 51.x**, based on upstream **51.1**.
+Install the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/)
+and log in again if needed, then choose `shell` in the wizard with desktop
+activation, or select Adwaita-AMOLED in the extension's settings.
+[Shell details](gnome-shell/README.md) explain its scope and rebuilding. The
+logged-in Shell is themed; other Shell major versions and GDM are outside its
+verified scope.
 
 ## Extras
 
-Additional themes are included in the `extra/` folder:
+Choose these names in the wizard or `--components` list:
 
-| Extra | Description | How to apply |
-|---|---|---|
-| **Alacritty** | Terminal color scheme aligned with the palette | Import the provided TOML; see [Alacritty setup](#alacritty) |
-| **Kitty** | Terminal color scheme | Include the `.conf` file in your `kitty.conf` |
-| **bat** | Syntax-highlighting theme | See [bat setup](#bat) below |
-| **Neovim** | Colorscheme and airline theme | See [Neovim setup](#neovim) below |
-| **Qt5ct / Qt6ct** | Full color schemes | See [Qt setup](#qt-qt5ct--qt6ct) above |
-| **Rofi** | Matching launcher theme | Pass the theme with `-theme` or set it in your config |
-| **Zsh** | Prompt, completion and optional plugin colors | See [Zsh setup](#zsh) |
+| Component | Effect |
+|---|---|
+| `qt` | Install Qt5ct/Qt6ct palettes and optional scrollbar QSS; select through Qt settings |
+| `kitty` | Include terminal colors, cursor and tab settings in the existing config |
+| `alacritty` | Add a theme import to current TOML configuration |
+| `bat` | Install/select the syntax theme and rebuild bat's cache |
+| `nvim` | Install/select the Neovim and optional Airline themes |
+| `rofi` | Import the launcher theme |
+| `zsh` | Source prompt, completion and optional plugin colors after existing config |
+| `wallpaper` | Copy the wallpaper for selection in background settings |
 
-All extras follow the same AMOLED palette and accent system as the GTK theme.
-
-### Alacritty
-
-For recent Alacritty versions (tested with 0.15.1), add this import to your
-`alacritty.toml`, merging it into an existing `[general]` table if necessary:
-
-```toml
-[general]
-import = ["~/.themes/Adwaita-AMOLED/extra/alacritty/alacritty.toml"]
-```
-
-### bat
-
-```bash
-mkdir -p ~/.config/bat/themes
-cp ~/.themes/Adwaita-AMOLED/extra/bat/themes/adwaita-amoled.tmTheme ~/.config/bat/themes/
-bat cache --build
-```
-
-Add `--theme="adwaita-amoled"` to your existing `~/.config/bat/config`.
-On distributions that name the command `batcat`, use `batcat cache --build`.
-
-### Zsh
-
-The prompt and completion configuration works without highlighting plugins.
-For autosuggestions and syntax colors, install `zsh-autosuggestions` and
-`fast-syntax-highlighting` using your distribution or plugin manager, and load
-them **before** sourcing this snippet:
-
-```zsh
-# Load your optional plugins above this line.
-source ~/.themes/Adwaita-AMOLED/extra/zsh/.zshrc
-```
-
-The snippet declares its highlighting array when the plugin is absent and
-registers a title hook without replacing other `precmd` hooks. Completion is
-initialized only in interactive shells, and existing completion setups are
-preserved.
-
-### Neovim
-
-Use Neovim 0.9 or newer and a true-color terminal.
-
-```bash
-mkdir -p ~/.config/nvim/colors
-cp ~/.themes/Adwaita-AMOLED/extra/nvim/colors/adwaita-amoled.vim ~/.config/nvim/colors/
-```
-
-Then add to your config:
-
-```vim
-" init.vim
-set termguicolors
-colorscheme adwaita-amoled
-```
-
-```lua
--- init.lua
-vim.opt.termguicolors = true
-vim.cmd('colorscheme adwaita-amoled')
-```
-
-If you use vim-airline, copy the airline theme as well:
-
-```bash
-mkdir -p ~/.config/nvim/autoload/airline/themes
-cp ~/.themes/Adwaita-AMOLED/extra/nvim/autoload/airline/themes/adwaita_amoled.vim ~/.config/nvim/autoload/airline/themes/
-```
-
-```vim
-let g:airline_theme = 'adwaita_amoled'
-```
+[INSTALLING.md](INSTALLING.md#every-component-and-destination) explains the exact
+paths and effects. Optional applications/plugins are not installed automatically.
 
 ---
 
 ## Building and testing
 
-Install GLib's resource compiler and `rsync` before using `--install`:
+Developers editing GTK source need GLib's resource compiler. Ordinary
+installation does not require a build:
 
 ```bash
 # Debian / Ubuntu
-sudo apt install libglib2.0-dev rsync
+sudo apt install libglib2.0-dev
 # Arch / Artix
-sudo pacman -S glib2 rsync
+sudo pacman -S glib2
 ```
 
 ```bash
@@ -276,14 +193,23 @@ sudo pacman -S glib2 rsync
 ./build.sh --install
 ```
 
-`--install` copies the theme to `~/.local/share/themes/Adwaita-AMOLED` and
-replaces `~/.config/gtk-4.0/gtk.css` with the source overrides. Back up an
-existing custom override first. After editing `src/`, rebuild and commit the
-updated `gtk.gresource` bundles together with their source changes.
-The installer honors `XDG_DATA_HOME` and `XDG_CONFIG_HOME` when they are set.
+`--install` builds the GTK bundles, then delegates to the reversible installer
+with `--yes`. Additional installer options can follow `--install`. It requires
+Python 3.11+ and uses the same GTK4 import and backups as `install.sh`.
+After editing `src/`, rebuild and commit the updated `gtk.gresource` bundles
+together with their source changes.
 
 The GNOME Shell CSS is also included precompiled. After changing its Sass
 palette, rebuild it separately with `./gnome-shell/build.sh` (requires `sassc`).
+
+Build an installer-enabled runtime archive (without source GTK files or tests):
+
+```bash
+python3 tools/package.py /tmp/Adwaita-AMOLED-installer-preview.tar.gz
+```
+
+The archive includes per-file checksums; a separate SHA-256 file is written beside
+it. This creates local files and does not publish a GitHub release.
 
 The repository's regression checks and their prerequisites are documented in
 [tests/README.md](tests/README.md). GitHub Actions runs them on pull requests.
@@ -316,6 +242,31 @@ White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
 use the pale `#8ab4f8` as a text background use black text (9.96:1).
 Success surfaces use black text on `#26a269` (approximately 6.45:1).
 
+### Why these colors
+
+The palette separates standalone accent text from filled controls so that both
+remain readable on AMOLED surfaces:
+
+| Use | Foreground / background | Defined sRGB contrast |
+|---|---|---|
+| Accent text and links on black | `#8ab4f8` / `#000000` | 9.96:1 |
+| Accent text on a raised surface | `#8ab4f8` / `#141414` | 8.74:1 |
+| Filled blue controls | `#ffffff` / `#2d6be0` | 4.89:1 |
+| Pale selections in applicable extras | `#000000` / `#8ab4f8` | 9.96:1 |
+
+White text on the pale blue would reach only 2.11:1, so pale selections use black
+labels. Dark blue buttons keep white labels. Focus/identifying graphics are
+checked separately from text; disabled states and decorative separators have
+different roles. GNOME Shell retains the system-selected accent hue and uses
+state-specific filled colors.
+
+These choices address measured contrast issues while retaining AMOLED black and
+Adwaita's layout. They are not a claim that one blue is universally best, that
+all users/displays see colors identically, or that contrast ratios alone prove
+complete accessibility. The [readability audit](COLOR_READABILITY.md) and
+[broader color follow-up](COLOR_COMPLETENESS.md) document native state tests,
+intentional exceptions and remaining limits.
+
 ---
 
 ## Structure
@@ -332,7 +283,7 @@ Adwaita-AMOLED/
 ├── extra/
 │   ├── alacritty/          Alacritty terminal theme
 │   ├── kitty/              Kitty terminal theme
-│   ├── libadwaita/         gtk.css + gtk-dark.css → copy to ~/.config/gtk-4.0/
+│   ├── libadwaita/         Native GTK4 entry points, managed by install.sh
 │   ├── logo/               Theme logo
 │   ├── nvim/               Neovim colorscheme and airline theme
 │   ├── qt5ct/              Qt5 color scheme
@@ -341,6 +292,9 @@ Adwaita-AMOLED/
 │   ├── screenshot/         Preview image
 │   ├── wallpaper/          Matching wallpaper
 │   └── zsh/                Zsh autosuggestions & syntax highlighting config
+├── install.sh              Interactive/reversible user installer
+├── tools/                  Installer implementation and migration hashes
+├── INSTALLING.md           Complete installation and undo guide
 └── index.theme
 ```
 
