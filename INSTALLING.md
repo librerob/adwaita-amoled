@@ -1,6 +1,7 @@
 # Installing Adwaita-AMOLED
 
-The installer is a **Bash script** using ordinary Linux file tools. It copies
+The installer is a **Bash script** using GNU coreutils and `flock` (util-linux),
+normally already installed on Linux desktops. It copies
 already compiled files: no Python, compiler, downloads, package installation,
 backup database or saved installer state is required. GTK2 applications also
 need your distribution's Murrine engine (`gtk2-engines-murrine` on Debian/Ubuntu).
@@ -31,6 +32,14 @@ them, and `--help` lists the options. There is no wizard or confirmation prompt.
 This replaces existing overrides, including custom ones, without backups.
 Other files in that directory, including `settings.ini`, are left alone.
 Restart GTK applications after installation.
+
+Before replacing a theme directory, the script checks essential files and
+prepares a complete temporary copy beside the destination. Release archives
+also have their per-file checksums verified before copying and again on the
+staged copy. Ordinary preparation/rename failures and tested catchable signals
+keep or restore the previous theme. Temporary staging is removed afterward;
+there is no saved backup history. Directory locks reject concurrent installers
+without creating lock files.
 
 The script normally installs to the XDG location above. If a regular legacy
 `~/.themes/Adwaita-AMOLED` directory also exists, the default user install
@@ -64,6 +73,13 @@ preferences. GTK4 removal only unlinks symlinks pointing into this installed
 theme, leaving replacement custom CSS alone. Choose another desktop theme in
 Appearance settings. Include `--extras LIST` to remove those copied app theme
 files too; existing app settings are not reset.
+
+Theme directories are replaced separately, and extras, GTK4 links and desktop
+preferences are applied afterward; this is not an all-or-nothing transaction
+across every destination. SIGKILL, power loss and failing hardware cannot be
+guaranteed recoverable. If a restore itself fails, the error reports where the
+previous theme was retained rather than deleting it. Resolve the underlying
+failure before retrying.
 
 ## GTK4 entry point
 
@@ -313,10 +329,33 @@ can stage another shared location. Run user GTK4/Flatpak/extras configuration
 separately without sudo. Root GTK4 user CSS must be configured separately if
 needed; a system theme alone does not force libadwaita to use it.
 
+To also expose that root-owned copy through `/usr/share/themes`, use:
+
+```bash
+sudo ./install.sh --system --link /usr/share/themes
+# Repeat both options to update or remove the shared link and copy:
+sudo ./install.sh --system --link /usr/share/themes --remove
+```
+
+The link is `/usr/share/themes/Adwaita-AMOLED` and points to
+`/usr/local/share/themes/Adwaita-AMOLED`. It does not point into your home folder.
+Both the system copy and link must have root-owned parents protected from other
+writers. Existing unrelated directories or links are preserved and reported as
+conflicts. No user configuration is changed. A shared theme makes its files
+available to root/other users; each application still needs theme selection,
+and libadwaita does not automatically load another user's GTK4 override.
+
+Alternatively, for a real copy directly in `/usr/share/themes`:
+
+```bash
+sudo ./install.sh --system --dest /usr/share/themes
+```
+
 ## Release archive checks
 
 Installer-enabled runtime archives include `ARCHIVE_CONTENTS.sha256`. From the
 freshly extracted directory, `sha256sum -c ARCHIVE_CONTENTS.sha256` verifies the
-payload. The script does not require this file to install and does not download
-anything. Developers build archives with `python3 tools/package.py OUTPUT.tar.gz`;
+payload. The script verifies this manifest automatically when present. A Git
+checkout without a manifest still has its essential runtime files checked.
+It does not download anything. Developers build archives with `python3 tools/package.py OUTPUT.tar.gz`;
 Python is only a development/testing dependency.

@@ -170,7 +170,21 @@ class InstallerTests(unittest.TestCase):
     def test_no_python_interpreter_required(self):
         bin_dir = self.base / "minimal-bin"
         bin_dir.mkdir()
-        for name in ["bash", "dirname", "realpath", "rm", "mkdir", "cp", "ln", "chmod"]:
+        for name in [
+            "bash",
+            "dirname",
+            "realpath",
+            "rm",
+            "mkdir",
+            "cp",
+            "ln",
+            "chmod",
+            "mv",
+            "mktemp",
+            "flock",
+            "stat",
+            "sha256sum",
+        ]:
             (bin_dir / name).symlink_to(shutil.which(name))
         env = dict(self.env, PATH=str(bin_dir))
         result = subprocess.run(

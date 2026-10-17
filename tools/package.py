@@ -55,12 +55,23 @@ def main():
     for required in [
         "install.sh",
         "INSTALLING.md",
+        "index.theme",
+        "gtk-2.0/gtkrc",
+        "gtk-3.0/gtk.css",
         "gtk-3.0/gtk.gresource",
+        "gtk-4.0/gtk.css",
         "gtk-4.0/gtk.gresource",
+        "cinnamon/cinnamon.css",
+        "metacity-1/metacity-theme-3.xml",
+        "openbox-3/themerc",
         "gnome-shell/gnome-shell-46.css",
         "gnome-shell/gnome-shell-51.css",
+        "extra/libadwaita/gtk.css",
+        "extra/libadwaita/gtk-modern.css",
+        "extra/libadwaita/gtk-dark.css",
+        "extra/libadwaita/libadwaita-tweaks.css",
     ]:
-        if not any(str(name) == required for name, _, _ in files):
+        if not any(str(name) == required and data for name, data, _ in files):
             parser.error("incomplete runtime: " + required)
     manifest = "".join(
         hashlib.sha256(data).hexdigest() + "  " + str(name) + "\n"
