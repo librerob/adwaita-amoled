@@ -15,6 +15,7 @@ From the repository root:
 ```bash
 shellcheck install.sh build.sh
 python3 tests/test_installer.py
+python3 tests/test_installer_failures.py
 python3 tests/test_flatpak_installer.py
 python3 tests/test_manual_installation.py
 sudo xvfb-run -a python3 tests/test_system_installer.py
@@ -209,11 +210,22 @@ the separate native Shell sessions test actual User Themes loading.
 `test_system_installer.py` runs as root and stages the shared installation in a
 temporary parent. It checks owner/public read/traversal permissions, resource
 bytes, repeated replacement, removal and refusal of mixed personal/shared scope.
+It also checks the root-owned shared-link option, conflicting destinations,
+untrusted parent directories and actual GTK3 loading through the shared link.
 `test_flatpak_installer.py` checks per-app command arguments and link paths using
 a Flatpak command fixture; actual sandbox loading is covered separately below.
 `test_manual_installation.py` executes the documented copy commands and both
 GTK4 entry points; its optional manual backup examples remain separate from the
 Bash installer, which creates no backups.
+
+`test_installer_failures.py` injects early/late copy failures, missing resources,
+corrupted archive content, chmod/mv failures, a real kernel file-size write
+limit, catchable signal interruptions and a concurrent installer. It verifies
+previous-theme preservation/restoration, staging cleanup and retained original
+files with a reported recovery path when restoration itself fails. It also
+checks that unused Neovim settings and failed package-query stdout do not block
+unrelated installation. These tests do not establish power-loss/SIGKILL or
+hardware-level crash consistency, nor atomicity across every config/desktop.
 
 The `flatpak-sandbox` CI job builds a tiny GTK4/libadwaita application and a minimal
 runtime from the runner's installed libraries, signs both with a temporary GPG

@@ -78,11 +78,14 @@ files do not block copying. Restart affected apps afterward.
 ./install.sh --extras qt,kitty,nvim  # Copy optional app theme files
 ./install.sh --dry-run             # Preview file operations
 sudo ./install.sh --system         # Shared theme, without user configuration
+sudo ./install.sh --system --link /usr/share/themes  # Link to the root-owned copy
 ./install.sh --remove -l           # Remove theme and its native GTK4 links
 ```
 
 Extras create missing folders but leave existing app settings alone; select or
 include their theme files in each app. XDG directory overrides are honored.
+The script prepares each replacement before switching it into place and checks
+release-archive checksums. Temporary staging is cleaned up without saved history.
 [The installation guide](INSTALLING.md) explains every destination, optional
 per-app Flatpak setup, GNOME Shell selection and manual configuration.
 

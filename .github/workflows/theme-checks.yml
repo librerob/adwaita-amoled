@@ -28,6 +28,7 @@ jobs:
       - name: Check resources, installation and extras
         run: |
           python3 tests/test_installer.py
+          python3 tests/test_installer_failures.py
           python3 tests/test_flatpak_installer.py
           python3 tests/test_manual_installation.py
           python3 tests/test_theme.py

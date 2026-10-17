@@ -10,9 +10,16 @@ DESKTOP=${XDG_CURRENT_DESKTOP:-}
 DEST=$DATA/themes
 LIBADWAITA=false ACTIVATE=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
 CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
+LINK_PARENT=''
 EXTRAS=() FLATPAKS=() TARGETS=()
 RUNTIME=(cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra)
 DOCUMENTS=(index.theme LICENSE README.md INSTALLING.md COMPATIBILITY.md COLOR_READABILITY.md COLOR_COMPLETENESS.md install.sh)
+REQUIRED=(index.theme gtk-2.0/gtkrc gtk-3.0/gtk.css gtk-3.0/gtk.gresource
+          gtk-4.0/gtk.css gtk-4.0/gtk.gresource cinnamon/cinnamon.css
+          metacity-1/metacity-theme-3.xml openbox-3/themerc
+          gnome-shell/gnome-shell-46.css gnome-shell/gnome-shell-51.css
+          extra/libadwaita/gtk.css extra/libadwaita/gtk-modern.css
+          extra/libadwaita/gtk-dark.css extra/libadwaita/libadwaita-tweaks.css)
 
 die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 usage() {
@@ -32,6 +39,7 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
       --shell-version VER   auto, 46 or 51
   -d, --dest DIR            Theme parent directory
       --system              Install for all users in /usr/local/share/themes
+      --link DIR            Link DIR/Adwaita-AMOLED to the system copy (root only)
   -r, --remove              Remove the theme and explicitly selected links/extras
       --dry-run             Print operations without changing files/settings
   -h, --help                Show this help
@@ -41,6 +49,7 @@ Examples:
   ./install.sh -l --activate
   ./install.sh --extras qt,kitty
   sudo ./install.sh --system
+  sudo ./install.sh --system --link /usr/share/themes
 
 GTK4 linking replaces gtk.css, gtk-dark.css, libadwaita-tweaks.css and assets
 under the selected gtk-4.0 config directory. No backup is created.
@@ -70,6 +79,7 @@ while (($#)); do
         -a|--activate) ACTIVATE=true ;;
         --shell) SHELL_THEME=true ;;
         --system) SYSTEM=true ;;
+        --link) value "$@"; LINK_PARENT=$2; shift ;;
         -r|-u|--remove|--uninstall|uninstall) REMOVE=true ;;
         --dry-run) DRY_RUN=true ;;
         -d|--dest) value "$@"; DEST=$2; CUSTOM_DEST=true; shift ;;
@@ -84,6 +94,9 @@ while (($#)); do
     shift
 done
 
+for tool in realpath rm mkdir cp ln chmod mv mktemp flock stat; do
+    command -v "$tool" >/dev/null || die "Required Linux tool is missing: $tool"
+done
 [[ $GTK_MODE =~ ^(auto|legacy|modern)$ ]] || die 'GTK4 mode must be auto, legacy or modern.'
 [[ $SHELL_VERSION =~ ^(auto|46|51)$ ]] || die 'Shell version must be auto, 46 or 51.'
 if $SYSTEM; then
@@ -95,11 +108,35 @@ if $SYSTEM; then
 elif [[ -n ${SUDO_USER:-} ]]; then
     die 'Run user setup without sudo, or use --system for shared theme files.'
 fi
-for path in "$HOME" "$DATA" "$CONFIG" "$DEST"; do
+[[ -z $LINK_PARENT ]] || $SYSTEM || die '--link requires --system; it must point to a root-owned copy, not a user theme.'
+for path in "$HOME" "$DATA" "$CONFIG" "$DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
     [[ $path == /* && $path != / && $path != *$'\n'* ]] || die "Expected an absolute directory other than /: $path"
 done
 DEST=$(realpath -m -- "$DEST")
 TARGET=$DEST/$THEME
+LINK_PATH=''
+if [[ -n $LINK_PARENT ]]; then
+    LINK_PARENT=$(realpath -m -- "$LINK_PARENT")
+    LINK_PATH=$LINK_PARENT/$THEME
+    [[ $LINK_PATH != "$TARGET" ]] || die 'The shared link and system theme must use different parents.'
+    if [[ -L $LINK_PATH ]]; then
+        [[ $(stat -c %u -- "$LINK_PATH") == 0 ]] || die "Existing shared link is not root-owned: $LINK_PATH"
+        [[ $(realpath -m -- "$LINK_PATH") == "$TARGET" ]] || die "Shared link already points elsewhere: $LINK_PATH"
+    elif [[ -e $LINK_PATH ]]; then
+        die "Shared link destination already exists: $LINK_PATH. Use --system --dest $LINK_PARENT to update a real theme directory there instead."
+    fi
+    # Root applications must not follow a link through a user-writable parent.
+    for parent in "$DEST" "$LINK_PARENT"; do
+        while [[ $parent != / ]]; do
+            if [[ -e $parent ]]; then
+                [[ $(stat -c %u -- "$parent") == 0 ]] || die "Shared theme/link parent is not root-owned: $parent"
+                permissions=$(stat -c %a -- "$parent")
+                (( (8#$permissions & 0022) == 0 || (8#$permissions & 01000) != 0 )) || die "Shared theme/link parent is writable by other users: $parent"
+            fi
+            parent=${parent%/*}; parent=${parent:-/}
+        done
+    done
+fi
 TARGETS+=("$TARGET")
 # Refresh a legacy user copy too, so it cannot shadow the updated XDG copy.
 if ! $SYSTEM && ! $CUSTOM_DEST && [[ -d $HOME/.themes/$THEME && ! -L $HOME/.themes/$THEME ]]; then
@@ -124,15 +161,71 @@ remove_link() {
     [[ $resolved == "$TARGET/"* ]] && run rm -f -- "$dest"
     return 0
 }
+
+# A directory descriptor lock leaves no lock file or saved installation state.
+lock_parent() {
+    local parent=$1 fd
+    [[ -d $parent ]] || return 0
+    exec {fd}<"$parent"
+    flock -n "$fd" || die "Another installer is using this destination: $parent"
+}
+
+validate_runtime() {
+    local directory=$1 name
+    for name in "${REQUIRED[@]}"; do
+        [[ -f $directory/$name && -r $directory/$name && -s $directory/$name ]] || die "Incomplete theme download: $name is missing, empty or unreadable."
+    done
+    if [[ -f $ROOT/ARCHIVE_CONTENTS.sha256 ]]; then
+        (cd -- "$directory" && sha256sum --check --status "$ROOT/ARCHIVE_CONTENTS.sha256") || die 'Archive checksum verification failed. Extract a complete, unmodified release archive.'
+    fi
+}
+
+# Build the new copy first. Keep the previous directory only during the rename
+# so an ordinary copy/promotion error or catchable signal can restore it.
+replace_theme() (
+    target=$1
+    stage=''
+    committed=false
+    # ShellCheck 0.9/0.11 miss this nested function's indirect EXIT-trap call.
+    # shellcheck disable=SC2317,SC2329
+    cleanup() {
+        result=$?
+        trap - EXIT INT TERM
+        if [[ -n $stage && -e $stage/previous ]] && ! $committed; then
+            if ! { rm -rf -- "$target" && mv -T -- "$stage/previous" "$target"; }; then
+                printf 'ERROR: Could not restore the previous theme; it is retained at %s/previous\n' "$stage" >&2
+                exit 1
+            fi
+        fi
+        [[ -z $stage ]] || rm -rf -- "$stage" || result=1
+        exit "$result"
+    }
+    trap cleanup EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+    if $DRY_RUN; then
+        printf '  Prepare a complete temporary copy beside %s, then replace it.\n' "$target"
+        return 0
+    fi
+    stage=$(mktemp -d "${target%/*}/.Adwaita-AMOLED-install.XXXXXX")
+    mkdir -- "$stage/new"
+    for name in "${RUNTIME[@]}" "${DOCUMENTS[@]}"; do cp -a --no-preserve=ownership -- "$ROOT/$name" "$stage/new/"; done
+    validate_runtime "$stage/new"
+    cp --remove-destination -T -- "$ROOT/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
+    chmod -R a+rX,go-w -- "$stage/new"
+    if [[ -e $target ]]; then mv -T -- "$target" "$stage/previous"; fi
+    mv -T -- "$stage/new" "$target"
+    committed=true
+)
 gtk_mode() {
     local version='' major minor
-    if command -v pkg-config >/dev/null; then version=$(pkg-config --modversion gtk4 2>/dev/null || :); fi
+    if command -v pkg-config >/dev/null; then version=$(pkg-config --modversion gtk4 2>/dev/null) || version=''; fi
     if [[ -z $version ]] && command -v dpkg-query >/dev/null; then
-        version=$(dpkg-query -W -f='${Version}' libgtk-4-1 2>/dev/null || :)
+        version=$(dpkg-query -W -f='${Version}' libgtk-4-1 2>/dev/null) || version=''
     fi
-    if [[ -z $version ]] && command -v rpm >/dev/null; then version=$(rpm -q --qf '%{VERSION}' gtk4 2>/dev/null || :); fi
-    if [[ -z $version ]] && command -v pacman >/dev/null; then version=$(pacman -Q gtk4 2>/dev/null || :); fi
-    if [[ -z $version ]] && command -v apk >/dev/null; then version=$(apk info -v gtk4 2>/dev/null || :); fi
+    if [[ -z $version ]] && command -v rpm >/dev/null; then version=$(rpm -q --qf '%{VERSION}' gtk4 2>/dev/null) || version=''; fi
+    if [[ -z $version ]] && command -v pacman >/dev/null; then version=$(pacman -Q gtk4 2>/dev/null) || version=''; fi
+    if [[ -z $version ]] && command -v apk >/dev/null; then version=$(apk info -v gtk4 2>/dev/null) || version=''; fi
     version=${version#*:}
     [[ $version =~ ([0-9]+)\.([0-9]+) ]] || die 'Cannot detect GTK4. Check its installed package version and use --gtk4-mode legacy or modern.'
     major=${BASH_REMATCH[1]}; minor=${BASH_REMATCH[2]}
@@ -171,9 +264,11 @@ done
 for extra in "${EXTRAS[@]}"; do
     if [[ $extra == all ]]; then EXTRAS=(qt kitty alacritty bat nvim rofi zsh wallpaper); break; fi
 done
-if [[ ${NVIM_APPNAME:-nvim} == */* || ${NVIM_APPNAME:-nvim} == . || ${NVIM_APPNAME:-nvim} == .. ]]; then
-    die 'NVIM_APPNAME must be a single profile directory name.'
-fi
+for extra in "${EXTRAS[@]}"; do
+    if [[ $extra == nvim && ( ${NVIM_APPNAME:-nvim} == */* || ${NVIM_APPNAME:-nvim} == . || ${NVIM_APPNAME:-nvim} == .. ) ]]; then
+        die 'NVIM_APPNAME must be a single profile directory name.'
+    fi
+done
 for app in "${FLATPAKS[@]}"; do
     [[ $app =~ ^[A-Za-z0-9_-]+(\.[A-Za-z0-9_-]+){2,}=(legacy|modern|gtk3)$ ]] ||
         die 'Use --flatpak APP_ID=legacy, APP_ID=modern or APP_ID=gtk3, matching the app runtime GTK version.'
@@ -184,6 +279,8 @@ if ! $REMOVE; then
     for name in "${RUNTIME[@]}" "${DOCUMENTS[@]}"; do
         [[ -e $ROOT/$name ]] || die "Incomplete theme download: $name is missing."
     done
+    if [[ -f $ROOT/ARCHIVE_CONTENTS.sha256 ]]; then command -v sha256sum >/dev/null || die 'sha256sum is required to verify this archive.'; fi
+    validate_runtime "$ROOT"
 fi
 
 # Check requested desktop tools before copying anything.
@@ -211,19 +308,32 @@ if $ACTIVATE && ! $REMOVE; then
     fi
 fi
 
+# Lock all selected theme parents before making any replacements. Removal does
+# not create absent parents, and dry runs never acquire locks or create files.
+if ! $DRY_RUN; then
+    for target in "${TARGETS[@]}" ${LINK_PATH:+"$LINK_PATH"}; do
+        parent=${target%/*}
+        if ! $REMOVE; then
+            # Only the selected shared parent is made public; ancestor modes stay unchanged.
+            # shellcheck disable=SC2174
+            if $SYSTEM; then mkdir -p -m 755 -- "$parent"; else mkdir -p -- "$parent"; fi
+        fi
+        lock_parent "$parent"
+    done
+fi
 if $REMOVE; then printf 'Removing %s\n' "$THEME"; else printf 'Installing %s\n' "$THEME"; fi
-if $SYSTEM && ! $REMOVE; then run mkdir -p -m 755 -- "$DEST"; fi
 if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
     for target in "${TARGETS[@]}"; do
         printf 'Theme: %s\n' "$target"
-        run rm -rf -- "$target"
-        if ! $REMOVE; then
-            run mkdir -p -- "$target"
-            for name in "${RUNTIME[@]}" "${DOCUMENTS[@]}"; do run cp -a --no-preserve=ownership -- "$ROOT/$name" "$target/"; done
-            copy_file "$ROOT/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$target/gnome-shell/gnome-shell.css"
-            run chmod -R a+rX,go-w -- "$target"
-        fi
+        if $REMOVE; then run rm -rf -- "$target"; else replace_theme "$target"; fi
     done
+fi
+if [[ -n $LINK_PATH ]]; then
+    if $REMOVE; then
+        [[ ! -L $LINK_PATH ]] || run rm -f -- "$LINK_PATH"
+    elif [[ ! -L $LINK_PATH ]]; then
+        run ln -s -- "$TARGET" "$LINK_PATH"
+    fi
 fi
 if $LIBADWAITA; then gtk_links "$CONFIG/gtk-4.0" "$GTK_MODE"; fi
 
