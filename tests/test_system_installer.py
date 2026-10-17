@@ -107,10 +107,31 @@ class SystemInstallerTests(unittest.TestCase):
         path = self.root_home / ".config/gtk-4.0/gtk.css"
         path.parent.mkdir(parents=True)
         path.write_text("/* root custom */\n")
-        self.cli("install", "--root-gtk4", "--gtk4-mode", "legacy", "--yes")
+        self.cli("install", "--root-gtk4", "--yes")
         self.assertIn("BEGIN Adwaita-AMOLED", path.read_text())
         self.assertIn("root custom", path.read_text())
         self.assertIn(self.target.as_uri(), path.read_text())
+        native_env = dict(
+            self.env,
+            HOME=str(self.root_home),
+            XDG_CONFIG_HOME=str(self.root_home / ".config"),
+            XDG_DATA_HOME=str(self.stage / "usr/local/share"),
+            XDG_CACHE_HOME=str(self.stage / "var/cache"),
+            GSETTINGS_BACKEND="memory",
+            GSK_RENDERER="cairo",
+        )
+        for key in ["GTK_THEME", "GTK_PATH", "GTK_DATA_PREFIX"]:
+            native_env.pop(key, None)
+        for scheme in [[], ["--light"]]:
+            result = subprocess.run(
+                ["python3", str(ROOT / "tests/installed_gtk4.py"), *scheme],
+                env=native_env,
+                text=True,
+                capture_output=True,
+                timeout=60,
+            )
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertTrue(json.loads(result.stdout)["automatic_user_css"])
         self.cli("uninstall", "--yes")
         self.assertEqual(path.read_text(), "/* root custom */\n")
 

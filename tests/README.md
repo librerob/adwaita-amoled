@@ -17,7 +17,7 @@ shellcheck install.sh build.sh
 python3 tests/test_installer.py
 python3 tests/test_flatpak_installer.py
 python3 tests/test_manual_installation.py
-sudo python3 tests/test_system_installer.py
+sudo xvfb-run -a python3 tests/test_system_installer.py
 xvfb-run -a python3 tests/test_install_consumers.py
 zsh -n extra/zsh/.zshrc
 python3 tests/test_theme.py
@@ -200,6 +200,8 @@ fresh temporary directory. It checks root ownership, public readability and
 directory traversal, byte-preserved resources, repeated updates, independent
 state, pre-existing ownership/mode restoration, root-account home selection,
 dry-run behavior and refusal of symlinked directories or mixed user/system scopes.
+Its root GTK4 case also launches actual libadwaita windows in light/dark modes
+and checks automatic loading, text colors and the rendered black background.
 It never installs into the test host's actual `/usr/local` or root home.
 
 `test_manual_installation.py` executes the README/guide copy commands, checks
