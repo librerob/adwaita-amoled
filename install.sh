@@ -12,8 +12,7 @@ LIBADWAITA=false ACTIVATE=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_
 CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
 LINK_PARENT=''
 EXTRAS=() FLATPAKS=() TARGETS=()
-RUNTIME=(cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra)
-DOCUMENTS=(index.theme LICENSE README.md INSTALLING.md COMPATIBILITY.md COLOR_READABILITY.md COLOR_COMPLETENESS.md install.sh)
+PAYLOAD=()
 REQUIRED=(index.theme gtk-2.0/gtkrc gtk-3.0/gtk.css gtk-3.0/gtk.gresource
           gtk-4.0/gtk.css gtk-4.0/gtk.gresource cinnamon/cinnamon.css
           metacity-1/metacity-theme-3.xml openbox-3/themerc
@@ -180,6 +179,28 @@ validate_runtime() {
     fi
 }
 
+read_runtime_files() {
+    local name parent
+    local -A seen=()
+    [[ -f $ROOT/runtime-files.txt ]] || die 'Incomplete theme download: runtime-files.txt is missing.'
+    while IFS= read -r name || [[ -n $name ]]; do
+        [[ $name =~ ^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$ && /$name/ != *'/../'* && /$name/ != *'/./'* ]] || die "Invalid runtime path: $name"
+        [[ ! ${seen[$name]+present} ]] || die "Duplicate runtime path: $name"
+        seen[$name]=1
+        [[ -f $ROOT/$name && -r $ROOT/$name ]] || die "Incomplete theme download: $name is missing or unreadable."
+        parent=$name
+        while [[ -n $parent ]]; do
+            [[ ! -L $ROOT/$parent ]] || die "Linked runtime path is not supported: $parent"
+            if [[ $parent == */* ]]; then parent=${parent%/*}; else parent=''; fi
+        done
+        PAYLOAD+=("$name")
+    done < "$ROOT/runtime-files.txt"
+    [[ ${seen[runtime-files.txt]+present} ]] || die 'Runtime list must include runtime-files.txt.'
+    for name in "${REQUIRED[@]}" install.sh INSTALLING.md; do
+        [[ ${seen[$name]+present} ]] || die "Incomplete runtime file list: $name"
+    done
+}
+
 # Build the new copy first. Keep the previous directory only during the rename
 # so an ordinary copy/promotion error or catchable signal can restore it.
 replace_theme() (
@@ -209,7 +230,7 @@ replace_theme() (
     fi
     stage=$(mktemp -d "${target%/*}/.Adwaita-AMOLED-install.XXXXXX")
     mkdir -- "$stage/new"
-    for name in "${RUNTIME[@]}" "${DOCUMENTS[@]}"; do cp -a --no-preserve=ownership -- "$ROOT/$name" "$stage/new/"; done
+    (cd -- "$ROOT" && cp -a --no-preserve=ownership --parents -- "${PAYLOAD[@]}" "$stage/new/")
     validate_runtime "$stage/new"
     cp --remove-destination -T -- "$ROOT/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
     chmod -R a+rX,go-w -- "$stage/new"
@@ -276,9 +297,7 @@ for app in "${FLATPAKS[@]}"; do
     flatpak info "${app%=*}" >/dev/null
 done
 if ! $REMOVE; then
-    for name in "${RUNTIME[@]}" "${DOCUMENTS[@]}"; do
-        [[ -e $ROOT/$name ]] || die "Incomplete theme download: $name is missing."
-    done
+    read_runtime_files
     if [[ -f $ROOT/ARCHIVE_CONTENTS.sha256 ]]; then command -v sha256sum >/dev/null || die 'sha256sum is required to verify this archive.'; fi
     validate_runtime "$ROOT"
 fi

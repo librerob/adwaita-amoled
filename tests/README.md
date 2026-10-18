@@ -14,6 +14,9 @@ From the repository root:
 
 ```bash
 shellcheck install.sh build.sh
+python3 tools/generate_palette.py --check
+python3 tests/test_palette.py
+python3 tests/test_runtime_package.py
 python3 tests/test_installer.py
 python3 tests/test_installer_failures.py
 python3 tests/test_flatpak_installer.py
@@ -26,6 +29,13 @@ python3 tests/test_readability.py
 xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_runtime.py
 xvfb-run -a python3 tests/test_consumers.py
 ```
+
+`test_palette.py` checks committed generation, an actual shared-color change
+across toolkits and formats, repeatability, stale-output detection and invalid
+input rejection before writing. `test_runtime_package.py` compares archive and
+checkout-installed payloads, checks runtime asset references and retained
+licenses/wallpaper, and rejects invalid lists or missing/linked assets before
+replacing an existing installation. Packaging tests also check reproducibility.
 
 `test_theme.py` checks the shipping and freshly compiled bundle contents, asset
 references, selected-text contrast, Kitty's native parser, clean-shell Zsh

@@ -33,6 +33,12 @@ This replaces existing overrides, including custom ones, without backups.
 Other files in that directory, including `settings.ini`, are left alone.
 Restart GTK applications after installation.
 
+The installer copies only files listed in `runtime-files.txt`, whether run from
+a checkout or a release archive. This includes compiled GTK/Shell styles,
+runtime assets, app extras, the wallpaper, guides and license/provenance notices.
+The logo, screenshots, palette templates and GTK/Shell development sources are
+not installed. For rebuilding, use a Git checkout or GitHub's source archive.
+
 Before replacing a theme directory, the script checks essential files and
 prepares a complete temporary copy beside the destination. Release archives
 also have their per-file checksums verified before copying and again on the

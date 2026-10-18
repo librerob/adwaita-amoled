@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./extra/logo/logo.png" alt="Adwaita AMOLED Logo" width="320">
+  <img src="https://raw.githubusercontent.com/librerob/adwaita-amoled/main/extra/logo/logo.png" alt="Adwaita AMOLED Logo" width="320">
 </p>
 <h1 align="center">Adwaita AMOLED</h1>
 <p align="center">
@@ -21,11 +21,11 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 ---
 
 <p align="center">
-  <img src="./extra/screenshot/screenshot.png" alt="Adwaita AMOLED Screenshot">
+  <img src="https://raw.githubusercontent.com/librerob/adwaita-amoled/main/extra/screenshot/screenshot.png" alt="Adwaita AMOLED Screenshot">
 </p>
 
 <p align="center">
-  <img src="./extra/screenshot/screenshot2.png" alt="Adwaita AMOLED Screenshot">
+  <img src="https://raw.githubusercontent.com/librerob/adwaita-amoled/main/extra/screenshot/screenshot2.png" alt="Adwaita AMOLED Screenshot">
 </p>
 
 
@@ -86,6 +86,9 @@ Extras create missing folders but leave existing app settings alone; select or
 include their theme files in each app. XDG directory overrides are honored.
 The script prepares each replacement before switching it into place and checks
 release-archive checksums. Temporary staging is cleaned up without saved history.
+Checkout installs and release archives use the same `runtime-files.txt` list:
+runtime styles, assets, app extras, wallpaper and license notices are included;
+the logo, screenshots and development build sources stay in the repository.
 [The installation guide](INSTALLING.md) explains every destination, optional
 per-app Flatpak setup, GNOME Shell selection and manual configuration.
 
@@ -144,6 +147,22 @@ paths and effects. Optional applications/plugins are not installed automatically
 
 ## Building and testing
 
+Use a Git checkout or GitHub's source archive for development. The smaller
+installer-enabled release archive contains prebuilt runtime files, not the
+palette templates or GTK/Shell build sources.
+
+The shared palette is in [palette/colors.json](palette/colors.json). For generated
+files, edit their matching [palette template](palette/README.md), then regenerate:
+
+```bash
+python3 tools/generate_palette.py
+python3 tools/generate_palette.py --check
+```
+
+Python 3.11+ is a development dependency only. Generated files are committed, so
+users still install with Bash alone. Toolkit-specific colors and upstream Shell
+sources retain their own definitions; this is not a global recoloring command.
+
 Developers editing GTK source need GLib's resource compiler. Ordinary
 installation does not require a build:
 
@@ -163,10 +182,16 @@ sudo pacman -S glib2
 installer options can follow `--install`, for example `./build.sh --install -l`.
 No Python is required to build GTK resources or install the theme.
 After editing `src/`, rebuild and commit the updated `gtk.gresource` bundles
-together with their source changes.
+together with their source changes. If a corresponding palette template exists,
+edit that template rather than the generated `src/` file.
 
 The GNOME Shell CSS is also included precompiled. After changing its Sass
-palette, rebuild it separately with `./gnome-shell/build.sh` (requires `sassc`).
+palette, regenerate the shared files and rebuild **both** variants (requires `sassc`):
+
+```bash
+./gnome-shell/build.sh
+./gnome-shell/build.sh --shell-version 46
+```
 
 Build an installer-enabled runtime archive (without source GTK files or tests):
 
@@ -174,8 +199,9 @@ Build an installer-enabled runtime archive (without source GTK files or tests):
 python3 tools/package.py /tmp/Adwaita-AMOLED-installer-preview.tar.gz
 ```
 
-The archive includes per-file checksums; a separate SHA-256 file is written beside
-it. This creates local files and does not publish a GitHub release.
+The archive includes `runtime-files.txt` and per-file checksums; a separate SHA-256
+file is written beside it. Update the runtime list when adding a required asset
+or app extra. This creates local files and does not publish a GitHub release.
 
 The repository's regression checks and their prerequisites are documented in
 [tests/README.md](tests/README.md). GitHub Actions runs them on pull requests.

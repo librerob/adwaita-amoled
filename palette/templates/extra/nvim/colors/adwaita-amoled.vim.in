@@ -1,0 +1,492 @@
+" =============================================================================
+" adwaita-amoled.vim — Neovim colorscheme  (readability palette)
+" GNOME Adwaita Dark adapted for AMOLED displays (pure {{background}} background)
+" =============================================================================
+" Requires: set termguicolors in init.vim / init.lua
+"           Neovim 0.9+ recommended (Treesitter + LSP semantic tokens)
+" =============================================================================
+
+set background=dark
+hi clear
+if exists('syntax_on') | syntax reset | endif
+let g:colors_name = 'adwaita-amoled'
+
+" =============================================================================
+" Readability palette (2026-10-16)
+" Text accent {{accent_text}}; filled controls retain {{accent_fill}} with white text.
+" Ordinary text is checked across normal, float, selection and cursor-line
+" backgrounds; separators and indentation guides use the non-text target.
+" See COLOR_READABILITY.md for measured pairs, exceptions and limits.
+" =============================================================================
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Editor chrome
+" ─────────────────────────────────────────────────────────────────────────────
+hi Normal          guifg={{foreground}}   guibg={{background}}      gui=NONE
+hi NormalNC        guifg={{secondary_text}}   guibg={{background}}      gui=NONE
+
+" Float bg is blue-tinted dark (#111820) — distinguishable from both bg
+" ({{background}}) and surface_card ({{surface}}) without breaking the AMOLED aesthetic.
+hi NormalFloat     guifg={{foreground}}   guibg=#111820   gui=NONE
+hi FloatBorder     guifg={{accent_text}}   guibg=#111820   gui=NONE
+hi FloatTitle      guifg={{accent_text}}   guibg=#111820   gui=bold
+
+hi LineNr          guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi CursorLineNr    guifg={{syntax_yellow}}   guibg=NONE      gui=bold
+" Cursor-line and selected text use distinct dark blue-tinted surfaces.
+hi CursorLine      guifg=NONE      guibg=#0c1a2e   gui=NONE
+hi ColorColumn     guifg=NONE      guibg={{surface}}   gui=NONE
+
+" SignColumn / FoldColumn — brought to {{muted_text}} for readability.
+hi SignColumn      guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi FoldColumn      guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi Folded          guifg={{muted_text}}   guibg={{surface}}   gui=italic
+
+hi EndOfBuffer     guifg=#333333   guibg=NONE      gui=NONE
+hi NonText         guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi Whitespace      guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi SpecialKey      guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi Conceal         guifg={{muted_text}}   guibg=NONE      gui=NONE
+
+" Identifying separators use {{control_border}}; decorative end-of-buffer tildes stay dim.
+hi WinSeparator    guifg={{control_border}}   guibg=NONE      gui=NONE
+hi VertSplit       guifg={{control_border}}   guibg=NONE      gui=NONE
+
+" Window bar (breadcrumbs — Neovim 0.8+)
+hi WinBar          guifg={{secondary_text}}   guibg=NONE      gui=bold
+hi WinBarNC        guifg={{muted_text}}   guibg=NONE      gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Status / tab line
+" ─────────────────────────────────────────────────────────────────────────────
+hi StatusLine      guifg={{secondary_text}}   guibg={{surface}}   gui=NONE
+" Secondary text remains readable on raised surfaces.
+hi StatusLineNC    guifg={{muted_text}}   guibg={{surface}}   gui=NONE
+hi TabLine         guifg={{muted_text}}   guibg={{surface}}   gui=NONE
+hi TabLineSel      guifg={{foreground}}   guibg=NONE      gui=bold
+hi TabLineFill     guifg=NONE      guibg={{surface}}   gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Selection / search
+" ─────────────────────────────────────────────────────────────────────────────
+" Selection keeps ordinary text readable on the dark blue-tinted surface.
+hi Visual          guifg=NONE      guibg=#1a2d4a   gui=NONE
+hi VisualNOS       guifg=NONE      guibg=#1a2d4a   gui=NONE
+
+" Search matches use black text on warning yellow.
+
+hi Search          guifg={{background}}   guibg={{syntax_yellow}}   gui=bold
+" The current match uses black text on the pale blue accent.
+hi IncSearch       guifg={{background}}   guibg={{accent_text}}   gui=bold
+hi CurSearch       guifg={{background}}   guibg={{accent_text}}   gui=bold
+
+hi MatchParen      guifg={{syntax_yellow}}   guibg=NONE      gui=bold,underline
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Substitution preview (:s///)
+" ─────────────────────────────────────────────────────────────────────────────
+hi Substitute      guifg={{background}}   guibg={{syntax_yellow}}   gui=bold
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Popup / completion menu
+" ─────────────────────────────────────────────────────────────────────────────
+hi Pmenu           guifg={{foreground}}   guibg=#111820   gui=NONE
+hi PmenuSel        guifg={{background}}   guibg={{accent_text}}   gui=bold
+hi PmenuSbar       guifg=NONE      guibg={{hover}}   gui=NONE
+hi PmenuThumb      guifg=NONE      guibg={{accent_text}}   gui=NONE
+hi PmenuMatch      guifg={{syntax_yellow}}   guibg=#111820   gui=bold
+hi PmenuMatchSel   guifg={{background}}   guibg={{accent_text}}   gui=bold,underline
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Messages & prompts
+" ─────────────────────────────────────────────────────────────────────────────
+" ErrorMsg uses softened error red.
+hi ErrorMsg        guifg={{error_text}}   guibg=NONE      gui=bold
+hi WarningMsg      guifg={{syntax_yellow}}   guibg=NONE      gui=NONE
+hi ModeMsg         guifg={{syntax_green}}   guibg=NONE      gui=bold
+hi MsgArea         guifg={{secondary_text}}   guibg=NONE      gui=NONE
+hi MsgSeparator    guifg={{control_border}}   guibg=NONE      gui=NONE
+hi MoreMsg         guifg={{syntax_green}}   guibg=NONE      gui=bold
+hi Question        guifg={{syntax_green}}   guibg=NONE      gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Diff
+" ─────────────────────────────────────────────────────────────────────────────
+hi DiffAdd         guifg={{syntax_green}}   guibg=#001a0f   gui=NONE
+hi DiffChange      guifg={{syntax_yellow}}   guibg=#141000   gui=NONE
+hi DiffDelete      guifg={{error_text}}   guibg=#1a0000   gui=NONE
+hi DiffText        guifg={{background}}   guibg={{accent_text}}   gui=bold
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Spell
+" ─────────────────────────────────────────────────────────────────────────────
+hi SpellBad        guifg=NONE      guibg=NONE      gui=undercurl   guisp={{error_text}}
+hi SpellCap        guifg=NONE      guibg=NONE      gui=undercurl   guisp={{syntax_yellow}}
+hi SpellRare       guifg=NONE      guibg=NONE      gui=undercurl   guisp={{syntax_magenta}}
+hi SpellLocal      guifg=NONE      guibg=NONE      gui=undercurl   guisp={{syntax_cyan}}
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Diagnostics (LSP / nvim-lsp)
+" ─────────────────────────────────────────────────────────────────────────────
+" Error uses softened {{error_text}}.
+hi DiagnosticError              guifg={{error_text}}   guibg=NONE   gui=NONE
+hi DiagnosticWarn               guifg={{syntax_yellow}}   guibg=NONE   gui=NONE
+hi DiagnosticInfo               guifg={{accent_text}}   guibg=NONE   gui=NONE
+" Hints use readable secondary text, including inside floating windows.
+hi DiagnosticHint               guifg={{muted_text}}   guibg=NONE   gui=NONE
+hi DiagnosticOk                 guifg={{syntax_green}}   guibg=NONE   gui=NONE
+
+hi DiagnosticUnderlineError     guifg=NONE      guibg=NONE   gui=undercurl   guisp={{error_text}}
+hi DiagnosticUnderlineWarn      guifg=NONE      guibg=NONE   gui=undercurl   guisp={{syntax_yellow}}
+hi DiagnosticUnderlineInfo      guifg=NONE      guibg=NONE   gui=undercurl   guisp={{accent_text}}
+" Hint squiggle bumped to {{muted_text}}.
+hi DiagnosticUnderlineHint      guifg=NONE      guibg=NONE   gui=undercurl   guisp={{muted_text}}
+
+hi DiagnosticVirtualTextError   guifg={{error_text}}   guibg=NONE   gui=italic
+hi DiagnosticVirtualTextWarn    guifg={{syntax_yellow}}   guibg=NONE   gui=italic
+hi DiagnosticVirtualTextInfo    guifg={{accent_text}}   guibg=NONE   gui=italic
+hi DiagnosticVirtualTextHint    guifg={{muted_text}}   guibg=NONE   gui=italic
+
+hi DiagnosticSignError          guifg={{error_text}}   guibg=NONE   gui=NONE
+hi DiagnosticSignWarn           guifg={{syntax_yellow}}   guibg=NONE   gui=NONE
+hi DiagnosticSignInfo           guifg={{accent_text}}   guibg=NONE   gui=NONE
+hi DiagnosticSignHint           guifg={{muted_text}}   guibg=NONE   gui=NONE
+
+hi DiagnosticFloatingError      guifg={{error_text}}   guibg=#111820 gui=NONE
+hi DiagnosticFloatingWarn       guifg={{syntax_yellow}}   guibg=#111820 gui=NONE
+hi DiagnosticFloatingInfo       guifg={{accent_text}}   guibg=#111820 gui=NONE
+hi DiagnosticFloatingHint       guifg={{muted_text}}   guibg=#111820 gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Syntax — base groups
+" ─────────────────────────────────────────────────────────────────────────────
+" Comments use readable secondary text.
+hi Comment         guifg={{muted_text}}   guibg=NONE   gui=italic
+
+hi Constant        guifg=#4affc4   guibg=NONE   gui=NONE
+hi String          guifg={{syntax_yellow}}   guibg=NONE   gui=NONE
+hi Character       guifg={{syntax_yellow}}   guibg=NONE   gui=NONE
+hi Number          guifg=#4affc4   guibg=NONE   gui=NONE
+" Boolean linked to Keyword (blue, bold) — booleans are keyword-class tokens,
+" not error/warning values. Using bright-red (#ff9a9a) created false urgency.
+hi Boolean         guifg={{accent_text}}   guibg=NONE   gui=bold
+hi Float           guifg=#4affc4   guibg=NONE   gui=NONE
+
+hi Identifier      guifg={{foreground}}   guibg=NONE   gui=NONE
+hi Function        guifg={{syntax_green}}   guibg=NONE   gui=bold
+
+hi Statement       guifg={{accent_text}}   guibg=NONE   gui=bold
+hi Conditional     guifg={{accent_text}}   guibg=NONE   gui=bold
+hi Repeat          guifg={{accent_text}}   guibg=NONE   gui=bold
+hi Label           guifg={{accent_text_hover}}   guibg=NONE   gui=NONE
+hi Operator        guifg={{syntax_cyan}}   guibg=NONE   gui=NONE
+hi Keyword         guifg={{accent_text}}   guibg=NONE   gui=bold
+hi Exception       guifg=#ff9a9a   guibg=NONE   gui=bold
+
+hi PreProc         guifg={{syntax_magenta}}   guibg=NONE   gui=NONE
+hi Include         guifg={{syntax_magenta}}   guibg=NONE   gui=NONE
+hi Define          guifg={{syntax_magenta}}   guibg=NONE   gui=NONE
+hi Macro           guifg=#e599ff   guibg=NONE   gui=NONE
+hi PreCondit       guifg={{syntax_magenta}}   guibg=NONE   gui=NONE
+
+hi Type            guifg={{accent_text_hover}}   guibg=NONE   gui=bold
+hi StorageClass    guifg={{accent_text_hover}}   guibg=NONE   gui=NONE
+hi Structure       guifg={{accent_text_hover}}   guibg=NONE   gui=NONE
+hi Typedef         guifg={{accent_text_hover}}   guibg=NONE   gui=NONE
+
+hi Special         guifg={{syntax_cyan}}   guibg=NONE   gui=NONE
+hi SpecialChar     guifg=#44ddff   guibg=NONE   gui=NONE
+hi Tag             guifg={{accent_text}}   guibg=NONE   gui=NONE
+hi Delimiter       guifg={{secondary_text}}   guibg=NONE   gui=NONE
+" SpecialComment bumped to {{muted_text}} bold.
+hi SpecialComment  guifg={{muted_text}}   guibg=NONE   gui=bold
+hi Debug           guifg=#ff9a9a   guibg=NONE   gui=NONE
+
+hi Underlined      guifg=NONE      guibg=NONE   gui=underline
+hi Ignore          guifg={{muted_text}}   guibg=NONE   gui=NONE
+" Error uses softened red.
+hi Error           guifg={{error_text}}   guibg=NONE   gui=bold
+hi Todo            guifg={{background}}   guibg={{syntax_yellow}} gui=bold
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Misc UI
+" ─────────────────────────────────────────────────────────────────────────────
+hi Title           guifg={{accent_text}}   guibg=NONE   gui=bold
+hi Directory       guifg={{accent_text}}   guibg=NONE   gui=bold
+hi WildMenu        guifg={{background}}   guibg={{accent_text}} gui=bold
+hi QuickFixLine    guifg=NONE      guibg=#1a2d4a gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Treesitter — explicit @-namespace groups (Neovim 0.8+ parser highlights)
+" ─────────────────────────────────────────────────────────────────────────────
+" Comments
+hi! link @comment            Comment
+" Documentation comments are brighter than ordinary comments to
+" signal they carry API/interface meaning.
+hi   @comment.documentation  guifg=#b0b0b0   guibg=NONE   gui=italic
+
+" Literals
+hi! link @string             String
+hi! link @string.escape      SpecialChar
+hi! link @string.special     SpecialChar
+hi   @string.regex       guifg=#44ddff guibg=NONE gui=NONE
+hi   @string.regexp          guifg=#44ddff   guibg=NONE   gui=NONE
+hi! link @number             Number
+hi! link @float              Float
+hi! link @boolean            Boolean
+hi! link @character          Character
+hi! link @character.special  SpecialChar
+
+" Variables
+hi! link @variable           Identifier
+" Function parameters: italic white — visually distinct from plain locals
+" without introducing an extra color.
+hi   @variable.parameter     guifg={{foreground}}   guibg=NONE   gui=italic
+hi! link @variable.builtin   Special
+hi! link @variable.member    @property
+" Object/struct properties use light blue-tinted white.
+" Distinct from plain Identifier while staying within the blue-tinted palette.
+hi   @property               guifg=#c8d8f8   guibg=NONE   gui=NONE
+
+" Functions
+hi! link @function           Function
+hi! link @function.builtin   Special
+hi! link @function.macro     Macro
+hi! link @function.call      Function
+hi! link @method             Function
+hi! link @method.call        Function
+hi! link @constructor        Function
+
+" Types
+hi! link @type               Type
+hi! link @type.builtin       Type
+hi! link @type.qualifier     StorageClass
+hi! link @type.definition    Typedef
+
+" Keywords
+hi! link @keyword            Keyword
+hi! link @keyword.return     Keyword
+hi! link @keyword.function   Keyword
+hi! link @keyword.operator   Operator
+hi! link @keyword.import     Include
+hi! link @keyword.type       Type
+hi! link @keyword.modifier   StorageClass
+hi! link @keyword.repeat     Repeat
+hi! link @keyword.exception  Exception
+hi! link @conditional        Conditional
+hi! link @conditional.ternary Operator
+hi! link @repeat             Repeat
+hi! link @exception          Exception
+hi! link @include            Include
+hi! link @preproc            PreProc
+hi! link @define             Define
+hi! link @operator           Operator
+
+" Punctuation
+hi! link @punctuation.delimiter Delimiter
+hi! link @punctuation.bracket   Delimiter
+hi! link @punctuation.special   Special
+
+" Constants / namespaces
+hi! link @constant           Constant
+hi! link @constant.builtin   Special
+hi! link @constant.macro     Define
+" Modules/namespaces: accent_hover blue, same family as Type but distinct role
+hi   @module                 guifg={{accent_text_hover}}   guibg=NONE   gui=NONE
+hi! link @namespace          @module
+hi! link @label              Label
+
+" Markup / HTML / JSX
+hi! link @tag                Tag
+hi   @tag.attribute          guifg={{syntax_green}}   guibg=NONE   gui=NONE
+hi! link @tag.delimiter      Delimiter
+hi! link @markup.heading     Title
+hi   @markup.link        guifg={{syntax_cyan}} guibg=NONE gui=underline
+hi   @markup.link.url        guifg={{syntax_cyan}}   guibg=NONE   gui=underline
+hi! link @markup.raw         String
+hi   @markup.strong      gui=bold
+hi   @markup.italic      gui=italic
+
+" Diff (Treesitter diff parser)
+hi @diff.plus                guifg={{syntax_green}}   guibg=#001a0f   gui=NONE
+hi @diff.minus               guifg={{error_text}}   guibg=#1a0000   gui=NONE
+hi @diff.delta               guifg={{syntax_yellow}}   guibg=#141000   gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" LSP Semantic Tokens (Neovim 0.9+ — takes priority over Treesitter)
+" ─────────────────────────────────────────────────────────────────────────────
+hi! link @lsp.type.class         Type
+hi! link @lsp.type.interface     Type
+hi! link @lsp.type.struct        Structure
+hi! link @lsp.type.enum          Type
+hi! link @lsp.type.enumMember    Constant
+hi! link @lsp.type.function      Function
+hi! link @lsp.type.method        Function
+hi! link @lsp.type.macro         Macro
+hi! link @lsp.type.variable      Identifier
+hi! link @lsp.type.parameter     @variable.parameter
+hi! link @lsp.type.property      @property
+hi! link @lsp.type.namespace     @module
+hi! link @lsp.type.keyword       Keyword
+hi! link @lsp.type.comment       Comment
+hi! link @lsp.type.string        String
+hi! link @lsp.type.number        Number
+hi! link @lsp.type.operator      Operator
+hi! link @lsp.type.decorator     PreProc
+hi! link @lsp.type.type          Type
+hi! link @lsp.type.typeParameter Type
+hi! link @lsp.type.event         Special
+hi! link @lsp.type.regexp        @string.regexp
+" Deprecated symbols: strikethrough over normal color
+hi @lsp.mod.deprecated       gui=strikethrough
+hi @lsp.mod.readonly         gui=italic
+
+" ─────────────────────────────────────────────────────────────────────────────
+" Plugin highlights
+" ─────────────────────────────────────────────────────────────────────────────
+
+" ── Telescope ──────────────────────────────────────────────────────────────
+hi! link TelescopeNormal         NormalFloat
+hi! link TelescopePreviewNormal  NormalFloat
+hi   TelescopeBorder             guifg={{accent_text}}   guibg=#111820   gui=NONE
+hi! link TelescopePromptBorder   TelescopeBorder
+hi! link TelescopeResultsBorder  TelescopeBorder
+hi! link TelescopePreviewBorder  TelescopeBorder
+hi   TelescopeTitle              guifg={{accent_text}}   guibg=#111820   gui=bold
+hi! link TelescopePromptTitle    TelescopeTitle
+hi! link TelescopeResultsTitle   TelescopeTitle
+hi! link TelescopePreviewTitle   TelescopeTitle
+hi   TelescopePromptPrefix       guifg={{accent_text}}   guibg=NONE      gui=bold
+hi   TelescopeSelectionCaret     guifg={{accent_text}}   guibg=#1a2d4a   gui=NONE
+hi   TelescopeSelection          guifg={{foreground}}   guibg=#1a2d4a   gui=NONE
+hi   TelescopeMultiSelection     guifg={{accent_text_hover}}   guibg=#1a2d4a   gui=NONE
+hi   TelescopeMatching           guifg={{syntax_yellow}}   guibg=NONE      gui=bold
+hi   TelescopePromptCounter      guifg={{muted_text}}   guibg=NONE      gui=NONE
+
+" ── nvim-tree ──────────────────────────────────────────────────────────────
+hi   NvimTreeNormal              guifg={{foreground}}   guibg=NONE      gui=NONE
+hi   NvimTreeRootFolder          guifg={{accent_text}}   guibg=NONE      gui=bold
+hi   NvimTreeFolderIcon          guifg={{accent_text}}   guibg=NONE      gui=NONE
+hi   NvimTreeFolderName          guifg={{accent_text_hover}}   guibg=NONE      gui=NONE
+hi   NvimTreeOpenedFolderName    guifg={{foreground}}   guibg=NONE      gui=bold
+hi   NvimTreeEmptyFolderName     guifg={{muted_text}}   guibg=NONE      gui=italic
+hi   NvimTreeIndentMarker        guifg={{control_border}}   guibg=NONE      gui=NONE
+hi   NvimTreeSymlink             guifg={{syntax_cyan}}   guibg=NONE      gui=underline
+hi   NvimTreeExecFile            guifg={{syntax_green}}   guibg=NONE      gui=bold
+hi   NvimTreeSpecialFile         guifg={{syntax_magenta}}   guibg=NONE      gui=underline
+hi   NvimTreeImageFile           guifg={{syntax_magenta}}   guibg=NONE      gui=NONE
+hi   NvimTreeGitDirty            guifg={{syntax_yellow}}   guibg=NONE      gui=NONE
+hi   NvimTreeGitStaged           guifg={{syntax_green}}   guibg=NONE      gui=NONE
+hi   NvimTreeGitNew              guifg={{syntax_green}}   guibg=NONE      gui=NONE
+hi   NvimTreeGitDeleted          guifg={{error_text}}   guibg=NONE      gui=NONE
+hi   NvimTreeGitIgnored          guifg={{muted_text}}   guibg=NONE      gui=italic
+hi   NvimTreeWinSeparator        guifg={{control_border}}   guibg=NONE      gui=NONE
+hi! link NvimTreeCursorLine      CursorLine
+hi! link NvimTreeEndOfBuffer     EndOfBuffer
+
+" ── neo-tree ───────────────────────────────────────────────────────────────
+hi   NeoTreeNormal               guifg={{foreground}}   guibg=NONE      gui=NONE
+hi   NeoTreeNormalNC             guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi   NeoTreeRootName             guifg={{accent_text}}   guibg=NONE      gui=bold
+hi   NeoTreeDirectoryName        guifg={{accent_text_hover}}   guibg=NONE      gui=NONE
+hi   NeoTreeDirectoryIcon        guifg={{accent_text}}   guibg=NONE      gui=NONE
+hi   NeoTreeSymbolicLinkTarget   guifg={{syntax_cyan}}   guibg=NONE      gui=underline
+hi   NeoTreeGitModified          guifg={{syntax_yellow}}   guibg=NONE      gui=NONE
+hi   NeoTreeGitAdded             guifg={{syntax_green}}   guibg=NONE      gui=NONE
+hi   NeoTreeGitDeleted           guifg={{error_text}}   guibg=NONE      gui=NONE
+hi   NeoTreeGitConflict          guifg=#ff9a9a   guibg=NONE      gui=bold
+hi   NeoTreeGitIgnored           guifg={{muted_text}}   guibg=NONE      gui=italic
+hi! link NeoTreeCursorLine       CursorLine
+hi! link NeoTreeWinSeparator     WinSeparator
+hi! link NeoTreeFloatBorder      FloatBorder
+hi! link NeoTreeFloatTitle       FloatTitle
+
+" ── GitSigns ───────────────────────────────────────────────────────────────
+hi   GitSignsAdd                 guifg={{syntax_green}}   guibg=NONE      gui=NONE
+hi   GitSignsChange              guifg={{syntax_yellow}}   guibg=NONE      gui=NONE
+hi   GitSignsDelete              guifg={{error_text}}   guibg=NONE      gui=NONE
+hi   GitSignsAddNr               guifg={{syntax_green}}   guibg=NONE      gui=NONE
+hi   GitSignsChangeNr            guifg={{syntax_yellow}}   guibg=NONE      gui=NONE
+hi   GitSignsDeleteNr            guifg={{error_text}}   guibg=NONE      gui=NONE
+hi   GitSignsAddLn               guifg=NONE      guibg=#001a0f   gui=NONE
+hi   GitSignsChangeLn            guifg=NONE      guibg=#141000   gui=NONE
+hi   GitSignsDeleteLn            guifg=NONE      guibg=#1a0000   gui=NONE
+hi   GitSignsCurrentLineBlame    guifg={{muted_text}}   guibg=NONE      gui=italic
+
+" ── Trouble (diagnostics list) ─────────────────────────────────────────────
+hi   TroubleNormal               guifg={{foreground}}   guibg=NONE      gui=NONE
+hi! link TroubleError            DiagnosticError
+hi! link TroubleWarning          DiagnosticWarn
+hi! link TroubleInfo             DiagnosticInfo
+hi! link TroubleHint             DiagnosticHint
+hi   TroubleLocation             guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi   TroubleFile                 guifg={{accent_text_hover}}   guibg=NONE      gui=bold
+hi   TroubleFoldIcon             guifg={{accent_text}}   guibg=NONE      gui=NONE
+hi! link TroubleIndent           Delimiter
+hi! link TroubleCount            DiagnosticError
+
+" ── WhichKey ───────────────────────────────────────────────────────────────
+hi   WhichKey                    guifg={{accent_text}}   guibg=NONE      gui=bold
+hi   WhichKeyGroup               guifg={{syntax_green}}   guibg=NONE      gui=NONE
+hi   WhichKeyDesc                guifg={{foreground}}   guibg=NONE      gui=NONE
+hi   WhichKeySeparator           guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi   WhichKeyValue               guifg={{muted_text}}   guibg=NONE      gui=italic
+hi! link WhichKeyFloat           NormalFloat
+hi! link WhichKeyBorder          FloatBorder
+
+" ── indent-blankline (ibl) ─────────────────────────────────────────────────
+hi   IblIndent                   guifg={{control_border}}   guibg=NONE      gui=nocombine
+hi   IblScope                    guifg={{control_border}}   guibg=NONE      gui=nocombine
+hi   IblWhitespace               guifg={{control_border}}   guibg=NONE      gui=nocombine
+" Legacy (indent-blankline v2)
+hi! link IndentBlanklineChar     IblIndent
+hi! link IndentBlanklineContextChar IblScope
+
+" ── nvim-cmp ───────────────────────────────────────────────────────────────
+hi! link CmpItemAbbr             Identifier
+hi! link CmpItemAbbrMatch        TelescopeMatching
+hi! link CmpItemAbbrMatchFuzzy   TelescopeMatching
+hi! link CmpItemAbbrDeprecated   @lsp.mod.deprecated
+hi   CmpItemKindText             guifg={{foreground}}   guibg=NONE   gui=NONE
+hi   CmpItemKindMethod           guifg={{syntax_green}}   guibg=NONE   gui=NONE
+hi! link CmpItemKindFunction     CmpItemKindMethod
+hi! link CmpItemKindConstructor  CmpItemKindMethod
+hi   CmpItemKindField            guifg=#c8d8f8   guibg=NONE   gui=NONE
+hi! link CmpItemKindProperty     CmpItemKindField
+hi! link CmpItemKindVariable     Identifier
+hi   CmpItemKindClass            guifg={{accent_text_hover}}   guibg=NONE   gui=NONE
+hi! link CmpItemKindInterface    CmpItemKindClass
+hi! link CmpItemKindStruct       CmpItemKindClass
+hi! link CmpItemKindModule       @module
+hi   CmpItemKindKeyword          guifg={{accent_text}}   guibg=NONE   gui=NONE
+hi! link CmpItemKindEnumMember   Constant
+hi! link CmpItemKindConstant     Constant
+hi   CmpItemKindSnippet          guifg={{syntax_magenta}}   guibg=NONE   gui=NONE
+hi   CmpItemKindOperator         guifg={{syntax_cyan}}   guibg=NONE   gui=NONE
+hi! link CmpItemKindTypeParameter Type
+hi   CmpItemMenu                 guifg={{muted_text}}   guibg=NONE   gui=italic
+
+" ── Noice (UI replacement) ─────────────────────────────────────────────────
+hi! link NoiceCmdlinePopup       NormalFloat
+hi! link NoiceCmdlinePopupBorder FloatBorder
+hi! link NoiceCmdlineIcon        Title
+hi! link NoiceConfirmBorder      FloatBorder
+hi   NoiceCompletionItemKindDefault guifg={{muted_text}} guibg=NONE gui=NONE
+
+" ── Mason ──────────────────────────────────────────────────────────────────
+hi! link MasonNormal             NormalFloat
+hi! link MasonHighlight          Title
+hi   MasonHighlightBlock         guifg={{background}}   guibg={{accent_text}}   gui=bold
+hi   MasonMuted                  guifg={{muted_text}}   guibg=NONE      gui=NONE
+hi   MasonError                  guifg={{error_text}}   guibg=NONE      gui=bold
+hi   MasonWarning                guifg={{syntax_yellow}}   guibg=NONE      gui=NONE
+
+" ─────────────────────────────────────────────────────────────────────────────
+" vim-airline (theme selector)
+" ─────────────────────────────────────────────────────────────────────────────
+" The airline theme file (autoload/airline/themes/adwaita_amoled.vim)
+" must be on runtimepath. If absent, 'dark' is an acceptable fallback.
+let g:airline_theme = 'adwaita_amoled'
+
+" =============================================================================
+" vim: ft=vim sw=4 ts=4 et
