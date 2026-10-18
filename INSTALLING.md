@@ -3,7 +3,7 @@
 The installer is a **Bash script** using GNU coreutils and `flock` (util-linux),
 normally already installed on Linux desktops. It copies
 already compiled files: no Python, compiler, downloads, package installation,
-backup database or saved installer state is required. GTK2 applications also
+backup database or undo history is required. GTK2 applications also
 need your distribution's Murrine engine (`gtk2-engines-murrine` on Debian/Ubuntu).
 
 ## Start here
@@ -23,6 +23,8 @@ In a terminal this opens guided setup:
 2. **Remove** selects the theme and any GTK4 links/extras to remove.
 3. **Help** explains setup; **Advanced options** covers a shared system theme
    and selected-app Flatpak configuration.
+4. **Accent color** chooses blue (default), yellow, gold, purple, green, red,
+   orange or pink, then returns to the main menu. Continue with Install/update.
 
 Numbered choices need only Enter or a number. Setup shows destinations and
 existing GTK4 override paths before its final **Apply / Cancel / Preview**
@@ -77,6 +79,43 @@ a checkout or a release archive. This includes compiled GTK/Shell styles,
 runtime assets, app extras, the wallpaper, guides and license/provenance notices.
 The logo, screenshots, palette templates and GTK/Shell development sources are
 not installed. For rebuilding, use a Git checkout or GitHub's source archive.
+
+## Accent colors
+
+New installations default to blue. Choose **Accent color** in guided setup, or
+specify a preset directly:
+
+```bash
+./install.sh --accent gold -l --activate
+./install.sh --accent green --extras qt,kitty,nvim
+sudo ./install.sh --system --accent purple
+```
+
+The choices are **blue, yellow, gold, purple, green, red, orange and pink**.
+The selected preset covers GTK2/3/4, the optional libadwaita override, Cinnamon,
+window decorations, Shell 46/51 and the supplied application themes. Semantic
+error/success/warning and terminal/syntax colors keep their meanings. Main
+surfaces remain black. See [measured colors and limits](ACCENT_COLORS.md).
+
+Only one preset is installed at a time, named **Adwaita-AMOLED**. Precompiled
+files under `accents/` supply the changed files; shared assets are copied once.
+Users need no compiler or Python. Variant manifests are checked before copying
+and on the staged theme. The full collection of overlays is not installed.
+
+Rerunning from a newer download retains the valid installed `accent-name`
+marker unless `--accent` selects another color. Older installations without a
+marker use blue. To return to blue, run `./install.sh --accent blue`.
+Rerun with the same optional extras to refresh their copied app snippets;
+GTK4/Flatpak links already referencing this theme follow the changed theme files.
+Restart apps and reload Shell/Cinnamon as appropriate. Separate user and system
+installations each retain their own color. Shared-system guided setup also has
+an Accent color choice.
+
+GNOME Shell 46 matches the selected preset. On Shell 51, the **seven new presets
+also match it**, regardless of GNOME Settings' system accent. The default blue
+Shell 51 build retains its existing behavior of following GNOME Settings.
+This does not change the system accent setting or application-owned accent
+preferences. Other Shell major versions remain unverified.
 
 Before replacing a theme directory, the script checks essential files and
 prepares a complete temporary copy beside the destination. Release archives
@@ -300,7 +339,7 @@ amoled_data="${XDG_DATA_HOME:-$HOME/.local/share}"
 amoled_theme="$amoled_data/themes/Adwaita-AMOLED"
 mkdir -p "$amoled_theme"
 cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
-cp index.theme LICENSE "$amoled_theme/"
+cp index.theme LICENSE accent-name "$amoled_theme/"
 mkdir -p "$HOME/.themes"
 if [ ! -e "$HOME/.themes/Adwaita-AMOLED" ] && [ ! -L "$HOME/.themes/Adwaita-AMOLED" ]; then
   ln -s "$amoled_theme" "$HOME/.themes/Adwaita-AMOLED"

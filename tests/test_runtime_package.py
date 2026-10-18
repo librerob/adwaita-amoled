@@ -35,6 +35,24 @@ class RuntimePackageTests(unittest.TestCase):
         )
         return source
 
+    def test_incomplete_or_linked_accent_distribution_blocks_packaging(self):
+        source = self.source_copy()
+        manifest = source / "accents/SHA256SUMS"
+        original = manifest.read_text()
+        manifest.write_text(
+            "\n".join(
+                line
+                for line in original.splitlines()
+                if not line.split("  ")[1].startswith("purple/")
+            )
+            + "\n"
+        )
+        self.assertFalse(self.package(source, success=False).exists())
+        manifest.unlink()
+        self.assertFalse(self.package(source, success=False).exists())
+        manifest.symlink_to(base.ROOT / "accents/SHA256SUMS")
+        self.assertFalse(self.package(source, success=False).exists())
+
     def test_archive_and_checkout_install_have_identical_runtime_files(self):
         self.run_cli("--shell-version", "51")
         with tarfile.open(self.package()) as tar:
@@ -48,7 +66,15 @@ class RuntimePackageTests(unittest.TestCase):
             str(p.relative_to(source)) for p in source.rglob("*") if p.is_file()
         }
         self.assertEqual(installed, listed)
-        self.assertEqual(archived, listed | {"ARCHIVE_CONTENTS.sha256"})
+        distributed_accents = {
+            str(p.relative_to(source))
+            for p in (source / "accents").rglob("*")
+            if p.is_file()
+        }
+        self.assertEqual(
+            archived, listed | {"ARCHIVE_CONTENTS.sha256"} | distributed_accents
+        )
+        self.assertFalse((self.theme / "accents").exists())
         for name in listed:
             self.assertEqual(
                 (self.theme / name).read_bytes(), (source / name).read_bytes(), name
@@ -92,6 +118,8 @@ class RuntimePackageTests(unittest.TestCase):
             self.assertFalse((root / name).exists(), name)
         self.assertFalse(list(root.rglob("*.scss")))
         for path in root.rglob("*"):
+            if path.is_relative_to(root / "accents"):
+                continue  # Overlays resolve unchanged assets after installation.
             if path.suffix not in (".css", ".qss", ".rasi"):
                 continue
             text = re.sub(r"/\*.*?\*/", "", path.read_text(), flags=re.S)

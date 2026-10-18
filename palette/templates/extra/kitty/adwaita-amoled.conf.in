@@ -33,7 +33,7 @@ foreground            {{foreground}}
 
 # Blue-tinted selection with white text
 selection_foreground  {{foreground}}
-selection_background  #1a2d4a
+selection_background  {{accent_selection}}
 
 # ── Normal colors ─────────────────────────────────────────────────────────────
 # pure black (terminal fill)

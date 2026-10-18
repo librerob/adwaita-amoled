@@ -61,7 +61,7 @@
      showborder="true"
      guidecolor="{{destructive_fill}}"
      guideopacity="1"
-     guidehicolor="#387af2"
+     guidehicolor="{{accent_indicator}}"
      guidehiopacity="0.49803922">
     <inkscape:grid
        type="xygrid"

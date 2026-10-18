@@ -231,6 +231,52 @@ See [the repository-wide follow-up](../COLOR_COMPLETENESS.md) for the
 reproduced failures, full inventory scope and limits.
 
 
+## Accent presets
+
+The base blue regression suite remains unchanged. The additional preset suite
+validates all seven definitions, text/fill contrast, preserved semantic roles,
+complete distribution manifests, archive installation, every installed file,
+update retention, color switching, matching app extras, CSS asset references and
+copy/corruption recovery:
+
+```bash
+python3 tools/generate_palette.py --check
+python3 tools/build_accents.py --check  # needs GLib's resource compiler and sassc
+python3 tests/test_accents.py
+```
+
+Native groups materialize the base runtime plus each selected overlay and run
+the existing consumer regressions against that combination. They use temporary
+homes/settings and save measurements, screenshots and command logs. `--colors`
+can select a subset while developing; CI runs all seven.
+
+```bash
+xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/accent_native.py gtk /tmp/accent-gtk
+xvfb-run -a python3 tests/accent_native.py qt /tmp/accent-qt
+xvfb-run -a python3 tests/accent_native.py edges /tmp/accent-edges
+xvfb-run -a python3 tests/accent_native.py extras /tmp/accent-extras
+python3 tests/accent_native.py shell46 /tmp/accent-shell46  # on GNOME 46 test image
+python3 tests/accent_native.py shell51 /tmp/accent-shell51  # on GNOME 51 test image
+xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
+  dbus-run-session -- python3 tests/accent_native.py cinnamon /tmp/accent-cinnamon
+```
+
+GTK covers GTK2/Murrine, GTK3 compound states, plain GTK4 and libadwaita, light
+and dark requests and selected-row descendants. Run it with both supported
+toolkit generations. Edges checks the GTK3/GTK4 card, toolbar, decoration and
+entry-boundary pixels for every preset. Qt covers active/inactive palettes and native slider
+painting/input in Qt5/Qt6. Extras exercise native Neovim/Airline (including
+256-color fallback), Kitty/Zsh/bat/Rofi parsing and paint/contrast checks.
+Shell 46 exercises real pointer interactions and the derived switch SVGs.
+Shell 51 checks each fixed preset against all nine GNOME system accents,
+including unchanged preset colors, text/glyph pairs and selection borders.
+Cinnamon checks its native 125 text/state/overlay pairs and decorative edges.
+Use the isolated images and packages described above; these are development
+tests, not commands to run inside your everyday desktop session.
+
+See [preset colors, method and limitations](../ACCENT_COLORS.md). Native software
+rendering does not verify physical OLED panels or every application's own CSS.
+
 ## Direct Bash installer
 
 `test_installer.py` runs the actual Bash script with isolated HOME/XDG roots.

@@ -176,7 +176,7 @@ class GuidedInstallerTests(unittest.TestCase):
     def test_help_invalid_input_and_exit_do_not_install(self):
         t = self.terminal()
         t.answer("Choose [1]:", "bogus")
-        t.expect("Enter a number from 0 to 4.")
+        t.expect("Enter a number from 0 to 5.")
         t.answer("Choose [1]:", "3")
         t.expect("For command-line options")
         t.answer("Choose [1]:", "0")
@@ -413,6 +413,30 @@ esac""",
                             output,
                         )
 
+    def test_color_menu_installs_and_retains_selected_accent_without_python(self):
+        t = self.terminal()
+        t.answer("Choose [1]:", "5")
+        t.answer("Choose [0]:", "3")  # gold
+        t.answer("Choose [1]:", "1")
+        t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
+        t.answer("Copy optional application themes or wallpaper?", "n")
+        t.expect("Accent color: gold")
+        t.answer("Apply these changes?", "y")
+        t.finish()
+        self.assertEqual((self.theme / "accent-name").read_text(), "gold\n")
+        self.assertEqual(
+            (self.theme / "gtk-3.0/gtk.gresource").read_bytes(),
+            (base.ROOT / "accents/gold/gtk-3.0/gtk.gresource").read_bytes(),
+        )
+        self.assertFalse((self.theme / "accents").exists())
+        t = self.terminal()
+        t.expect("Accent color (gold)")
+        self.install_choices(t)
+        t.expect("Accent color: gold")
+        t.answer("Apply these changes?", "y")
+        t.finish()
+        self.assertEqual((self.theme / "accent-name").read_text(), "gold\n")
+
     def test_unavailable_dark_preference_does_not_add_question_or_block_installation(
         self,
     ):
@@ -550,6 +574,20 @@ esac""",
 class SystemMenuTests(unittest.TestCase):
     setUp = GuidedInstallerTests.setUp
     terminal = GuidedInstallerTests.terminal
+
+    def test_shared_color_choice_is_in_the_review_without_writing_system_paths(self):
+        self.assertEqual(os.geteuid(), 0)
+        self.env["SUDO_USER"] = "desktop-user"
+        t = self.terminal(("--interactive",))
+        t.answer("Choose [0]:", "3")
+        t.answer("Choose [0]:", "8")
+        t.answer("Choose [0]:", "1")
+        t.answer("Choose [1]:", "2")
+        t.answer("Apply these changes?", "p")
+        text = t.finish()
+        self.assertIn("Accent color: pink", text)
+        self.assertIn("/usr/share/themes/Adwaita-AMOLED", text)
+        self.assertEqual(list(self.home.iterdir()), [])
 
     def test_shared_setup_preview_and_cancel_never_write_system_paths(self):
         self.assertEqual(os.geteuid(), 0)

@@ -148,6 +148,34 @@ async function checkAccentRoles(context, theme) {
     }
     const failures = pairs.filter(pair => pair.contrast < 4.5);
     assert(failures.length === 0, `Unreadable Shell control states: ${JSON.stringify(failures)}`);
+    const fixedFill = GLib.getenv('THEME_TEST_FIXED_ACCENT_FILL');
+    if (fixedFill) {
+        const defaults = pairs.filter(pair => pair.name === 'default' && pair.state === '');
+        assert(defaults.every(pair => pair.background === `${fixedFill}ff`),
+            `Preset fill does not match selected theme: ${JSON.stringify(defaults)}`);
+        const first = new Map();
+        for (const pair of pairs) {
+            const key = `${pair.name}/${pair.state}`;
+            const value = `${pair.foreground}/${pair.background}`;
+            if (first.has(key))
+                assert(first.get(key) === value, `System accent changed a fixed preset: ${JSON.stringify(pair)}`);
+            else
+                first.set(key, value);
+        }
+        results.fixedAccentFill = fixedFill;
+        let borderPairs = 0;
+        for (const state of ['hover', 'checked']) {
+            let parent = make(context.get_root_node(), 'screenshot-ui-window-selector-window', state);
+            const border = make(parent, 'screenshot-ui-window-selector-window-border');
+            const foreground = border.get_border_color(St.Side.TOP).to_string();
+            for (const background of ['#000000ff', '#141414ff', '#252525ff']) {
+                assert(contrast(composite(foreground, background), background) >= 3,
+                    `Unreadable preset screenshot selection border: ${state}/${foreground}/${background}`);
+                borderPairs++;
+            }
+        }
+        results.presetBorderPairs = borderPairs;
+    }
     const graphicFailures = graphics.filter(pair => pair.contrast < 3);
     assert(graphicFailures.length === 0, `Unreadable Shell scrollbar states: ${JSON.stringify(graphicFailures)}`);
     results.accentPairs = pairs.length;

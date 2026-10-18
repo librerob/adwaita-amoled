@@ -14,7 +14,7 @@ cursor = '{{accent_text}}'          # @accent
 text   = '{{background}}'
 
 [colors.selection]
-background = '#1a2d4a'      # blue-tinted selection
+background = '{{accent_selection}}'      # blue-tinted selection
 text       = '{{foreground}}'      # readable selection text
 
 [colors.search.matches]

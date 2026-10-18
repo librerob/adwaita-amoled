@@ -19,7 +19,12 @@ local ok, err = pcall(function()
     NvimTreeIndentMarker=true, NvimTreeWinSeparator=true,
     IblScope=true, IblIndent=true, IblWhitespace=true,
   }
-  local backgrounds = {'#000000', '#0f0f0f', '#111820', '#0c1a2e', '#1a2d4a'}
+  local backgrounds = {}
+  for _, group in ipairs({'Normal', 'ColorColumn', 'NormalFloat', 'CursorLine', 'Visual'}) do
+    local background = vim.fn.synIDattr(vim.fn.hlID(group), 'bg', 'gui')
+    assert(background:match('^#%x%x%x%x%x%x$'), 'Missing background: ' .. group)
+    table.insert(backgrounds, background)
+  end
   local function lum(color)
     local result = 0
     for i, weight in ipairs({0.2126, 0.7152, 0.0722}) do

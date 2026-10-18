@@ -19,9 +19,9 @@
 				<key>invisibles</key>
 				<string>#333333</string>           <!-- subtle guide dots -->
 				<key>lineHighlight</key>
-				<string>#0c1a2e</string>           <!-- cursor line background -->
+				<string>{{accent_cursorline}}</string>           <!-- cursor line background -->
 				<key>selection</key>
-				<string>#1a2d4a</string>           <!-- selection background -->
+				<string>{{accent_selection}}</string>           <!-- selection background -->
 				<key>findHighlight</key>
 				<string>{{syntax_yellow}}</string>           <!-- search match background -->
 				<key>findHighlightForeground</key>

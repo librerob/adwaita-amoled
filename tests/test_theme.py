@@ -60,7 +60,12 @@ class ThemeTests(unittest.TestCase):
             for match in re.finditer(r'''url\(\s*['"]?([^)'"\s]+)['"]?\s*\)''', text):
                 url = match[1]
                 if not re.match(r'(resource|data|https?):', url):
-                    self.assertTrue((path.parent / url).is_file(), f'{path}: {url}')
+                    candidates = [path.parent / url]
+                    if path.is_relative_to(ROOT / 'accents'):
+                        # Sparse overlays inherit unchanged assets from the base.
+                        relative = path.relative_to(ROOT / 'accents').parts[1:]
+                        candidates.append((ROOT / Path(*relative)).parent / url)
+                    self.assertTrue(any(p.is_file() for p in candidates), f'{path}: {url}')
 
     def test_svg_ids_and_references(self):
         for path in ROOT.rglob('*.svg'):

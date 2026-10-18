@@ -25,6 +25,30 @@ class PaletteTests(unittest.TestCase):
         data["colors"][name] = value
         path.write_text(json.dumps(data))
 
+    def test_presets_reject_missing_accent_roles_semantic_overrides_and_duplicates(
+        self,
+    ):
+        path = self.root / "palette/accents.json"
+        original = json.loads(path.read_text())
+        for change in ("missing", "semantic", "malformed", "duplicate"):
+            with self.subTest(change=change):
+                data = json.loads(json.dumps(original))
+                colors = data["presets"]["gold"]["colors"]
+                if change == "missing":
+                    colors.pop("accent_fill")
+                elif change == "semantic":
+                    colors["error_text"] = "#123456"
+                elif change == "malformed":
+                    colors["accent_fill"] = "gold"
+                text = json.dumps(data)
+                if change == "duplicate":
+                    text = text.replace(
+                        '"accent_fill":', '"accent_text": "#123456", "accent_fill":', 1
+                    )
+                path.write_text(text)
+                with self.assertRaises(ValueError):
+                    palette.preset_colors(self.root, "gold")
+
     def test_committed_outputs_match_templates_without_changes(self):
         self.assertEqual(palette.generate(ROOT, check=True), [])
 

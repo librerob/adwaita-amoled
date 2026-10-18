@@ -6,8 +6,12 @@ have not been verified. Each variant retains its own upstream widget structures.
 GNOME 46 uses SVG switches and different quick-settings classes; loading the
 51 stylesheet on 46 causes missing interaction backgrounds and switch handles.
 
-The adaptation keeps upstream layout, widget states, privacy indicators and
-GNOME 51's selected system accent hue. GNOME 46 uses the theme's blue palette.
+The adaptation keeps upstream layout, widget states and privacy indicators.
+GNOME 46 matches the selected theme accent. The default blue installation on
+GNOME 51 retains its selected system accent hue. The seven optional named
+presets instead use their selected theme color on GNOME 51 too; changing GNOME
+Settings' accent does not recolor those Shell presets. Select a preset through
+the installer's Accent color menu or `--accent purple`.
 Opaque accent fills are darkened by state
 to preserve white-label contrast; standalone system accents remain lighter. Panel, menu, dialog and overview bases
 are black; raised surfaces and OSDs use the existing AMOLED depth palette.
@@ -83,6 +87,12 @@ The default build updates both the source default `gnome-shell.css` and its
 canonical `gnome-shell-51.css`; the 46 build updates `gnome-shell-46.css`. Keeping
 canonical copies allows an installed theme's updater to switch versions after a
 desktop upgrade without requiring Sass at installation time.
+
+After rebuilding the base GTK and both Shell styles, run
+`python3 tools/build_accents.py` from the repository root to update all seven
+precompiled overlays. Its Shell 51 adaptation resolves accent expressions by
+their text/fill roles in the compiled preset CSS; selectors and layout remain
+unchanged. It does not rewrite pinned upstream Sass or default blue CSS.
 
 GNOME Shell Sass is GPL-2.0-or-later; its license and attribution are retained in
 `sass/upstream/COPYING`, `sass/upstream/README.md` and the source files. The
