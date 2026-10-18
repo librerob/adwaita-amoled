@@ -83,11 +83,15 @@ keep or restore the previous theme. Temporary staging is removed afterward;
 there is no saved backup history. Directory locks reject concurrent installers
 without creating lock files.
 
-The script normally installs to the XDG location above. If a regular legacy
-`~/.themes/Adwaita-AMOLED` directory also exists, the default user install
-refreshes that copy too, so it cannot shadow the newer theme. `--dest DIR`
-selects a different theme parent and updates only that location. Run from an
-extracted download/checkout outside the installed theme directory.
+The script normally installs to the XDG location above and creates
+`~/.themes/Adwaita-AMOLED` as a compatibility link to it: GTK2 does not discover
+themes in `XDG_DATA_HOME/themes`. If a regular legacy directory already exists,
+the default user install refreshes that copy instead. A legacy link pointing
+elsewhere is reported before changing installed files; it is never overwritten.
+Default removal also removes a matching compatibility link. `--dest DIR`
+selects a different theme parent and updates only that location, without adding
+this link. Run from an extracted download/checkout outside the installed theme
+directory.
 
 ## Update and remove
 
@@ -138,7 +142,10 @@ explicit selection after checking your GTK package version:
 
 Libadwaita is configured through user CSS, rather than an official theming API.
 Do not set GTK_THEME globally. App-specific styling can still override parts
-of the theme.
+of the theme. Set a dark appearance in your desktop/app when available: editors
+such as GNOME Text Editor select their document/syntax colors separately, and
+can retain a white editing canvas while following a light system preference.
+The theme does not replace an application's syntax color scheme.
 
 ## Desktop activation
 
@@ -188,7 +195,7 @@ copied theme using the app's own settings or the manual examples below.
 
 | Extra | Destination / selection |
 |---|---|
-| `qt` | `CONFIG/qt5ct` and `CONFIG/qt6ct`, under `colors/` and `qss/`. Select Adwaita-AMOLED in the matching qt5ct/qt6ct app; QSS is optional. No global Qt plugin variable is changed. |
+| `qt` | `CONFIG/qt5ct` and `CONFIG/qt6ct`, under `colors/` and `qss/`. Select Adwaita-AMOLED in the matching qt5ct/qt6ct app. Enable the optional `fusion-simple-scrollbar.qss` for visible scrollbar and slider handles. No global Qt plugin variable is changed. |
 | `kitty` | `CONFIG/kitty/themes/adwaita-amoled.conf`, or the corresponding `KITTY_CONFIG_DIRECTORY/themes/` location. Include that file in your active `kitty.conf`. |
 | `alacritty` | `CONFIG/alacritty/themes/adwaita-amoled.toml`. Add it to `[general].import` in your active TOML config, preserving existing imports. |
 | `bat` | `themes/adwaita-amoled.tmTheme` in bat's reported config directory, or beside `BAT_CONFIG_PATH`; defaults to `CONFIG/bat`. Rebuilds bat's cache if bat/batcat is installed. Select with `--theme=adwaita-amoled`. |
@@ -210,8 +217,11 @@ your normal user. GTK2 still needs Murrine.
 ### Theme files and desktop selection
 
 Keep a backup of an existing installed theme before replacing its files. Avoid
-keeping a second copy named Adwaita-AMOLED in `~/.themes`, because different
-desktop components search the legacy and XDG locations in different orders.
+keeping a second independent copy named Adwaita-AMOLED in `~/.themes`, because
+different desktop components search the locations in different orders. The
+compatibility link below exposes the same copy to GTK2. If that legacy path
+already exists, inspect it and resolve any older copy/link before proceeding;
+the example does not replace it.
 
 ```bash
 amoled_data="${XDG_DATA_HOME:-$HOME/.local/share}"
@@ -219,6 +229,10 @@ amoled_theme="$amoled_data/themes/Adwaita-AMOLED"
 mkdir -p "$amoled_theme"
 cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
 cp index.theme LICENSE "$amoled_theme/"
+mkdir -p "$HOME/.themes"
+if [ ! -e "$HOME/.themes/Adwaita-AMOLED" ] && [ ! -L "$HOME/.themes/Adwaita-AMOLED" ]; then
+  ln -s "$amoled_theme" "$HOME/.themes/Adwaita-AMOLED"
+fi
 ```
 
 Select **Adwaita-AMOLED** in your desktop's Appearance settings. For GNOME/Budgie,
@@ -371,7 +385,8 @@ can stage another shared location. Run user GTK4/Flatpak/extras configuration
 separately without sudo. Root GTK4 user CSS must be configured separately if
 needed; a system theme alone does not force libadwaita to use it.
 
-To also expose that root-owned copy through `/usr/share/themes`, use:
+GTK2 also needs the root-owned theme exposed through its system theme location,
+normally `/usr/share/themes`. For the default shared copy, use:
 
 ```bash
 sudo ./install.sh --system --link /usr/share/themes

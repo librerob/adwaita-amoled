@@ -21,6 +21,46 @@ class InstalledConsumerTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return result
 
+    def test_native_gtk2_discovers_default_user_installation(self):
+        with tempfile.TemporaryDirectory(prefix="amoled-gtk2-discovery-") as temporary:
+            home = Path(temporary) / "home # ü"
+            home.mkdir()
+            env = dict(
+                os.environ,
+                HOME=str(home),
+                XDG_DATA_HOME=str(home / "data"),
+                XDG_CONFIG_HOME=str(home / "config"),
+                GSETTINGS_BACKEND="memory",
+                GTK_DATA_PREFIX=str(home / "empty-system-prefix"),
+            )
+            for name in ("SUDO_USER", "GTK_THEME", "GTK2_RC_FILES", "GTK_PATH"):
+                env.pop(name, None)
+            self.run_program(["bash", str(ROOT / "install.sh"), "install"], env)
+            probe = [sys.executable, str(ROOT / "tests/installed_gtk2.py")]
+            self.assertTrue(
+                json.loads(self.run_program(probe, env).stdout)[
+                    "normal_theme_discovery"
+                ]
+            )
+            # Negative control: leave every XDG theme file installed, but hide
+            # the compatibility link. The real GTK2 loader must fall back.
+            legacy = home / ".themes/Adwaita-AMOLED"
+            hidden = legacy.with_name("hidden-theme")
+            legacy.rename(hidden)
+            self.assertFalse(
+                json.loads(self.run_program(probe, env).stdout)[
+                    "normal_theme_discovery"
+                ]
+            )
+            hidden.rename(legacy)
+            self.run_program(["bash", str(ROOT / "install.sh"), "--remove"], env)
+            self.assertFalse(os.path.lexists(legacy))
+            self.assertFalse(
+                json.loads(self.run_program(probe, env).stdout)[
+                    "normal_theme_discovery"
+                ]
+            )
+
     def test_native_gtk4_automatic_loading_and_removal(self):
         with tempfile.TemporaryDirectory(prefix="amoled-native-install-") as temporary:
             home = Path(temporary) / "home # % ü"

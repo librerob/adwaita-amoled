@@ -47,6 +47,23 @@ class SystemInstallerTests(unittest.TestCase):
             self.run_cli("--system", "--dest", str(dest), *args, success=False)
             self.assertFalse(dest.exists())
 
+    def test_root_gtk2_discovers_the_root_owned_shared_link(self):
+        dest = self.base / "local/share/themes"
+        links = self.base / "usr/share/themes"
+        self.run_cli("--system", "--dest", str(dest), "--link", str(links))
+        env = dict(self.env, GTK_DATA_PREFIX=str(self.base / "usr"))
+        for key in ("GTK_THEME", "GTK2_RC_FILES", "GTK_PATH"):
+            env.pop(key, None)
+        result = subprocess.run(
+            [sys.executable, str(base.ROOT / "tests/installed_gtk2.py")],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue(json.loads(result.stdout)["normal_theme_discovery"])
+
     def test_new_shared_parent_is_accessible_with_restrictive_root_umask(self):
         self.assertEqual(os.geteuid(), 0)
         dest = self.base / "shared/themes"

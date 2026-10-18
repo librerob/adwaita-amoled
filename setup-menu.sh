@@ -126,7 +126,8 @@ guided_system() {
     case $MENU_NUMBER in
         0) printf 'Cancelled; no changes made.\n'; exit 0 ;;
         2) MENU_ARGS+=(--dest /usr/share/themes) ;;
-        1) if menu_yes 'Also manage a link under /usr/share/themes to this root-owned copy?' n; then
+        1) printf 'GTK2 needs the shared theme exposed under /usr/share/themes.\n'
+           if menu_yes 'Also manage a link under /usr/share/themes to this root-owned copy?' n; then
                MENU_ARGS+=(--link /usr/share/themes)
            fi ;;
     esac
@@ -238,6 +239,7 @@ guided_review() {
         printf '  %s\n' "${TARGETS[@]}"
     fi
     [[ -z $LINK_PATH ]] || printf 'Shared link: %s -> %s\n' "$LINK_PATH" "$TARGET"
+    [[ -z $GTK2_LINK ]] || printf 'GTK2 compatibility link: %s -> %s\n' "$GTK2_LINK" "$TARGET"
     if $LIBADWAITA; then
         if $REMOVE; then printf 'Unlink only this theme\047s GTK4 overrides in %s/gtk-4.0\n' "$CONFIG"
         else

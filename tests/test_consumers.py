@@ -40,6 +40,12 @@ class ConsumerTests(unittest.TestCase):
     def test_qt6_native_palette(self):
         self.native("qt_colors.py", "6")
 
+    def test_qt5_slider_visibility_and_native_geometry(self):
+        self.native("qt_sliders.py", "5")
+
+    def test_qt6_slider_visibility_and_native_geometry(self):
+        self.native("qt_sliders.py", "6")
+
     def test_gtk2_style_and_painted_button_contrast(self):
         self.native("gtk2_colors.py")
 

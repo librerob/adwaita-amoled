@@ -159,6 +159,52 @@ class InstallerTests(unittest.TestCase):
         self.run_cli("--remove")
         self.assertFalse(legacy.exists())
 
+    def test_default_user_install_exposes_gtk2_without_a_second_theme_copy(self):
+        legacy = self.home / ".themes" / THEME
+        for _ in range(2):
+            self.run_cli()
+            self.assertTrue(legacy.is_symlink())
+            self.assertEqual(legacy.resolve(), self.theme)
+            self.assertEqual(
+                (legacy / "gtk-2.0/gtkrc").read_bytes(),
+                (ROOT / "gtk-2.0/gtkrc").read_bytes(),
+            )
+        self.run_cli("--remove")
+        self.assertFalse(os.path.lexists(legacy))
+        self.assertFalse(self.theme.exists())
+
+    def test_foreign_gtk2_link_is_reported_before_replacing_existing_files(self):
+        marker = self.theme / "keep"
+        self.write(marker, "previous version")
+        elsewhere = self.base / "different-theme"
+        self.write(elsewhere / "keep", "unrelated")
+        legacy = self.home / ".themes" / THEME
+        legacy.parent.mkdir()
+        legacy.symlink_to(elsewhere)
+        for args in [(), ("--remove",)]:
+            result = self.run_cli(*args, success=False)
+            self.assertIn("GTK2 theme path points elsewhere", result.stderr)
+            self.assertEqual(marker.read_text(), "previous version")
+            self.assertEqual((elsewhere / "keep").read_text(), "unrelated")
+            self.assertEqual(legacy.resolve(), elsewhere)
+
+    def test_gtk2_parent_alias_to_xdg_themes_does_not_create_a_recursive_link(self):
+        legacy_parent = self.home / ".themes"
+        legacy_parent.symlink_to(self.theme.parent)
+        self.run_cli()
+        self.assertFalse(self.theme.is_symlink())
+        self.assertTrue((legacy_parent / THEME / "gtk-2.0/gtkrc").is_file())
+        self.run_cli("--remove")
+        self.assertTrue(legacy_parent.is_symlink())
+        self.assertFalse(self.theme.exists())
+
+    def test_gtk2_compatibility_link_cannot_be_placed_inside_the_theme(self):
+        self.write(self.theme / "keep", "previous version")
+        (self.home / ".themes").symlink_to(self.theme / "extra")
+        result = self.run_cli(success=False)
+        self.assertIn("compatibility path overlaps", result.stderr)
+        self.assertEqual((self.theme / "keep").read_text(), "previous version")
+
     def test_custom_destination_leaves_other_theme_copy_alone(self):
         legacy = self.home / ".themes" / THEME
         self.write(legacy / "keep", "untouched")

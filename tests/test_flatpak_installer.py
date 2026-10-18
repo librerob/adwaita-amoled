@@ -44,6 +44,7 @@ class FlatpakInstallerTests(unittest.TestCase):
         )
         self.run_cli("--remove", "--flatpak", "org.example.One=legacy")
         self.assertTrue((self.theme / "index.theme").exists())
+        self.assertEqual((self.home / ".themes" / base.THEME).resolve(), self.theme)
         self.assertTrue(
             (self.home / ".var/app/org.example.Two/config/gtk-4.0/gtk.css").exists()
         )

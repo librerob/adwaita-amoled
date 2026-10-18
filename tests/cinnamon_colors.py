@@ -164,6 +164,20 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
         }
       }
     }
+    const decorativeBorders=[];
+    for(const [name,id,classes] of [
+      ['tooltip','Tooltip',null],
+      ['notification','notification',null],
+      ['task-preview',null,'window-list-preview'],
+      ['grouped-task-preview',null,'grouped-window-list-thumbnail-menu'],
+      ['start-sidebar',null,'appmenu-sidebar'],
+    ]) {
+      for(const state of ['', 'hover','focus','active']) {
+        const n=node(context.get_root_node(),id,classes,state);
+        decorativeBorders.push({name,state,widths:[0,1,2,3].map(side=>n.get_border_width(side)),
+          colors:[0,1,2,3].map(side=>n.get_border_color(side).to_string())});
+      }
+    }
     let styleNodes=0;
     {
       for (const cls of CLASS_NAMES) {
@@ -175,7 +189,7 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
         }
       }
     }
-    return {directory:imports.ui.main.themeManager.themeDirectory,colors,styleNodes};
+    return {directory:imports.ui.main.themeManager.themeDirectory,colors,styleNodes,decorativeBorders};
    })()"""
             import re
 
@@ -244,6 +258,12 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
                 )
             )
             assert not failed, failed
+            for sample in result["decorativeBorders"]:
+                expected = [0, 1, 0, 0] if sample["name"] == "start-sidebar" else [1, 1, 1, 1]
+                assert sample["widths"] == expected, sample
+                for width, color in zip(sample["widths"], sample["colors"]):
+                    if width:
+                        assert color == "#2a2a2aff", sample
             subprocess.run(
                 [
                     "python3",
