@@ -38,9 +38,7 @@ jobs:
           python3 tests/test_theme.py
           python3 tests/test_readability.py
       - name: Check root-owned shared installation in temporary staging roots
-        run: |
-          sudo --preserve-env=GITHUB_ACTIONS xvfb-run -a python3 tests/test_system_installer.py
-          sudo --preserve-env=GITHUB_ACTIONS python3 tests/test_guided_installer.py SystemMenuTests
+        run: sudo --preserve-env=GITHUB_ACTIONS xvfb-run -a python3 tests/test_system_installer.py
       - name: Check subtle decoration and visible GTK input edges
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/borders
@@ -83,6 +81,8 @@ jobs:
             git ca-certificates python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
             gir1.2-adw-1 libmetacity3 xvfb xauth
       - uses: actions/checkout@v7
+      - name: Check guided administrator preview in isolated system paths
+        run: python3 tests/test_guided_installer.py SystemMenuTests
       - name: Check automatic modern GTK4 links and removal
         run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk4_automatic_loading_and_removal
       - name: Check modern native parsing, rendering and text colors

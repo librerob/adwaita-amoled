@@ -23,7 +23,6 @@ python3 tests/test_installer_failures.py
 python3 tests/test_flatpak_installer.py
 python3 tests/test_manual_installation.py
 sudo xvfb-run -a python3 tests/test_system_installer.py
-sudo python3 tests/test_guided_installer.py SystemMenuTests
 xvfb-run -a python3 tests/test_install_consumers.py
 zsh -n extra/zsh/.zshrc
 python3 tests/test_theme.py
@@ -45,8 +44,12 @@ preview/cancellation/EOF/Ctrl-C, GTK detection and existing overrides, extras,
 desktop/Shell choices, selected-app Flatpak setup/removal, and administrator
 handoff. Desktop/Flatpak commands in these menu-specific cases are controlled
 fixtures; existing native and real Flatpak checks verify their backend paths.
-The separate root menu test previews/cancels shared setup without writing global
-theme paths. Ordinary explicit options and captured/nonterminal execution keep
+The separate `SystemMenuTests` root class previews/cancels shared setup without
+writing global theme paths. CI runs it in its Ubuntu container, whose default
+system-theme parents are root-owned and protected; the GitHub host runner can
+have a group-writable `/usr/share/themes`, which the installer correctly rejects.
+Run that class as root in a disposable container with protected system paths.
+Ordinary explicit options and captured/nonterminal execution keep
 their non-interactive behavior.
 
 `test_theme.py` checks the shipping and freshly compiled bundle contents, asset
