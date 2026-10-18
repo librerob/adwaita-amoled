@@ -8,6 +8,7 @@ import shlex
 import subprocess
 import sys
 import tarfile
+import tomllib
 import unittest
 
 import test_installer as base
@@ -86,6 +87,34 @@ class AccentTests(unittest.TestCase):
                 (base.ROOT / "accents" / accent / "accent-name").read_text(),
                 accent + "\n",
             )
+
+    def test_terminal_ansi_slots_keep_their_meanings_across_accents(self):
+        def kitty(path):
+            return {
+                key: value
+                for key, value in (
+                    line.split(None, 1)
+                    for line in path.read_text().splitlines()
+                    if line and not line.startswith("#")
+                )
+                if key.startswith("color") and key[5:].isdigit()
+            }
+
+        normal = kitty(base.ROOT / "extra/kitty/adwaita-amoled.conf")
+        alacritty = tomllib.loads(
+            (base.ROOT / "extra/alacritty/alacritty.toml").read_text()
+        )["colors"]
+        for accent in COLORS:
+            with self.subTest(accent=accent):
+                self.assertEqual(
+                    kitty(self.expected(accent, "extra/kitty/adwaita-amoled.conf")),
+                    normal,
+                )
+                colors = tomllib.loads(
+                    self.expected(accent, "extra/alacritty/alacritty.toml").read_text()
+                )["colors"]
+                for group in ("normal", "bright", "dim"):
+                    self.assertEqual(colors[group], alacritty[group])
 
     def test_presets_preserve_shell_layout_and_resolve_system_accent_expressions(self):
         properties = {

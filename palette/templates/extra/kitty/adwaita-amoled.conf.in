@@ -45,7 +45,7 @@ color2  {{syntax_green}}
 # warning
 color3  {{syntax_yellow}}
 # @accent blue
-color4  {{accent_text}}
+color4  {{terminal_blue}}
 # readable syntax magenta
 color5  {{syntax_magenta}}
 # link/cyan
@@ -63,7 +63,7 @@ color10 #4affc4
 # brighter warning
 color11 #ffcc44
 # @accent_hover
-color12 {{accent_text_hover}}
+color12 {{terminal_bright_blue}}
 # brighter magenta
 color13 #e599ff
 # bright cyan

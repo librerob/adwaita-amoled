@@ -1,6 +1,6 @@
 # Shared palette generation
 
-`colors.json` holds 46 shared color values for the default blue theme.
+`colors.json` holds 48 shared color values for the default blue theme.
 `accents.json` supplies complete `accent_*` overrides for yellow, gold, purple,
 green, red, orange and pink. Neutral and semantic roles retain the base values. `templates/` supplies the 76 generated
 source, configuration and SVG files that use them. Templates have the output's
@@ -73,3 +73,6 @@ Templates and this tool are development inputs. They are excluded from
 `runtime-files.txt`, so users need no Python and download no palette sources.
 
 See [accent choices, measured contrast and limitations](../ACCENT_COLORS.md).
+
+`terminal_blue` and `terminal_bright_blue` are separate from accent roles, so
+changing the preset does not change ANSI blue slots in Kitty or Alacritty.

@@ -46,6 +46,8 @@
     "accent_menu_surface": "#0a1520",
     "accent_menu_surface_hover": "#060e16",
     "accent_menu_border": "#0c2040",
-    "accent_menu_border_hover": "#0a1830"
+    "accent_menu_border_hover": "#0a1830",
+    "terminal_blue": "#8ab4f8",
+    "terminal_bright_blue": "#aecbfa"
   }
 }
