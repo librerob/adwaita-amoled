@@ -139,6 +139,14 @@ def main():
                         ),
                     ]
                 ]
+                if args.group == "shell46":
+                    commands.append(
+                        [
+                            str(tests / "shell46_assets.py"),
+                            str(root),
+                            str(evidence / "focus-rings"),
+                        ]
+                    )
             for index, command in enumerate(commands):
                 env = dict(
                     os.environ,

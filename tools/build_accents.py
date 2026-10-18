@@ -57,6 +57,12 @@ def shell46_asset(text, colors):
     def style(match):
         value = match[1]
         role = "accent_text" if "fill:none;" in value else "accent_fill"
+        if role == "accent_text" and "stroke:#3584e4;" in value:
+            # Inherited 35% focus rings paint below 3:1 on AMOLED. A 60%
+            # ring is measured on black and both raised popup surfaces.
+            value = re.sub(
+                r"stroke-opacity:(?:\.35|\.34999999)(?=;|$)", "stroke-opacity:.6", value
+            )
         return 'style="' + value.replace("#3584e4", colors[role]) + '"'
 
     text = re.sub(r'style="([^"]*)"', style, text)

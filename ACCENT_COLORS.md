@@ -38,6 +38,8 @@ meanings. A red preset still needs error icons/messages; a green preset still
 needs success indicators. Color alone must not communicate those meanings.
 Wallpaper, logos, screenshots and pinned upstream originals remain unchanged.
 Preset Shell 46 switches/checkboxes use derived SVG copies with matching colors.
+Their checkbox focus rings also use a measured 60% opacity; the inherited 35%
+paint was below 3:1 on the AMOLED surfaces.
 
 ## Method and guidance
 

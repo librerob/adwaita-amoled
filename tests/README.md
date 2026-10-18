@@ -267,7 +267,9 @@ toolkit generations. Edges checks the GTK3/GTK4 card, toolbar, decoration and
 entry-boundary pixels for every preset. Qt covers active/inactive palettes and native slider
 painting/input in Qt5/Qt6. Extras exercise native Neovim/Airline (including
 256-color fallback), Kitty/Zsh/bat/Rofi parsing and paint/contrast checks.
-Shell 46 exercises real pointer interactions and the derived switch SVGs.
+Shell 46 exercises real pointer interactions and the derived switch SVGs. Its
+image check measures focused checkbox ring pixels rendered by librsvg against
+black, `#141414` and `#252525`, requiring at least 3:1.
 Shell 51 checks each fixed preset against all nine GNOME system accents,
 including unchanged preset colors, text/glyph pairs and selection borders.
 Cinnamon checks its native 125 text/state/overlay pairs and decorative edges.

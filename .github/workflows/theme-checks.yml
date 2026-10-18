@@ -150,7 +150,7 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             git ca-certificates gnome-shell gnome-shell-extensions mutter-14-tests \
-            python3-dbusmock python3-dbus sassc pipewire wireplumber librsvg2-common
+            python3-dbusmock python3-dbus python3-gi gir1.2-gdkpixbuf-2.0 sassc pipewire wireplumber librsvg2-common librsvg2-bin
       - uses: actions/checkout@v7
       - name: Check GNOME 46 source and actual pointer interactions
         env:
