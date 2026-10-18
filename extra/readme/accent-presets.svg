@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="288" viewBox="0 0 960 288" role="img" aria-labelledby="title desc">
+  <title id="title">Adwaita AMOLED accent presets</title>
+  <desc id="desc">Actual palette samples, not application screenshots. Each card shows light accent text and a darker filled button with a white label. Blue is the default.</desc>
+  <rect width="960" height="288" rx="18" fill="#000000"/>
+  <g font-family="DejaVu Sans, sans-serif">
+    <g transform="translate(16 16)" data-accent="blue">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#8ab4f8">Blue · default</text>
+      <text x="16" y="82" font-size="25" fill="#8ab4f8">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#2d6be0"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(252 16)" data-accent="yellow">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#d2cf89">Yellow</text>
+      <text x="16" y="82" font-size="25" fill="#d2cf89">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#7b7505"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(488 16)" data-accent="gold">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#edc76f">Gold</text>
+      <text x="16" y="82" font-size="25" fill="#edc76f">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#956c0b"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(724 16)" data-accent="purple">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#dcc1ef">Purple</text>
+      <text x="16" y="82" font-size="25" fill="#dcc1ef">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#9a4fd0"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(16 152)" data-accent="green">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#85dea3">Green</text>
+      <text x="16" y="82" font-size="25" fill="#85dea3">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#238443"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(252 152)" data-accent="red">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#f7bebe">Red</text>
+      <text x="16" y="82" font-size="25" fill="#f7bebe">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#d43737"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(488 152)" data-accent="orange">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#f3c29e">Orange</text>
+      <text x="16" y="82" font-size="25" fill="#f3c29e">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#ba550d"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+    <g transform="translate(724 152)" data-accent="pink">
+      <rect width="220" height="120" rx="12" fill="#0f0f0f" stroke="#2a2a2a"/>
+      <text x="16" y="30" font-size="17" font-weight="600" fill="#eebed8">Pink</text>
+      <text x="16" y="82" font-size="25" fill="#eebed8">Aa</text>
+      <rect x="80" y="54" width="124" height="44" rx="9" fill="#d02f85"/>
+      <text x="142" y="82" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff">Button</text>
+    </g>
+  </g>
+</svg>
