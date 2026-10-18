@@ -65,6 +65,7 @@ async function checkAccentRoles(context, theme) {
     const original = settings.get_string('accent-color');
     const pairs = [];
     const graphics = [];
+    const textPairs = [];
     const states = ['', 'hover', 'focus', 'active', 'active:hover', 'focus:hover', 'active:focus', 'active:focus:hover'];
     const make = (parent, classes, state = '', type = St.Widget.$gtype, id = null) =>
         St.ThemeNode.new(context, parent, theme, type, id, classes, state.replaceAll(':', ' '), '');
@@ -72,6 +73,11 @@ async function checkAccentRoles(context, theme) {
         for (const accent of ['blue', 'teal', 'green', 'yellow', 'orange', 'red', 'pink', 'purple', 'slate']) {
             settings.set_string('accent-color', accent);
             await Scripting.sleep(60);
+            for (const state of ['', 'hover']) {
+                const link = make(context.get_root_node(), 'url-highlighter', state);
+                textPairs.push({accent, state,
+                    color: link.get_color('link-color').to_string()});
+            }
             for (const [name, parentClass, childClass, baseState] of [
                 ['default', null, 'button default', ''],
                 ['quick-toggle', null, 'quick-toggle', 'checked'],
@@ -149,6 +155,13 @@ async function checkAccentRoles(context, theme) {
     const failures = pairs.filter(pair => pair.contrast < 4.5);
     assert(failures.length === 0, `Unreadable Shell control states: ${JSON.stringify(failures)}`);
     const fixedFill = GLib.getenv('THEME_TEST_FIXED_ACCENT_FILL');
+    const fixedText = GLib.getenv('THEME_TEST_FIXED_ACCENT_TEXT');
+    if (fixedText) {
+        assert(textPairs.every(pair => pair.color === `${fixedText}ff`),
+            `Preset link text does not match selected theme: ${JSON.stringify(textPairs)}`);
+        results.fixedAccentText = fixedText;
+        results.presetTextPairs = textPairs.length;
+    }
     if (fixedFill) {
         const defaults = pairs.filter(pair => pair.name === 'default' && pair.state === '');
         assert(defaults.every(pair => pair.background === `${fixedFill}ff`),

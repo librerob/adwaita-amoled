@@ -68,7 +68,8 @@ The main accent roles remain separate: pale blue `#8ab4f8` for standalone text,
 for filled hover states. Existing pale editor/Qt selections keep dark text.
 Selected opaque GTK rows use selection text instead of semantic hues; libadwaita's
 darker translucent row selection keeps its independently readable status hues.
-GNOME Shell retains all nine system accent hues. Pinned upstream Sass and SVGs
+GNOME Shell now uses the selected theme preset, including blue, independently
+of all nine GNOME system accent choices. Pinned upstream Sass and SVGs
 remain unchanged; adaptations live outside the pinned source directory.
 
 ## Accounting for every file and color role

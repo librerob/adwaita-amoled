@@ -132,7 +132,7 @@ jobs:
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-shell
         run: python3 tests/test_shell.py
-      - name: Check seven fixed Shell accents against every GNOME system accent
+      - name: Check all eight fixed Shell accents against every GNOME system accent
         run: python3 tests/accent_native.py shell51 '${{ runner.temp }}/theme-test-output-shell/accents'
       - name: Upload Shell rendering evidence
         if: always()

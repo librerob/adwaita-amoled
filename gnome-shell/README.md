@@ -7,14 +7,13 @@ GNOME 46 uses SVG switches and different quick-settings classes; loading the
 51 stylesheet on 46 causes missing interaction backgrounds and switch handles.
 
 The adaptation keeps upstream layout, widget states and privacy indicators.
-GNOME 46 matches the selected theme accent. The default blue installation on
-GNOME 51 retains its selected system accent hue. The seven optional named
-presets instead use their selected theme color on GNOME 51 too; changing GNOME
-Settings' accent does not recolor those Shell presets. Select a preset through
-the installer's Accent color menu or `--accent purple`.
-Opaque accent fills are darkened by state
-to preserve white-label contrast; standalone system accents remain lighter. Panel, menu, dialog and overview bases
-are black; raised surfaces and OSDs use the existing AMOLED depth palette.
+GNOME 46 and 51 match the selected theme accent for all eight presets, including
+blue. Changing GNOME Settings' accent does not recolor the Shell theme; the
+installer does not change that saved preference. Select a preset through the
+installer's Accent color menu or `--accent purple`. Standalone text/focus and
+white-label filled controls use separate measured tones. Panel, menu, dialog
+and overview bases are black; raised surfaces and OSDs use the existing AMOLED
+depth palette.
 The desktop wallpaper remains your choice.
 
 ## Install and activate
@@ -50,7 +49,7 @@ activation also checks that it matches the local Shell version.
 
 For manual installation, copy `gnome-shell-46.css` or `gnome-shell-51.css` over
 `gnome-shell.css` in the **installed** theme directory. Keep the entire `assets/`
-tree, including `assets/46`. The source default remains 51; manual GNOME 46 users
+tree, including `assets/46-themed`. The source default remains 51; manual GNOME 46 users
 must select the 46 stylesheet before enabling User Themes.
 
 ## Source and rebuilding
@@ -73,14 +72,18 @@ the entry is `sass/gnome-shell-46.scss`, with color-only overrides in
 Rebuild after editing the palette:
 
 ```bash
-sudo apt install sassc
+sudo apt install sassc python3
 ./gnome-shell/build.sh
 ./gnome-shell/build.sh --shell-version 46
 ```
 
 Run the build command from the repository/theme root. The script also accepts an
 output filename (after optional `--shell-version 46`) for reproducibility checks. It rewrites
-upstream resource URLs to the bundled assets. GTK resource bundles are built
+upstream resource URLs to the bundled assets. The development-only
+`tools/shell_palette.py` resolves dynamic accent expressions using the shared
+palette, and derives 46 controls under `assets/46-themed/` without changing the
+recorded upstream SVGs. Users install the precompiled outputs and need no Python.
+GTK resource bundles are built
 separately by the root `build.sh`.
 
 The default build updates both the source default `gnome-shell.css` and its
@@ -90,9 +93,9 @@ desktop upgrade without requiring Sass at installation time.
 
 After rebuilding the base GTK and both Shell styles, run
 `python3 tools/build_accents.py` from the repository root to update all seven
-precompiled overlays. Its Shell 51 adaptation resolves accent expressions by
-their text/fill roles in the compiled preset CSS; selectors and layout remain
-unchanged. It does not rewrite pinned upstream Sass or default blue CSS.
+precompiled overlays. The same Shell palette step applies to blue and the seven
+additional presets; selectors and layout remain unchanged. The builder does not
+rewrite pinned upstream Sass or SVG originals.
 
 GNOME Shell Sass is GPL-2.0-or-later; its license and attribution are retained in
 `sass/upstream/COPYING`, `sass/upstream/README.md` and the source files. The

@@ -15,11 +15,14 @@ From the repository root:
 ```bash
 shellcheck install.sh setup-menu.sh build.sh
 python3 tools/generate_palette.py --check
+python3 tools/build_accents.py --check
+python3 tests/test_accents.py
 python3 tests/test_palette.py
 python3 tests/test_runtime_package.py
 python3 tests/test_guided_installer.py GuidedInstallerTests
 python3 tests/test_installer.py
 python3 tests/test_installer_failures.py
+python3 tests/test_installer_preservation.py
 python3 tests/test_flatpak_installer.py
 python3 tests/test_manual_installation.py
 sudo xvfb-run -a python3 tests/test_system_installer.py
@@ -356,3 +359,10 @@ installation, explicit runtime selection, configuration/update/removal without a
 That mode is explicitly rejected in CI. A successful preparation run does not
 establish rendered Flatpak coverage; the full CI case must also pass. These
 fixtures do not cover every Flatpak runtime, application, device or GUI session.
+
+All eight presets, including blue, run through `accent_native.py`. Shell 51
+checks fixed fills and link text against every GNOME system accent; Shell 46
+checks interactions and actual derived SVG focus-ring paint. Pinned originals
+remain checked by the source suites. These are headless software-rendered
+sessions. A repository owner also reports a successful real Brave-on-Wayland
+test; that manual result is separate from the reproducible automation.

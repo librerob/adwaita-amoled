@@ -1,7 +1,8 @@
 // Adwaita-AMOLED palette adaptation, 2026-10-16.
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Override the palette before upstream drawing/widget rules are evaluated.
-// Keep upstream geometry, states, privacy indicators and system accent colors.
+// Keep upstream geometry, states and privacy indicators. The build step applies
+// the shared theme accent to compiled CSS without changing pinned sources.
 
 $_base_color_dark: #000000;
 $_base_color_light: #ffffff;

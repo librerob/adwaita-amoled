@@ -111,9 +111,8 @@ Restart apps and reload Shell/Cinnamon as appropriate. Separate user and system
 installations each retain their own color. Shared-system guided setup also has
 an Accent color choice.
 
-GNOME Shell 46 matches the selected preset. On Shell 51, the **seven new presets
-also match it**, regardless of GNOME Settings' system accent. The default blue
-Shell 51 build retains its existing behavior of following GNOME Settings.
+GNOME Shell 46 and 51 match the selected preset for **all eight colors,
+including blue**, regardless of GNOME Settings' system accent.
 This does not change the system accent setting or application-owned accent
 preferences. Other Shell major versions remain unverified.
 

@@ -126,3 +126,9 @@ runtime-files.txt
 setup-menu.sh
 accent-name
 ACCENT_COLORS.md
+gnome-shell/assets/46-themed/checkbox-focused.svg
+gnome-shell/assets/46-themed/checkbox-off-focused.svg
+gnome-shell/assets/46-themed/checkbox-off.svg
+gnome-shell/assets/46-themed/checkbox.svg
+gnome-shell/assets/46-themed/toggle-off.svg
+gnome-shell/assets/46-themed/toggle-on.svg

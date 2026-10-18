@@ -10,7 +10,8 @@ repository path plus `.in`; for example,
 For generated files, edit the template for layout or toolkit-specific styling;
 edit `colors.json` for a shared color. Do not edit the generated output directly.
 Files without a matching template remain maintained in their original location.
-The expanded role mapping preserves default blue rendered files byte-for-byte.
+The role mapping preserves existing GTK and app palette values. Shell blue also
+uses these roles, including its derived GNOME 46 checkbox and switch assets.
 
 From the repository root, using Python 3.11 or newer:
 
@@ -24,13 +25,15 @@ python3 tools/build_accents.py
 python3 tools/build_accents.py --check
 ```
 
-GTK rebuilding needs GLib's resource compiler; Shell rebuilding needs `sassc`.
+GTK rebuilding needs GLib's resource compiler; Shell rebuilding needs `sassc`
+and Python 3 (development only).
 Commit palette/template changes, generated files and rebuilt GTK/Shell outputs
 together. The accent builder compiles all seven presets in temporary directories
 and stores only files differing from blue under `accents/<name>/`, with per-color
 and distribution SHA-256 manifests. `--check` rebuilds and compares without
 writing. Unexpected existing overlay files require inspection rather than silent
-deletion. Blue outputs and pinned upstream sources remain untouched.
+deletion. The overlay builder leaves base blue outputs and pinned upstream
+sources untouched; rebuild the base first with the commands above.
 
 CI checks generation and native/source/bundle tests. Changing
 a color still requires contrast and native rendering review; generation does
@@ -59,9 +62,11 @@ original artwork are not rewritten; Shell 46 preset controls use derived SVG
 copies. The base generator writes neither GTK resources nor
 compiled Shell CSS; the accent builder invokes the normal build tools for those.
 
-GNOME Shell 51's new presets resolve native accent expressions by property:
-light text/focus, dark fills and white labels. Its default blue build retains
-GNOME Settings' accent behavior. Selectors and geometry stay unchanged.
+All eight GNOME Shell 51 presets resolve native accent expressions by property:
+light text/focus, dark fills and white labels. GNOME Settings' accent does not
+recolor the theme. Shell 46 controls use `assets/46-themed/`, derived from the
+pinned originals by the same development build. Selectors and geometry stay
+unchanged.
 
 Presets must define every base `accent_*` role and cannot override semantic or
 neutral roles. Unknown tokens, malformed colors and duplicate JSON keys fail.

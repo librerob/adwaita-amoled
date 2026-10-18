@@ -1008,19 +1008,19 @@ StEntry StLabel.hint-text {
 .check-box StBin {
   width: 24px;
   height: 24px;
-  background-image: url("assets/46/checkbox-off.svg");
+  background-image: url("assets/46-themed/checkbox-off.svg");
 }
 
 .check-box:focus StBin {
-  background-image: url("assets/46/checkbox-off-focused.svg");
+  background-image: url("assets/46-themed/checkbox-off-focused.svg");
 }
 
 .check-box:checked StBin {
-  background-image: url("assets/46/checkbox.svg");
+  background-image: url("assets/46-themed/checkbox.svg");
 }
 
 .check-box:focus:checked StBin {
-  background-image: url("assets/46/checkbox-focused.svg");
+  background-image: url("assets/46-themed/checkbox-focused.svg");
 }
 
 /* Switches */
@@ -1029,11 +1029,11 @@ StEntry StLabel.hint-text {
   height: 26px;
   width: 46px;
   background-size: contain;
-  background-image: url("assets/46/toggle-off.svg");
+  background-image: url("assets/46-themed/toggle-off.svg");
 }
 
 .toggle-switch:checked {
-  background-image: url("assets/46/toggle-on.svg");
+  background-image: url("assets/46-themed/toggle-on.svg");
 }
 
 .toggle-switch StIcon {
