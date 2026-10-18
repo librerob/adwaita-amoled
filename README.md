@@ -99,6 +99,9 @@ output is not a terminal. `--interactive` explicitly requests menus and requires
 a terminal; it is used alone.
 The script prepares each replacement before switching it into place and checks
 release-archive checksums. Temporary staging is cleaned up without saved history.
+Default user installs expose the XDG theme through a `~/.themes/Adwaita-AMOLED`
+compatibility link so GTK2 can discover it. Existing real legacy copies are
+updated; links pointing elsewhere are reported without being overwritten.
 Checkout installs and release archives use the same `runtime-files.txt` list:
 runtime styles, assets, app extras, wallpaper and license notices are included;
 the logo, screenshots and development build sources stay in the repository.
@@ -114,6 +117,10 @@ amoled_theme="${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED"
 mkdir -p "$amoled_theme"
 cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
 cp index.theme LICENSE "$amoled_theme/"
+mkdir -p "$HOME/.themes"
+if [ ! -e "$HOME/.themes/Adwaita-AMOLED" ] && [ ! -L "$HOME/.themes/Adwaita-AMOLED" ]; then
+  ln -s "$amoled_theme" "$HOME/.themes/Adwaita-AMOLED"
+fi
 ```
 
 Select it in Appearance settings. See [manual GTK4 overrides](INSTALLING.md#gtk4-and-libadwaita-overrides)

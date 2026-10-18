@@ -128,6 +128,7 @@ done
 DEST=$(realpath -m -- "$DEST")
 TARGET=$DEST/$THEME
 LINK_PATH=''
+GTK2_LINK=''
 if [[ -n $LINK_PARENT ]]; then
     LINK_PARENT=$(realpath -m -- "$LINK_PARENT")
     LINK_PATH=$LINK_PARENT/$THEME
@@ -155,6 +156,21 @@ TARGETS+=("$TARGET")
 if ! $SYSTEM && ! $CUSTOM_DEST && [[ -d $HOME/.themes/$THEME && ! -L $HOME/.themes/$THEME ]]; then
     legacy=$(realpath -m -- "$HOME/.themes/$THEME")
     [[ $legacy == "$TARGET" ]] || TARGETS+=("$legacy")
+fi
+# GTK2 searches ~/.themes, not XDG_DATA_HOME/themes. Keep one runtime copy,
+# exposing it through a compatibility link only for the default user scope.
+if ! $SYSTEM && ! $CUSTOM_DEST && { ! $REMOVE || ((${#FLATPAKS[@]} == 0)); }; then
+    legacy_parent=$(realpath -m -- "$HOME/.themes")
+    legacy_path=$legacy_parent/$THEME
+    if [[ $legacy_path != "$TARGET" ]] && [[ ! -d $legacy_path || -L $legacy_path ]]; then
+        if [[ -L $legacy_path && $(realpath -m -- "$legacy_path") != "$TARGET" ]]; then
+            die "GTK2 theme path points elsewhere; keeping it unchanged: $legacy_path. Select its real parent with --dest."
+        fi
+        [[ ! -e $legacy_path || -L $legacy_path ]] || die "GTK2 theme path is not a directory: $legacy_path"
+        [[ $legacy_path != "$TARGET/"* && $TARGET != "$legacy_path/"* ]] || die 'GTK2 compatibility path overlaps the installed theme.'
+        [[ $legacy_path != "$ROOT" && $legacy_path != "$ROOT/"* ]] || die 'GTK2 compatibility path overlaps the source download.'
+        GTK2_LINK=$legacy_path
+    fi
 fi
 for target in "${TARGETS[@]}"; do
     [[ $ROOT != "$target" && $ROOT != "$target/"* && $target != "$ROOT/"* ]] ||
@@ -350,7 +366,7 @@ if $GUIDED; then guided_review; fi
 # Lock all selected theme parents before making any replacements. Removal does
 # not create absent parents, and dry runs never acquire locks or create files.
 if ! $DRY_RUN; then
-    for target in "${TARGETS[@]}" ${LINK_PATH:+"$LINK_PATH"}; do
+    for target in "${TARGETS[@]}" ${GTK2_LINK:+"$GTK2_LINK"} ${LINK_PATH:+"$LINK_PATH"}; do
         parent=${target%/*}
         if ! $REMOVE; then
             # Only the selected shared parent is made public; ancestor modes stay unchanged.
@@ -366,6 +382,13 @@ if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
         printf 'Theme: %s\n' "$target"
         if $REMOVE; then run rm -rf -- "$target"; else replace_theme "$target"; fi
     done
+fi
+if [[ -n $GTK2_LINK ]]; then
+    if $REMOVE; then
+        [[ ! -L $GTK2_LINK ]] || run rm -f -- "$GTK2_LINK"
+    elif [[ ! -L $GTK2_LINK ]]; then
+        run ln -sT -- "$TARGET" "$GTK2_LINK"
+    fi
 fi
 if [[ -n $LINK_PATH ]]; then
     if $REMOVE; then

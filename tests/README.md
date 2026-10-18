@@ -175,6 +175,13 @@ builds/uses bat's actual theme cache, parses the Rofi theme, and renders every
 SVG through librsvg. GitHub Actions uploads Qt images and GTK2 measurements in
 `extra-consumer-rendering`.
 
+Its Qt slider cases paint 96 samples across Qt5/Qt6, both orientations, black
+and raised surfaces, enabled/disabled/inactive and pointer/focus/pressed states,
+at 1x/2x scale. Enabled handle interiors must contrast at least 3:1, native
+handle rectangles must remain unchanged, and drag/press/release/keyboard input
+must still work. These checks apply to the optional Fusion control QSS; a
+palette alone cannot set every style's slider-handle rendering.
+
 The Shell automation additionally checks 936 control/glyph pairs across
 all nine system accents and compound hover/focus/active states, including Looking
 Glass switches. It separately checks 162 scrollbar graphic pairs and placeholder
@@ -225,6 +232,11 @@ case explicitly selects the copied files in real Kitty, bat, Neovim, Rofi and
 Zsh, checks Qt palette bytes/Alacritty TOML, and verifies app settings remain
 untouched by installation and removal. It does not claim the script activates
 extras automatically.
+Its GTK2 discovery check selects the installed theme by name through the real
+GTK2 settings API, without loading an RC file directly. Hiding the legacy
+compatibility link while keeping the XDG files installed must reproduce the
+light-theme fallback; installing/removing the link must restore/remove normal
+theme discovery.
 
 `test_install_settings.py` checks actual GSettings selection for isolated
 GNOME/Budgie, Cinnamon and MATE users, and xfconf selection in a private D-Bus

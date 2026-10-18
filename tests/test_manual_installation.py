@@ -44,6 +44,8 @@ class ManualInstallationTests(unittest.TestCase):
                     )
                 self.assertFalse((theme / "gtk-3.0/gtk-3.0").exists())
                 self.assertTrue((theme / "extra/libadwaita/gtk-modern.css").is_file())
+                self.assertTrue((home / ".themes/Adwaita-AMOLED").is_symlink())
+                self.assertEqual((home / ".themes/Adwaita-AMOLED").resolve(), theme)
 
     def test_both_documented_gtk4_entry_points_updates_and_backup(self):
         text = (

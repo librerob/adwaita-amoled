@@ -27,3 +27,14 @@ QScrollBar::up-arrow, QScrollBar::down-arrow {
 }
 
 QScrollBar::add-page, QScrollBar::sub-page { background: none; }
+
+/* Fusion derives slider handles from the very dark button palette. Keep their
+ * native dimensions, but make the movable control visible on AMOLED surfaces. */
+QSlider::handle {
+  background: rgba(128, 128, 128, 1);
+  border: 0;
+  border-radius: 3px;
+}
+QSlider::handle:enabled:hover { background: rgba(160, 160, 160, 1); }
+QSlider::handle:enabled:pressed, QSlider::handle:enabled:focus { background: palette(highlight); }
+QSlider::handle:disabled { background: palette(text); }
