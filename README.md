@@ -62,8 +62,17 @@ cd adwaita-amoled
 ./install.sh
 ```
 
-This copies the theme into `~/.local/share/themes/Adwaita-AMOLED`. Select it in
-Appearance settings, or also apply native GTK4/libadwaita and desktop selection:
+In a terminal, this opens numbered menus for installation/update, removal and
+optional app themes. Setup detects your desktop, offers native GTK4/libadwaita
+and supported Shell activation, then shows the destinations before you choose
+**Apply**, **Cancel** or **Preview**. GTK4 replacement is optional and defaults to
+keeping existing overrides. No extra menu package is needed.
+
+The default user theme location is `~/.local/share/themes/Adwaita-AMOLED`.
+Advanced menus cover shared system setup and selected Flatpak apps. App themes
+still need selection in their own applications.
+
+Existing explicit options work without prompts, even in a terminal:
 
 ```bash
 ./install.sh -l --activate
@@ -80,10 +89,14 @@ files do not block copying. Restart affected apps afterward.
 sudo ./install.sh --system         # Shared theme, without user configuration
 sudo ./install.sh --system --link /usr/share/themes  # Link to the root-owned copy
 ./install.sh --remove -l           # Remove theme and its native GTK4 links
+./install.sh install               # Theme files only, without menus
 ```
 
 Extras create missing folders but leave existing app settings alone; select or
 include their theme files in each app. XDG directory overrides are honored.
+Bare `./install.sh` keeps its original theme-files-only behavior when input or
+output is not a terminal. `--interactive` explicitly requests menus and requires
+a terminal; it is used alone.
 The script prepares each replacement before switching it into place and checks
 release-archive checksums. Temporary staging is cleaned up without saved history.
 Checkout installs and release archives use the same `runtime-files.txt` list:

@@ -58,6 +58,7 @@ def main():
         )
     for required in [
         "install.sh",
+        "setup-menu.sh",
         "INSTALLING.md",
         "index.theme",
         "gtk-2.0/gtkrc",

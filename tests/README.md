@@ -13,15 +13,17 @@ sudo apt install libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
 From the repository root:
 
 ```bash
-shellcheck install.sh build.sh
+shellcheck install.sh setup-menu.sh build.sh
 python3 tools/generate_palette.py --check
 python3 tests/test_palette.py
 python3 tests/test_runtime_package.py
+python3 tests/test_guided_installer.py GuidedInstallerTests
 python3 tests/test_installer.py
 python3 tests/test_installer_failures.py
 python3 tests/test_flatpak_installer.py
 python3 tests/test_manual_installation.py
 sudo xvfb-run -a python3 tests/test_system_installer.py
+sudo python3 tests/test_guided_installer.py SystemMenuTests
 xvfb-run -a python3 tests/test_install_consumers.py
 zsh -n extra/zsh/.zshrc
 python3 tests/test_theme.py
@@ -36,6 +38,16 @@ input rejection before writing. `test_runtime_package.py` compares archive and
 checkout-installed payloads, checks runtime asset references and retained
 licenses/wallpaper, and rejects invalid lists or missing/linked assets before
 replacing an existing installation. Packaging tests also check reproducibility.
+
+`test_guided_installer.py` drives real Bash prompts through Linux pseudo-terminals
+with no Python or menu packages in the installer's PATH. It covers confirmation,
+preview/cancellation/EOF/Ctrl-C, GTK detection and existing overrides, extras,
+desktop/Shell choices, selected-app Flatpak setup/removal, and administrator
+handoff. Desktop/Flatpak commands in these menu-specific cases are controlled
+fixtures; existing native and real Flatpak checks verify their backend paths.
+The separate root menu test previews/cancels shared setup without writing global
+theme paths. Ordinary explicit options and captured/nonterminal execution keep
+their non-interactive behavior.
 
 `test_theme.py` checks the shipping and freshly compiled bundle contents, asset
 references, selected-text contrast, Kitty's native parser, clean-shell Zsh
