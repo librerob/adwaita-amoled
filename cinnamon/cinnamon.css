@@ -123,7 +123,7 @@ StScrollBar StButton#hhandle:active {
   border-radius: 5px;
   padding: 6px 10px;
   background-color: rgba(20, 20, 20, 0.97);
-  border: 1px solid #808080;
+  border: 1px solid #2a2a2a;
   color: #ffffff;
   font-size: 1em;
   font-weight: normal;
@@ -735,7 +735,7 @@ StScrollBar StButton#hhandle:active {
 .window-list-preview {
   spacing: 6px;
   color: #ffffff;
-  border: 1px solid #808080;
+  border: 1px solid #2a2a2a;
   background-color: #0f0f0f;
   border-radius: 5px;
   padding: 6px 12px 12px 12px;
@@ -938,7 +938,7 @@ StScrollBar StButton#hhandle:active {
 
 .grouped-window-list-thumbnail-menu {
   color: #ffffff;
-  border: 1px solid #808080;
+  border: 1px solid #2a2a2a;
   background-color: #0f0f0f;
   border-radius: 5px;
   padding: 0px;
@@ -1127,7 +1127,7 @@ StScrollBar StButton#hhandle:active {
   border-top: 4px;
   border-radius: 5px;
   background-color: #0f0f0f;
-  border: 1px solid #808080;
+  border: 1px solid #2a2a2a;
   padding: 13px;
   spacing-rows: 10px;
   spacing-columns: 10px;
@@ -2381,7 +2381,7 @@ StScrollBar StButton#hhandle:active {
   background-color: #0f0f0f;
   border-radius: 6px 0 0 0;
   border-right-width: 1px;
-  border-color: #808080;
+  border-color: #2a2a2a;
   spacing: 5px;
 }
 
