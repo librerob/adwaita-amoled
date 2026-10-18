@@ -9,6 +9,7 @@ CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}
 DESKTOP=${XDG_CURRENT_DESKTOP:-}
 DEST=$DATA/themes
 LIBADWAITA=false ACTIVATE=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
+GUIDED=false
 CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
 LINK_PARENT=''
 EXTRAS=() FLATPAKS=() TARGETS=()
@@ -25,6 +26,7 @@ usage() {
     cat <<'EOF'
 Usage: ./install.sh [OPTIONS]
 
+Run without options in a terminal for guided setup. Explicit options never prompt.
 Install the included theme. Rerun to overwrite/update it; no backups or state.
 Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
 
@@ -41,6 +43,7 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
       --link DIR            Link DIR/Adwaita-AMOLED to the system copy (root only)
   -r, --remove              Remove the theme and explicitly selected links/extras
       --dry-run             Print operations without changing files/settings
+      --interactive         Open guided setup (terminal required; use alone)
   -h, --help                Show this help
 
 Examples:
@@ -55,6 +58,17 @@ under the selected gtk-4.0 config directory. No backup is created.
 App themes are copied without rewriting your .zshrc, init.lua or other settings.
 EOF
 }
+
+if [[ ${1:-} == --interactive ]] || { (($# == 0)) && [[ -t 0 && -t 1 ]]; }; then
+    [[ $# -le 1 ]] || die 'Use --interactive by itself, or pass regular options without it.'
+    [[ -t 0 && -t 1 ]] || die 'Guided setup needs a terminal. Use --help for non-interactive options.'
+    [[ -f $ROOT/setup-menu.sh ]] || die 'Incomplete theme download: setup-menu.sh is missing.'
+    # shellcheck source=setup-menu.sh
+    source "$ROOT/setup-menu.sh"
+    GUIDED=true
+    guided_setup
+    set -- "${MENU_ARGS[@]}"
+fi
 
 value() { [[ $# -ge 2 && -n $2 && $2 != -* ]] || die "$1 needs a value"; }
 components() {
@@ -196,7 +210,7 @@ read_runtime_files() {
         PAYLOAD+=("$name")
     done < "$ROOT/runtime-files.txt"
     [[ ${seen[runtime-files.txt]+present} ]] || die 'Runtime list must include runtime-files.txt.'
-    for name in "${REQUIRED[@]}" install.sh INSTALLING.md; do
+    for name in "${REQUIRED[@]}" install.sh setup-menu.sh INSTALLING.md; do
         [[ ${seen[$name]+present} ]] || die "Incomplete runtime file list: $name"
     done
 }
@@ -278,7 +292,11 @@ if $SHELL_THEME && ! $REMOVE; then
         die 'Shell styling is currently verified only for GNOME 46 and 51. Install GTK without --shell on other versions.'
     [[ $SHELL_VERSION == "$detected_shell" ]] || die 'Requested Shell stylesheet does not match the installed GNOME Shell.'
 fi
-if $LIBADWAITA && ! $REMOVE && [[ $GTK_MODE == auto ]]; then GTK_MODE=$(gtk_mode); fi
+if $LIBADWAITA && ! $REMOVE && [[ $GTK_MODE == auto ]]; then
+    if $GUIDED; then
+        if GTK_MODE=$(gtk_mode 2>/dev/null); then :; else guided_gtk_mode; fi
+    else GTK_MODE=$(gtk_mode); fi
+fi
 for extra in "${EXTRAS[@]}"; do
     case "$extra" in qt|kitty|alacritty|bat|nvim|rofi|zsh|wallpaper|all) ;; *) die "Unknown extra: $extra" ;; esac
 done
@@ -326,6 +344,8 @@ if $ACTIVATE && ! $REMOVE; then
         [[ $(gsettings get org.gnome.shell disable-user-extensions) == false ]] || die 'User extensions are disabled; enable them in Extensions before selecting a Shell theme.'
     fi
 fi
+
+if $GUIDED; then guided_review; fi
 
 # Lock all selected theme parents before making any replacements. Removal does
 # not create absent parents, and dry runs never acquire locks or create files.
@@ -401,4 +421,7 @@ if $ACTIVATE && ! $REMOVE; then
     fi
 fi
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
-if (("${#EXTRAS[@]}")); then printf 'App theme files copied. Select them in each app; see INSTALLING.md. Existing app settings were not rewritten.\n'; fi
+if (("${#EXTRAS[@]}")) && ! $DRY_RUN; then
+    if $REMOVE; then printf 'Selected app theme files removed. Existing app settings were not rewritten.\n'
+    else printf 'App theme files copied. Select them in each app; see INSTALLING.md. Existing app settings were not rewritten.\n'; fi
+fi

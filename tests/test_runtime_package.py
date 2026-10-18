@@ -121,6 +121,7 @@ class RuntimePackageTests(unittest.TestCase):
             original + "gtk-4.0/./gtk.css\n",
             original.replace("gtk-4.0/gtk.gresource\n", ""),
             original.replace("runtime-files.txt\n", ""),
+            original.replace("setup-menu.sh\n", ""),
             "",
         ]:
             with self.subTest(listing=changed[-80:]):

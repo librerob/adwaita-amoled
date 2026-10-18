@@ -14,17 +14,53 @@ Extract the release archive or clone the repository, then run:
 ./install.sh
 ```
 
-This installs the complete theme into
-`${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED`. Select
-**Adwaita-AMOLED** in your desktop's Appearance settings. To also apply the
-native GTK4/libadwaita override and select the desktop theme automatically:
+In a terminal this opens guided setup:
+
+1. **Install/update** offers native GTK4/libadwaita styling, desktop selection,
+   matching supported GNOME Shell styling and optional application extras.
+2. **Remove** selects the theme and any GTK4 links/extras to remove.
+3. **Help** explains setup; **Advanced options** covers a shared system theme
+   and selected-app Flatpak configuration.
+
+Numbered choices need only Enter or a number. Setup shows destinations and
+existing GTK4 override paths before its final **Apply / Cancel / Preview**
+choice. Enter at that final question cancels. Preview prints operations and
+exits without applying them; rerun setup when ready. EOF or Ctrl-C before
+confirmation also leaves the installation untouched.
+
+The default user destination is
+`${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED`. GTK4 setup defaults
+to keeping existing overrides when any of the four override paths already
+exist. New GTK4 setup is offered by default; an unknown GTK version lets you
+choose its version range or skip, rather than guessing. Shell activation is
+offered only for 46/51 when desktop selection and User Themes are available.
+Unknown desktops or unavailable settings tools use manual Appearance selection.
+
+Explicit command-line options always run without questions. To apply the
+native GTK4 override and select supported desktop preferences directly:
 
 ```bash
 ./install.sh -l --activate
 ```
 
 Run user setup **without sudo**. `--dry-run` prints operations without applying
-them, and `--help` lists the options. There is no wizard or confirmation prompt.
+them, and `--help` lists the options. To copy only the theme without menus, run
+`./install.sh install`. Bare `./install.sh` also retains this original behavior
+when stdin or stdout is not a terminal, so existing automation does not hang.
+`./install.sh --interactive` forces guided setup, requires a terminal, and must
+be used without other options.
+
+The Advanced shared-system option opens a separate administrator setup with
+`sudo` (which may ask for your password). It offers a real copy in
+`/usr/local/share/themes` or `/usr/share/themes`, plus the optional root-owned
+link for the former. Its review still requires confirmation. Personal GTK4 and
+app configuration is done separately as your normal desktop user.
+
+Flatpak menus list installed apps and let you select each app's GTK3 or GTK4
+runtime mode. This can differ from the host; skip if unsure. Removing selected
+Flatpak styling keeps installed theme files, matching the command-line behavior.
+Before removing the theme itself, remove any selected-app Flatpak styling under
+Advanced options. The installer does not save which options you used previously.
 
 **Rerunning replaces the installed theme.** `-l` replaces these four paths in
 `${XDG_CONFIG_HOME:-$HOME/.config}/gtk-4.0` with symlinks to the installed theme:

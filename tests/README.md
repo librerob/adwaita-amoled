@@ -13,10 +13,11 @@ sudo apt install libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
 From the repository root:
 
 ```bash
-shellcheck install.sh build.sh
+shellcheck install.sh setup-menu.sh build.sh
 python3 tools/generate_palette.py --check
 python3 tests/test_palette.py
 python3 tests/test_runtime_package.py
+python3 tests/test_guided_installer.py GuidedInstallerTests
 python3 tests/test_installer.py
 python3 tests/test_installer_failures.py
 python3 tests/test_flatpak_installer.py
@@ -36,6 +37,20 @@ input rejection before writing. `test_runtime_package.py` compares archive and
 checkout-installed payloads, checks runtime asset references and retained
 licenses/wallpaper, and rejects invalid lists or missing/linked assets before
 replacing an existing installation. Packaging tests also check reproducibility.
+
+`test_guided_installer.py` drives real Bash prompts through Linux pseudo-terminals
+with no Python or menu packages in the installer's PATH. It covers confirmation,
+preview/cancellation/EOF/Ctrl-C, GTK detection and existing overrides, extras,
+desktop/Shell choices, selected-app Flatpak setup/removal, and administrator
+handoff. Desktop/Flatpak commands in these menu-specific cases are controlled
+fixtures; existing native and real Flatpak checks verify their backend paths.
+The separate `SystemMenuTests` root class previews/cancels shared setup without
+writing global theme paths. CI runs it in its Ubuntu container, whose default
+system-theme parents are root-owned and protected; the GitHub host runner can
+have a group-writable `/usr/share/themes`, which the installer correctly rejects.
+Run that class as root in a disposable container with protected system paths.
+Ordinary explicit options and captured/nonterminal execution keep
+their non-interactive behavior.
 
 `test_theme.py` checks the shipping and freshly compiled bundle contents, asset
 references, selected-text contrast, Kitty's native parser, clean-shell Zsh
@@ -234,7 +249,10 @@ limit, catchable signal interruptions and a concurrent installer. It verifies
 previous-theme preservation/restoration, staging cleanup and retained original
 files with a reported recovery path when restoration itself fails. It also
 checks that unused Neovim settings and failed package-query stdout do not block
-unrelated installation. These tests do not establish power-loss/SIGKILL or
+unrelated installation. Signal fixtures wait for their wrapper's stopped state
+in Linux `/proc` before injecting a signal and continuing it. This avoids a
+race between the old ready marker and a subsequently forked sleep process.
+These tests do not establish power-loss/SIGKILL or
 hardware-level crash consistency, nor atomicity across every config/desktop.
 
 The `flatpak-sandbox` CI job builds a tiny GTK4/libadwaita application and a minimal

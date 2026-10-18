@@ -123,3 +123,4 @@ openbox-3/iconify.xbm
 openbox-3/max.xbm
 openbox-3/themerc
 runtime-files.txt
+setup-menu.sh

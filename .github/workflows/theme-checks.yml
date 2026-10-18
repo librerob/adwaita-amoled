@@ -23,13 +23,14 @@ jobs:
             libgtk2.0-0t64 gtk2-engines-murrine
       - name: Check shell syntax
         run: |
-          shellcheck install.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh tests/gnome-shell/session46.sh
+          shellcheck install.sh setup-menu.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh tests/gnome-shell/session46.sh
           zsh -n extra/zsh/.zshrc
       - name: Check resources, installation and extras
         run: |
           python3 tools/generate_palette.py --check
           python3 tests/test_palette.py
           python3 tests/test_runtime_package.py
+          python3 tests/test_guided_installer.py GuidedInstallerTests
           python3 tests/test_installer.py
           python3 tests/test_installer_failures.py
           python3 tests/test_flatpak_installer.py
@@ -80,6 +81,8 @@ jobs:
             git ca-certificates python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
             gir1.2-adw-1 libmetacity3 xvfb xauth
       - uses: actions/checkout@v7
+      - name: Check guided administrator preview in isolated system paths
+        run: python3 tests/test_guided_installer.py SystemMenuTests
       - name: Check automatic modern GTK4 links and removal
         run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk4_automatic_loading_and_removal
       - name: Check modern native parsing, rendering and text colors
