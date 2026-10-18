@@ -6,7 +6,7 @@ reproduced and addressed: modern libadwaita derives standalone text colors from
 the requested light/dark scheme, while the AMOLED override keeps surfaces dark.
 The legacy overrides alone could therefore produce dark text on black.
 
-Use the modern entry point described in [the installation instructions](README.md#gtk4--libadwaita)
+Use the modern entry point described in [the installation instructions](INSTALLING.md#gtk4-entry-point)
 on GTK 4.16 or newer. Keep the legacy entry point on older GTK releases.
 
 ## Versions and coverage

@@ -33,24 +33,16 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 
 ## Features
 
-- True AMOLED base (`#000000`) with layered depth
-- Blue by default; optional yellow, gold, purple, green, red, orange and pink accents
-- Clear visual hierarchy across all widget states, unfocused, hover, active
-- Correct GTK3 widget rendering: checkboxes show ✓, radio buttons show ●, indeterminate states work
-- Refined XFCE panel with accent underline focus indicator, no flat white blocks
-- Complete GTK2 theme via the murrine engine, fully styled across all widget classes
-- GTK4 + libadwaita color overrides included
-- GNOME Shell 46 and 51 themes based on their matching upstream defaults, with an AMOLED palette
-- Cinnamon shell theme, Openbox theme, and Metacity window decorations included
-- Qt5ct and Qt6ct color schemes aligned with the GTK palette
+- True-black backgrounds (`#000000`) with subtle raised surfaces
+- Eight accents: **blue** (default), yellow, gold, purple, green, red, orange and pink
+- GTK2, GTK3 and GTK4 styling, plus optional libadwaita user CSS overrides
+- Cinnamon and Xfce styling, Openbox themes, and Metacity/Muffin/Marco window decorations
+- Matching GNOME Shell themes for **46.x and 51.x**
+- Coordinated Qt palettes, application extras and wallpaper
 
-See [tested upstream versions and coverage limits](COMPATIBILITY.md) for the
-latest compatibility review. See the [color readability audit](COLOR_READABILITY.md)
-for color roles, native measurements and the limits of contrast checks. The
-[repository-wide color follow-up](COLOR_COMPLETENESS.md) records compound-state
-fixes and the expanded file/paint review.
-
----
+Accents use light text/focus colors and darker filled buttons with white labels.
+All eight Shell presets match the selected theme accent independently of GNOME
+Settings. See [accent choices and measured contrast](ACCENT_COLORS.md).
 
 ## Installation
 
@@ -88,6 +80,9 @@ paths, Flatpak, system-wide setup, removal and manual configuration. See
 
 ### Manual installation
 
+<details>
+<summary>Show manual copy instructions (default blue)</summary>
+
 The manual instructions install the default blue theme. Use the installer to
 select a different accent consistently across compiled resources and app extras.
 
@@ -108,207 +103,42 @@ Select it in Appearance settings. See [manual GTK4 overrides](INSTALLING.md#gtk4
 and [manual extras](INSTALLING.md#manual-extras) for application configuration.
 GTK2 apps require the Murrine engine. No Xfwm4 decoration theme is included.
 
-## GNOME Shell
+For GNOME Shell, also follow the [version-specific installation instructions](gnome-shell/README.md#install-and-activate).
 
-The included Shell themes target **GNOME Shell 46.x and 51.x**, based on upstream
-**46.10 and 51.1** respectively. The installer detects the local Shell version
-and installs the matching stylesheet; other major versions are unverified.
-Install the [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/)
-and log in again if needed, then run `./install.sh --shell --activate`, or select Adwaita-AMOLED in the
-extension's settings.
-[Shell details](gnome-shell/README.md) explain its scope and rebuilding. The
-logged-in Shell is themed; other Shell major versions and GDM are outside its
-verified scope.
+</details>
 
-For manual installation on GNOME 46, copy `gnome-shell-46.css` over
-`gnome-shell.css` **inside the installed theme's `gnome-shell/` directory**, keeping
-the complete `assets/` directory beside it. The source archive's default entry
-is GNOME 51; it must not be selected unchanged on GNOME 46. Toggle User Themes
-off/on, or log out and back in, after changing the installed stylesheet.
+## Application extras
 
-## Extras
+Choose extras in setup for **Qt5ct/Qt6ct, Kitty, Alacritty, Neovim/Airline, bat,
+Rofi, Zsh and the wallpaper**. Then select or include the theme files in each
+application. Optional applications and plugins are not installed automatically.
 
-Copy these optional theme files with `--extras LIST`, then select them in each app:
+See [app setup and file destinations](INSTALLING.md#every-extra-and-destination).
 
-| Component | Effect |
-|---|---|
-| `qt` | Install Qt5ct/Qt6ct palettes and optional scrollbar QSS; select through Qt settings |
-| `kitty` | Copy terminal colors, cursor and tab settings for inclusion in Kitty |
-| `alacritty` | Copy the TOML theme for import from your existing configuration |
-| `bat` | Copy the syntax theme and rebuild bat's cache when installed |
-| `nvim` | Copy the Neovim and optional Airline themes for selection |
-| `rofi` | Copy the launcher theme for selection/import |
-| `zsh` | Copy prompt/completion/plugin colors for sourcing from your existing .zshrc |
-| `wallpaper` | Copy the wallpaper for selection in background settings |
+## Compatibility
 
-[INSTALLING.md](INSTALLING.md#every-extra-and-destination) explains the exact
-paths and effects. Optional applications/plugins are not installed automatically.
+- **GTK2:** requires your distribution's Murrine engine.
+- **GNOME Shell:** verified for **46.x and 51.x**, with the
+  [User Themes extension](https://extensions.gnome.org/extension/19/user-themes/).
+  Other Shell major versions are unverified; GDM/login screens are not themed.
+- **Qt:** requires qt5ct/qt6ct and the appropriate integration plugin.
+- **Window decorations:** Openbox and Metacity/Muffin/Marco are included;
+  Xfwm4 decorations are not included.
 
----
+Applications and extensions may apply their own styling. See the
+[compatibility review](COMPATIBILITY.md) and [Shell guide](gnome-shell/README.md)
+for tested versions and coverage limits.
 
-## Building and testing
+## Documentation
 
-Use a Git checkout or GitHub's source archive for development. The smaller
-installer-enabled release archive contains prebuilt runtime files, not the
-palette templates or GTK/Shell build sources.
+- [Installation, updates, removal and manual configuration](INSTALLING.md)
+- [Accent choices and contrast](ACCENT_COLORS.md)
+- [Development, building and testing](https://github.com/librerob/adwaita-amoled/blob/main/CONTRIBUTING.md)
+- Detailed color reviews: [readability](COLOR_READABILITY.md) and
+  [compound states and file coverage](COLOR_COMPLETENESS.md)
 
-The shared palette is in [palette/colors.json](palette/colors.json). For generated
-files, edit their matching [palette template](palette/README.md), then regenerate:
+## Feedback
 
-```bash
-python3 tools/generate_palette.py
-python3 tools/generate_palette.py --check
-```
-
-Python 3.11+ is a development dependency only. Generated files are committed, so
-users still install with Bash alone. Toolkit-specific colors and upstream Shell
-sources retain their own definitions; this is not a global recoloring command.
-
-Developers editing GTK source need GLib's resource compiler. Ordinary
-installation does not require a build:
-
-```bash
-# Debian / Ubuntu
-sudo apt install libglib2.0-dev
-# Arch / Artix
-sudo pacman -S glib2
-```
-
-```bash
-./build.sh
-./build.sh --install
-```
-
-`--install` builds the GTK bundles, then runs the Bash installer. Additional
-installer options can follow `--install`, for example `./build.sh --install -l`.
-No Python is required to build GTK resources or install the theme.
-After editing `src/`, rebuild and commit the updated `gtk.gresource` bundles
-together with their source changes. If a corresponding palette template exists,
-edit that template rather than the generated `src/` file.
-
-The GNOME Shell CSS is also included precompiled. After changing its Sass
-palette, regenerate the shared files and rebuild **both** variants (requires `sassc`):
-
-```bash
-./gnome-shell/build.sh
-./gnome-shell/build.sh --shell-version 46
-```
-
-Then rebuild/check the seven precompiled accent overlays:
-
-```bash
-python3 tools/build_accents.py
-python3 tools/build_accents.py --check
-```
-
-Preset definitions are in [palette/accents.json](palette/accents.json). The build
-runs in temporary directories and leaves the default blue outputs unchanged.
-
-Build an installer-enabled runtime archive (without source GTK files or tests):
-
-```bash
-python3 tools/package.py /tmp/Adwaita-AMOLED-installer-preview.tar.gz
-```
-
-The archive includes `runtime-files.txt` and per-file checksums; a separate SHA-256
-file is written beside it. Update the runtime list when adding a required asset
-or app extra. This creates local files and does not publish a GitHub release.
-
-The repository's regression checks and their prerequisites are documented in
-[tests/README.md](tests/README.md). GitHub Actions runs them on pull requests.
-
----
-
-## Wallpaper
-
-A matching wallpaper is included at `extra/wallpaper/blackmount.png`.
-
----
-
-## Color Palette
-
-| Token | Hex | Role |
-|---|---|---|
-| Background | `#000000` | Window base, AMOLED black |
-| Surface 1 | `#0f0f0f` | Cards, lists |
-| Surface 2 | `#141414` | Popovers, tooltips |
-| Hover | `#1a1a1a` | Hover state |
-| Control border | `#808080` | Identifying control outlines |
-| Decorative border | `#2a2a2a` | Nonessential separators and depth |
-| Text accent | `#8ab4f8` | Readable accent text, links and focus |
-| Filled GTK accent | `#2d6be0` | Selected surfaces with white text |
-| Filled hover | `#2862cf` | Hovered selections/controls with white text |
-| Foreground | `#ffffff` | Primary text |
-| Dim | `#a0a0a0` | Readable secondary text |
-
-Ordinary button/card outlines and header/sidebar separators use the subtle
-decorative border. Text-field boundaries, checkbox/radio outlines and slider
-handles retain identifying contrast; keyboard focus uses its separate accent
-outline. Decorative lines are not all forced to the control-edge brightness.
-
-White on the filled GTK accent has approximately 4.89:1 contrast. Extras that
-use the pale `#8ab4f8` as a text background use black text (9.96:1).
-Success surfaces use black text on `#26a269` (approximately 6.45:1).
-
-### Why these colors
-
-The palette separates standalone accent text from filled controls so that both
-remain readable on AMOLED surfaces:
-
-| Use | Foreground / background | Defined sRGB contrast |
-|---|---|---|
-| Accent text and links on black | `#8ab4f8` / `#000000` | 9.96:1 |
-| Accent text on a raised surface | `#8ab4f8` / `#141414` | 8.74:1 |
-| Filled blue controls | `#ffffff` / `#2d6be0` | 4.89:1 |
-| Pale selections in applicable extras | `#000000` / `#8ab4f8` | 9.96:1 |
-
-White text on the pale blue would reach only 2.11:1, so pale selections use black
-labels. Dark blue buttons keep white labels. Focus/identifying graphics are
-checked separately from text; disabled states and decorative separators have
-different roles. GNOME Shell retains the system-selected accent hue and uses
-state-specific filled colors.
-
-These choices address measured contrast issues while retaining AMOLED black and
-Adwaita's layout. They are not a claim that one blue is universally best, that
-all users/displays see colors identically, or that contrast ratios alone prove
-complete accessibility. The [readability audit](COLOR_READABILITY.md) and
-[broader color follow-up](COLOR_COMPLETENESS.md) document native state tests,
-intentional exceptions and remaining limits.
-
----
-
-## Structure
-
-```
-Adwaita-AMOLED/
-├── cinnamon/               Cinnamon shell theme
-├── gnome-shell/            GNOME Shell 46/51 themes, assets and Sass source
-├── gtk-2.0/                GTK2 theme (murrine engine)
-├── gtk-3.0/                GTK3 theme
-├── gtk-4.0/                GTK4 theme
-├── metacity-1/             Metacity / Muffin window decorations
-├── openbox-3/              Openbox window manager theme
-├── extra/
-│   ├── alacritty/          Alacritty terminal theme
-│   ├── kitty/              Kitty terminal theme
-│   ├── libadwaita/         Native GTK4 entry points, linked with install.sh -l
-│   ├── logo/               Theme logo
-│   ├── nvim/               Neovim colorscheme and airline theme
-│   ├── qt5ct/              Qt5 color scheme
-│   ├── qt6ct/              Qt6 color scheme
-│   ├── rofi/               Rofi launcher theme
-│   ├── screenshot/         Preview image
-│   ├── wallpaper/          Matching wallpaper
-│   └── zsh/                Zsh autosuggestions & syntax highlighting config
-├── install.sh              Direct Bash installer
-├── tools/                  Development archive builder
-├── INSTALLING.md           Installation and manual configuration guide
-└── index.theme
-```
-
----
-
-## Philosophy
-
-Minimal, readable, and actually usable.
-No washed-out grays, no invisible states.
+[Report a problem or contribute](https://github.com/librerob/adwaita-amoled/issues).
+Include your distribution, desktop/version, application, selected accent and
+theme version so the problem can be reproduced.
