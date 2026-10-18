@@ -108,6 +108,11 @@ the logo, screenshots and development build sources stay in the repository.
 [The installation guide](INSTALLING.md) explains every destination, optional
 per-app Flatpak setup, GNOME Shell selection and manual configuration.
 
+If Firefox's tabs/address bar stay light, select **System theme — auto** in
+Firefox and enable your desktop's dark appearance preference. The GTK theme
+and that preference are separate; see [Firefox dark appearance](INSTALLING.md#firefox-dark-appearance)
+for the Linux Mint setting and a Firefox-only alternative.
+
 ### Manual installation
 
 From the extracted theme/repository directory, copy the compiled theme folders:

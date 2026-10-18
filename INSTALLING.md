@@ -176,6 +176,46 @@ establish compatibility. Other Shell majors remain unverified and explicit
 for staging; activation requires a matching local version. Reload User Themes
 or log out/in after updating, especially on Wayland. GDM is not themed.
 
+### Firefox dark appearance
+
+Firefox's window decorations can follow the GTK/window theme while its tabs
+and address bar remain light. With **System theme — auto**, Firefox also reads
+the desktop's color preference through the settings portal. Selecting a dark
+GTK theme alone does not necessarily change that preference. `--activate`
+selects the themes listed above; it does not change the desktop's separate
+dark-mode preference or Firefox profile settings.
+
+In Firefox, open **Add-ons and themes → Themes** and enable **System theme —
+auto**. On Linux Mint Cinnamon, open **Themes → Settings** and select
+**Prefer dark mode** under **Dark mode**. On versions exposing the XApp setting,
+the equivalent command, run as your normal desktop user without sudo, is:
+
+```bash
+gsettings set org.x.apps.portal color-scheme 'prefer-dark'
+```
+
+This preference applies to applications that honor it, including Firefox; it
+does not recolor every application or website. To return to Mint's
+**Let applications decide** setting:
+
+```bash
+gsettings set org.x.apps.portal color-scheme 'default'
+```
+
+Other desktops have their own appearance settings. For GNOME, select **Dark**
+in **Settings → Appearance**. If you only want Firefox to change, enable its
+built-in **Dark** theme instead of **System theme — auto**. An explicitly
+selected **Light** theme can keep Firefox light despite a dark desktop
+preference. Restart Firefox if the change is not picked up immediately.
+
+Firefox renders much of its interface itself, so dark mode does not guarantee
+the GTK theme's exact AMOLED colors. Ordinary websites control their own
+styling, and Firefox's website appearance setting is separate from its toolbar
+theme. Flatpak/Snap builds also depend on their sandbox's portal access.
+
+The separate setting is used by [Mint's own dark-style selector](https://github.com/linuxmint/cinnamon/blob/master/files/usr/share/cinnamon/cinnamon-settings/modules/cs_themes.py)
+and exported by the [XApp settings portal](https://github.com/linuxmint/xdg-desktop-portal-xapp/blob/master/src/settings.c).
+
 ## Every extra and destination
 
 All supplied extras are always included inside the installed theme. To also
