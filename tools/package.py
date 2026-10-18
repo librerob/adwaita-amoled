@@ -5,30 +5,32 @@ import gzip
 import hashlib
 import io
 from pathlib import Path
+import re
 import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 THEME = "Adwaita-AMOLED"
-DIRS = {
-    "cinnamon",
-    "gnome-shell",
-    "gtk-2.0",
-    "gtk-3.0",
-    "gtk-4.0",
-    "metacity-1",
-    "openbox-3",
-    "extra",
-}
-FILES = {
-    "index.theme",
-    "LICENSE",
-    "README.md",
-    "INSTALLING.md",
-    "COMPATIBILITY.md",
-    "COLOR_READABILITY.md",
-    "COLOR_COMPLETENESS.md",
-    "install.sh",
-}
+
+
+def runtime_paths(root):
+    """The Bash installer consumes this same explicit file list."""
+    names = (root / "runtime-files.txt").read_text().splitlines()
+    if not names or len(set(names)) != len(names):
+        raise ValueError("empty or duplicate runtime file list")
+    for name in names:
+        path = Path(name)
+        if not re.fullmatch(r"[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*", name) or any(
+            part in (".", "..") for part in name.split("/")
+        ):
+            raise ValueError(f"invalid runtime path: {name}")
+        source = root / path
+        if not source.is_file() or any(
+            p.is_symlink() for p in (source, *source.parents) if p != root
+        ):
+            raise ValueError(f"missing or linked runtime file: {name}")
+    if "runtime-files.txt" not in names:
+        raise ValueError("runtime list must include runtime-files.txt")
+    return names
 
 
 def main():
@@ -41,16 +43,18 @@ def main():
     if output.is_relative_to(ROOT):
         parser.error("write the archive outside the checkout")
     files = []
-    for path in sorted(ROOT.rglob("*")):
-        name = path.relative_to(ROOT)
-        if name.parts[0] not in DIRS and str(name) not in FILES:
-            continue
-        if "__pycache__" in name.parts or not path.is_file():
-            continue
-        if path.is_symlink():
-            parser.error(f"unexpected source link: {name}")
+    try:
+        names = runtime_paths(ROOT)
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
+    for name in sorted(names):
+        path = ROOT / name
         files.append(
-            (name, path.read_bytes(), 0o755 if path.stat().st_mode & 0o111 else 0o644)
+            (
+                Path(name),
+                path.read_bytes(),
+                0o755 if path.stat().st_mode & 0o111 else 0o644,
+            )
         )
     for required in [
         "install.sh",

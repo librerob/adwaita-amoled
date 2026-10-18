@@ -1,0 +1,110 @@
+// Readability adaptation, 2026-10-16. SPDX-License-Identifier: GPL-2.0-or-later
+// Retain the selected system hue. White labels need darker opaque accent fills
+// in every state; upstream dark-style hover/active lightening loses contrast.
+%default_button {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: {{foreground}};
+  &:focus {
+    background-color: st-darken(-st-accent-color, 14%);
+    color: {{foreground}};
+  }
+  &:hover {
+    background-color: st-darken(-st-accent-color, 10%);
+    color: {{foreground}};
+  }
+  &:active {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: {{foreground}};
+  }
+  &:focus:hover {
+    background-color: st-darken(-st-accent-color, 10%);
+    color: {{foreground}};
+  }
+  &:active:hover {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: {{foreground}};
+  }
+  &:active:focus {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: {{foreground}};
+  }
+  &:active:focus:hover {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: {{foreground}};
+  }
+  &:insensitive {
+    background-color: st-darken(-st-accent-color, 18%);
+    color: {{secondary_text}};
+  }
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked,
+.candidate-box:selected,
+.osd-monitor-label, .osd-break-countdown-label,
+.screenshot-ui-window-selector-window:checked .screenshot-ui-window-selector-check,
+.quick-toggle-menu .header .icon.active,
+.keyboard-key.default-key:latched, .emoji-panel .keyboard-key:latched {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: {{foreground}};
+}
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:hover,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:focus:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:hover {
+  background-color: st-darken(-st-accent-color, 18%);
+}
+
+// Include all pressed/focused menu combinations and contrast-sensitive glyphs.
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:focus,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked:active:focus:hover {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: {{foreground}};
+}
+.check-box:checked StIcon, .toggle-switch:checked {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: {{foreground}};
+}
+.check-box:checked:hover StIcon, .toggle-switch:checked:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+  color: {{foreground}};
+}
+.check-box:checked:active StIcon, .toggle-switch:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+  color: {{foreground}};
+}
+.calendar .calendar-week-number { color: {{muted_text}}; }
+.word-suggestions StButton:checked { background-color: #3a3a3a; color: {{foreground}}; }
+.word-suggestions StButton:active:hover,
+.word-suggestions StButton:checked:hover,
+.word-suggestions StButton:checked:active {
+  background-color: #555555;
+  color: {{foreground}};
+}
+
+// The resting scrollbar thumb must be visible against AMOLED surfaces.
+StScrollBar > .vhandle, StScrollBar > .hhandle { background-color: {{control_border}}; }
+StScrollBar > .vhandle:hover, StScrollBar > .hhandle:hover { background-color: {{muted_text}}; }
+StScrollBar > .vhandle:active, StScrollBar > .hhandle:active { background-color: {{secondary_text}}; }
+
+// Keep placeholder text readable when the user chooses a smaller UI font.
+.message-list .message-list-placeholder { color: {{muted_text}}; }
+
+// Looking Glass has a more specific switch palette than ordinary Shell switches.
+#LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked {
+  background-color: st-darken(-st-accent-color, 14%);
+  color: {{foreground}};
+}
+#LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked:hover {
+  background-color: st-darken(-st-accent-color, 10%);
+}
+#LookingGlassDebugFlags .lg-debug-flag-button .toggle-switch:checked:active {
+  background-color: st-darken(-st-accent-color, 18%);
+}

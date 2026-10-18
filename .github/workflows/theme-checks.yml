@@ -27,6 +27,9 @@ jobs:
           zsh -n extra/zsh/.zshrc
       - name: Check resources, installation and extras
         run: |
+          python3 tools/generate_palette.py --check
+          python3 tests/test_palette.py
+          python3 tests/test_runtime_package.py
           python3 tests/test_installer.py
           python3 tests/test_installer_failures.py
           python3 tests/test_flatpak_installer.py

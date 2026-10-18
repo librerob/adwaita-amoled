@@ -1,0 +1,49 @@
+// Adwaita-AMOLED palette adaptation, 2026-10-16.
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Override the palette before upstream drawing/widget rules are evaluated.
+// Keep upstream geometry, states, privacy indicators and system accent colors.
+
+$_base_color_dark: {{background}};
+$_base_color_light: {{foreground}};
+$base_color: {{background}};
+$bg_color: {{background}};
+$fg_color: {{foreground}};
+
+$osd_bg_color: {{popover}};
+$osd_fg_color: {{foreground}};
+$osd_borders_color: transparentize($osd_fg_color, 0.9);
+$osd_outer_borders_color: transparentize($osd_fg_color, 0.98);
+
+$system_base_color: {{background}};
+$system_bg_color: #0a0a0a;
+$system_fg_color: {{foreground}};
+$system_borders_color: transparentize($system_fg_color, 0.9);
+$system_insensitive_fg_color: mix($system_bg_color, $system_fg_color, 37%);
+$system_overlay_bg_color: {{surface}};
+
+$panel_bg_color: {{background}};
+$panel_fg_color: {{foreground}};
+$panel_border_color: transparent;
+
+$card_bg_color: {{surface}};
+$borders_color: {{control_border}};
+$outer_borders_color: {{control_border}};
+
+$insensitive_fg_color: mix($fg_color, $bg_color, 50%);
+$insensitive_bg_color: mix($bg_color, $base_color, 60%);
+$insensitive_borders_color: mix($borders_color, $base_color, 60%);
+$card_insensitive_fg_color: lighten($insensitive_fg_color, 9%);
+
+$checked_bg_color: {{hover}};
+$checked_fg_color: {{foreground}};
+$hover_bg_color: #1f1f1f;
+$hover_fg_color: {{foreground}};
+$active_bg_color: {{pressed}};
+$active_fg_color: {{foreground}};
+
+// Standalone status text sits on dark surfaces; keep filled status controls
+// and their foregrounds from upstream.
+$destructive_color: {{error_text}};
+$error_color: {{error_text}};
+$success_color: {{success_text}};
+$warning_color: {{warning_text}};

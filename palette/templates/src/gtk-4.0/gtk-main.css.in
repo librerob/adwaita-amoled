@@ -1,0 +1,245 @@
+/* ── Rounder OSD surfaces ────────────────────────────────────────────────── */
+.osd,
+.osd button {
+  border-radius: 24px;
+}
+.osd button {
+  margin: 2px;
+}
+
+/* ── Tighter window-control padding in default-decoration headerbars ─────── */
+headerbar.default-decoration windowcontrols > button {
+  margin: 0 1px;
+}
+headerbar.default-decoration windowcontrols > button > image {
+  padding: 4px;
+}
+headerbar.default-decoration windowcontrols.start {
+  margin-left: 3px;
+}
+headerbar.default-decoration windowcontrols.end {
+  margin-right: 3px;
+}
+
+/* ── Chromium / Electron CSD overrides ──────────────────────────────────── *
+ *  Chromium draws its own titlebar as a GTK widget with class .chromium.
+ *  We override it here so it picks up the AMOLED palette instead of
+ *  Chromium's hardcoded grey.
+ *
+ *  Named colors (@window_bg_color ...) are used on purpose, not var(--*):
+ *  the --*-color custom properties only exist inside libadwaita. In a plain
+ *  GTK4 app such as Chromium the var() is invalid and the declaration
+ *  computes to "transparent", which made the whole window see-through.
+ * ─────────────────────────────────────────────────────────────────────── */
+.background.chromium {
+  background-color: @window_bg_color;
+}
+
+.background.chromium selection,
+.background.chromium selection:focus {
+  background-color: alpha(@accent_bg_color, 0.3);
+  color: @accent_fg_color;
+}
+
+.background.chromium windowcontrols > button {
+  background-color: alpha(currentColor, 0.1);
+  color: @window_fg_color;
+  min-width: 24px;
+  padding: 0;
+  box-shadow: none;
+  border-radius: 100%;
+  margin: 0 4px;
+  transition: background 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.background.chromium windowcontrols > button:hover {
+  background-color: alpha(currentColor, 0.15);
+}
+.background.chromium windowcontrols > button:active {
+  background-color: alpha(currentColor, 0.3);
+}
+
+tooltip.background.chromium {
+  background-color: rgba(0, 0, 6, 0.80);
+}
+
+
+/* ── Accent ──────────────────────────────────────────────────────────────── */
+@define-color accent_color             {{accent_text}};
+@define-color accent_bg_color          {{accent_fill}};
+@define-color accent_fg_color          {{foreground}};
+
+/* ── Window / base ───────────────────────────────────────────────────────── */
+@define-color window_bg_color          {{background}};
+@define-color window_fg_color          {{foreground}};
+
+/* ── View (lists, treeviews, text areas) ─────────────────────────────────── */
+@define-color view_bg_color            {{surface}};
+@define-color view_fg_color            {{foreground}};
+
+/* ── Headerbar ───────────────────────────────────────────────────────────── */
+@define-color headerbar_bg_color       #0e0e0e;
+@define-color headerbar_fg_color       {{foreground}};
+@define-color headerbar_border_color   {{decorative_border}};
+@define-color control_border_color     {{control_border}};
+@define-color headerbar_backdrop_color {{background}};
+@define-color headerbar_shade_color    rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.5);
+@define-color headerbar_darker_shade_color rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.9);
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+@define-color card_bg_color            {{surface}};
+@define-color card_fg_color            {{foreground}};
+@define-color card_shade_color         rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.4);
+
+/* ── Dialog ──────────────────────────────────────────────────────────────── */
+@define-color dialog_bg_color          {{popover}};
+@define-color dialog_fg_color          {{foreground}};
+
+/* ── Popover / tooltip ───────────────────────────────────────────────────── */
+@define-color popover_bg_color         {{popover}};
+@define-color popover_fg_color         {{foreground}};
+@define-color popover_shade_color      rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.4);
+
+/* ── Thumbnail ───────────────────────────────────────────────────────────── */
+@define-color thumbnail_bg_color       {{popover}};
+@define-color thumbnail_fg_color       {{foreground}};
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+@define-color sidebar_bg_color         {{background}};
+@define-color sidebar_fg_color         {{foreground}};
+@define-color sidebar_backdrop_color   {{background}};
+@define-color sidebar_border_color     {{decorative_border}};
+@define-color sidebar_shade_color      rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.4);
+
+/* ── Secondary sidebar ───────────────────────────────────────────────────── */
+@define-color secondary_sidebar_bg_color       #0a0a0a;
+@define-color secondary_sidebar_fg_color       {{foreground}};
+@define-color secondary_sidebar_backdrop_color {{background}};
+@define-color secondary_sidebar_border_color   {{decorative_border}};
+@define-color secondary_sidebar_shade_color    rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.4);
+
+/* ── Shade / scrollbar ───────────────────────────────────────────────────── */
+@define-color shade_color              rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.4);
+@define-color scrollbar_outline_color  rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.95);
+
+/* ── Semantic status colors ──────────────────────────────────────────────── */
+@define-color destructive_color        {{error_text}};
+@define-color destructive_bg_color     {{destructive_fill}};
+@define-color destructive_fg_color     {{foreground}};
+
+@define-color success_color            {{success_text}};
+@define-color success_bg_color         {{success_fill}};
+@define-color success_fg_color         {{background}};
+
+@define-color warning_color            {{warning_text}};
+@define-color warning_bg_color         {{warning_fill}};
+@define-color warning_fg_color         rgba({{background.r}}, {{background.g}}, {{background.b}}, 0.8);
+
+@define-color error_color              {{error_text}};
+@define-color error_bg_color           {{destructive_fill}};
+@define-color error_fg_color           {{foreground}};
+
+/* ── Legacy GTK3 named color aliases (adw-gtk3 compatibility) ────────────── */
+@define-color theme_bg_color           {{background}};
+@define-color theme_fg_color           {{foreground}};
+@define-color theme_base_color         {{surface}};
+@define-color theme_text_color         {{foreground}};
+@define-color theme_selected_bg_color  @accent_bg_color;
+@define-color theme_selected_fg_color  {{foreground}};
+@define-color insensitive_bg_color     #0a0a0a;
+@define-color insensitive_fg_color     #909090;
+@define-color insensitive_base_color   {{surface}};
+
+/* Readability roles: pale standalone text, dark filled controls with white labels.
+ * Keep semantic filled controls on their own foreground/background pairs.
+ */
+.accent, button.suggested-action.flat, button.suggested-action.flat:hover,
+button.suggested-action.flat:active, button.suggested-action.flat:checked,
+button.link, button.link:visited, button.link:hover, button.link:active {
+  color: @accent_color;
+}
+.error, label.error, entry.error, entry.error > text { color: @error_color; }
+.warning, label.warning, entry.warning, entry.warning > text { color: @warning_color; }
+.success, label.success { color: @success_color; }
+button.suggested-action.flat {
+  background-color: transparent;
+  background-image: none;
+}
+button.suggested-action.flat:hover { background-color: alpha(@accent_bg_color, 0.15); }
+button.suggested-action.flat:active, button.suggested-action.flat:checked {
+  background-color: alpha(@accent_bg_color, 0.25);
+}
+button.suggested-action:not(.flat):not(.success):not(.warning):not(.error):not(.destructive-action):hover {
+  color: @accent_fg_color;
+  background-color: shade(@accent_bg_color, 0.95);
+  background-image: none;
+}
+button.suggested-action:not(.flat):not(.success):not(.warning):not(.error):not(.destructive-action):active,
+button.suggested-action:not(.flat):not(.success):not(.warning):not(.error):not(.destructive-action):checked {
+  color: @accent_fg_color;
+  background-color: shade(@accent_bg_color, 0.85);
+  background-image: none;
+}
+button:focus-visible, entry:focus-within, spinbutton:focus-within {
+  outline-color: @accent_color;
+  outline-style: solid;
+  outline-width: 2px;
+  outline-offset: -2px;
+}
+
+button.suggested-action:focus-visible, button.destructive-action:focus-visible {
+  outline-color: @accent_fg_color;
+}
+button.success.suggested-action:focus-visible { outline-color: @success_fg_color; }
+button.warning.suggested-action:focus-visible { outline-color: @warning_fg_color; }
+
+/* Explicit semantic filled roles work in plain GTK4 and libadwaita alike. */
+button.success.suggested-action:not(.flat) {
+  color: @success_fg_color;
+  background-color: @success_bg_color;
+  background-image: none;
+}
+button.success.suggested-action:not(.flat):hover { background-color: shade(@success_bg_color, 1.08); }
+button.success.suggested-action:not(.flat):active { background-color: shade(@success_bg_color, 0.9); }
+button.warning.suggested-action:not(.flat) {
+  color: @warning_fg_color;
+  background-color: @warning_bg_color;
+  background-image: none;
+}
+button.warning.suggested-action:not(.flat):hover { background-color: shade(@warning_bg_color, 1.08); }
+button.warning.suggested-action:not(.flat):active { background-color: shade(@warning_bg_color, 0.9); }
+button.error.suggested-action:not(.flat) {
+  color: @error_fg_color;
+  background-color: @error_bg_color;
+  background-image: none;
+}
+button.error.suggested-action:not(.flat):hover { background-color: shade(@error_bg_color, 1.08); }
+button.error.suggested-action:not(.flat):active { background-color: shade(@error_bg_color, 0.9); }
+
+/* Flat destructive text uses the lighter standalone semantic color. */
+button.destructive-action.flat {
+  color: @destructive_color;
+  background-color: transparent;
+  background-image: none;
+}
+button.destructive-action.flat:hover {
+  color: @destructive_color;
+  background-color: alpha(@destructive_bg_color, 0.15);
+  background-image: none;
+}
+button.destructive-action.flat:active, button.destructive-action.flat:checked {
+  color: @destructive_color;
+  background-color: alpha(@destructive_bg_color, 0.25);
+  background-image: none;
+}
+
+/* GtkLinkButton exposes link/visited state nodes, rather than a .link class. */
+button:link, button:visited, button:link:hover, button:visited:hover,
+button:link:active, button:visited:active,
+button:link:backdrop:active, button:visited:backdrop:active {
+  color: @accent_color;
+}
+
+/* Semantic flat actions retain their standalone status role. */
+button.success.suggested-action.flat:not(:disabled) { color: @success_color; }
+button.warning.suggested-action.flat:not(:disabled) { color: @warning_color; }
+button.error.suggested-action.flat:not(:disabled) { color: @error_color; }

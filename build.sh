@@ -5,7 +5,8 @@
 #
 #  EDITING THE THEME
 #  ─────────────────
-#  1. Edit source files in src/gtk-3.0/ or src/gtk-4.0/
+#  1. Edit palette/colors.json or palette/templates/src/gtk-*/; regenerate with
+#     python3 tools/generate_palette.py (development only, not installation).
 #  2. Run:  ./build.sh
 #  3. Run:  ./build.sh --install   (also copies to ~/.local/share/themes/)
 #

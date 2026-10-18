@@ -1,0 +1,17 @@
+// Color-only adaptations for Shell 46's own widget structures.
+// SPDX-License-Identifier: GPL-2.0-or-later
+%default_button {
+  color: {{foreground}};
+  background-color: {{accent_fill}};
+  &:focus { background-color: {{accent_fill}}; color: {{foreground}}; }
+  &:hover, &:focus:hover { background-color: {{accent_fill_hover}}; color: {{foreground}}; }
+  &:active, &:active:hover, &:active:focus, &:active:focus:hover {
+    background-color: #2459bc;
+    color: {{foreground}};
+  }
+}
+.calendar .calendar-week-number,
+.message-list .message-list-placeholder { color: {{muted_text}}; }
+StScrollBar > .vhandle, StScrollBar > .hhandle { background-color: {{control_border}}; }
+StScrollBar > .vhandle:hover, StScrollBar > .hhandle:hover { background-color: {{muted_text}}; }
+StScrollBar > .vhandle:active, StScrollBar > .hhandle:active { background-color: {{secondary_text}}; }
