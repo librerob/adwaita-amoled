@@ -63,7 +63,7 @@ def render(text, colors):
         return value.upper() if form in ("upper", "hex_upper") else value
 
     result = TOKEN.sub(replace, text)
-    if "{{" in result or "}}" in result:
+    if "{{" in result:
         raise ValueError("invalid or unresolved palette placeholder")
     return result.encode("utf-8")
 

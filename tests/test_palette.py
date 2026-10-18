@@ -28,6 +28,18 @@ class PaletteTests(unittest.TestCase):
     def test_committed_outputs_match_templates_without_changes(self):
         self.assertEqual(palette.generate(ROOT, check=True), [])
 
+    def test_nested_style_braces_and_case_formats_remain_valid(self):
+        self.assertEqual(
+            palette.render(
+                "a { b { color: {{accent_text.upper}}; }}", {"accent_text": "#8ab4f8"}
+            ),
+            b"a { b { color: #8AB4F8; }}",
+        )
+        self.assertEqual(
+            palette.render("#ff{{accent_text.hex_upper}}", {"accent_text": "#8ab4f8"}),
+            b"#ff8AB4F8",
+        )
+
     def test_color_change_reaches_css_sass_svg_qt_and_app_configs(self):
         self.change("accent_text", "#123456")
         palette.generate(self.root)
