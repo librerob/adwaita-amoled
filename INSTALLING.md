@@ -107,7 +107,8 @@ you want, for example:
 ./install.sh -l --activate
 ```
 
-Options are not remembered. The former `install`, `update`, `--yes` and
+For GTK4 links and app extras, repeat your selections on each update. The
+former `install`, `update`, `--yes` and
 `--components gtk,libadwaita` spellings are accepted for convenience, but there
 is no state tracking. State/backups from the old Python installer are left
 untouched and never consulted. Known theme files are replaced, including local
