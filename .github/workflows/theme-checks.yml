@@ -84,7 +84,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Check guided administrator preview in isolated system paths
         run: python3 tests/test_guided_installer.py SystemMenuTests
-      - name: Check opt-in app dark appearance with real settings backends
+      - name: Check automatic app dark appearance with real settings backends
         run: python3 tests/test_install_settings.py DarkAppearanceTests
       - name: Check native GTK2 discovery and automatic modern GTK4 links
         run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk2_discovers_default_user_installation InstalledConsumerTests.test_native_gtk4_automatic_loading_and_removal

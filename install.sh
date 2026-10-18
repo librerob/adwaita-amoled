@@ -8,7 +8,7 @@ DATA=${XDG_DATA_HOME:-$HOME/.local/share}
 CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}
 DESKTOP=${XDG_CURRENT_DESKTOP:-}
 DEST=$DATA/themes
-LIBADWAITA=false ACTIVATE=false PREFER_DARK=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
+LIBADWAITA=false ACTIVATE=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
 GUIDED=false
 CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
 LINK_PARENT=''
@@ -32,7 +32,6 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
 
   -l, --libadwaita          Replace native GTK4 override files with theme links
   -a, --activate            Select the theme for the current desktop
-      --prefer-dark         Ask supporting apps to prefer a dark appearance
       --shell               Require a matching GNOME Shell theme (46 or 51)
       --extras LIST         Copy optional themes: qt,kitty,alacritty,bat,nvim,
                             rofi,zsh,wallpaper or all (select them in each app)
@@ -50,7 +49,6 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
 Examples:
   ./install.sh
   ./install.sh -l --activate
-  ./install.sh -l --activate --prefer-dark
   ./install.sh --extras qt,kitty
   sudo ./install.sh --system
   sudo ./install.sh --system --link /usr/share/themes
@@ -58,6 +56,8 @@ Examples:
 GTK4 linking replaces gtk.css, gtk-dark.css, libadwaita-tweaks.css and assets
 under the selected gtk-4.0 config directory. No backup is created.
 App themes are copied without rewriting your .zshrc, init.lua or other settings.
+User installation sets supported application appearance preferences to dark.
+Unavailable or locked appearance settings are skipped; system/removal leave them alone.
 EOF
 }
 
@@ -76,15 +76,18 @@ dark_preference_settings() {
     for schema in "${candidates[@]}"; do
         range=$(gsettings range "$schema" color-scheme 2>/dev/null) || continue
         [[ $range == enum$'\n'* && $range == *"'prefer-dark'"* ]] || continue
-        gsettings get "$schema" color-scheme >/dev/null 2>&1 || return 1
-        writable=$(gsettings writable "$schema" color-scheme) || return 1
+        if ! gsettings get "$schema" color-scheme >/dev/null 2>&1; then
+            printf 'Skipping unreadable app appearance setting: %s color-scheme\n' "$schema" >&2
+            continue
+        fi
+        writable=$(gsettings writable "$schema" color-scheme) || writable=false
         [[ $writable == true ]] || {
-            printf 'Dark appearance setting is locked: %s color-scheme\n' "$schema" >&2
-            return 1
+            printf 'Skipping locked or unavailable app appearance setting: %s color-scheme\n' "$schema" >&2
+            continue
         }
         dark_schemas+=("$schema")
     done
-    ((${#dark_schemas[@]})) || { printf 'No supported color-scheme key is installed.\n' >&2; return 1; }
+    ((${#dark_schemas[@]})) || { printf 'No supported writable app appearance key is available.\n' >&2; return 1; }
     printf '%s\n' "${dark_schemas[@]}"
 }
 
@@ -119,7 +122,7 @@ while (($#)); do
         -h|--help) usage; exit 0 ;;
         -l|--libadwaita) LIBADWAITA=true ;;
         -a|--activate) ACTIVATE=true ;;
-        --prefer-dark) PREFER_DARK=true ;;
+        --prefer-dark) ;; # Accepted for v1.6.0 command compatibility; now the user-install default.
         --shell) SHELL_THEME=true ;;
         --system) SYSTEM=true ;;
         --link) value "$@"; LINK_PARENT=$2; shift ;;
@@ -145,13 +148,12 @@ done
 if $SYSTEM; then
     ((EUID == 0)) || die 'Use sudo with --system.'
     $CUSTOM_DEST || DEST=/usr/local/share/themes
-    if $LIBADWAITA || $ACTIVATE || $PREFER_DARK || (("${#EXTRAS[@]}" || "${#FLATPAKS[@]}")); then
+    if $LIBADWAITA || $ACTIVATE || (("${#EXTRAS[@]}" || "${#FLATPAKS[@]}")); then
         die '--system copies only the shared theme. Run user configuration separately without sudo.'
     fi
 elif [[ -n ${SUDO_USER:-} ]]; then
     die 'Run user setup without sudo, or use --system for shared theme files.'
 fi
-$REMOVE && $PREFER_DARK && die '--prefer-dark cannot be combined with --remove; choose another appearance in desktop settings.'
 [[ -z $LINK_PARENT ]] || $SYSTEM || die '--link requires --system; it must point to a root-owned copy, not a user theme.'
 for path in "$HOME" "$DATA" "$CONFIG" "$DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
     [[ $path == /* && $path != / && $path != *$'\n'* ]] || die "Expected an absolute directory other than /: $path"
@@ -371,9 +373,12 @@ fi
 SETTINGS=()
 DARK_SETTINGS=()
 SCHEMA_ARGS=()
-if $PREFER_DARK; then
-    dark_targets=$(dark_preference_settings) || die 'Cannot configure dark appearance; omit --prefer-dark and use your desktop/app Appearance settings.'
-    while IFS= read -r schema; do DARK_SETTINGS+=("$schema"); done <<< "$dark_targets"
+if ! $SYSTEM && ! $REMOVE; then
+    if dark_targets=$(dark_preference_settings); then
+        while IFS= read -r schema; do DARK_SETTINGS+=("$schema"); done <<< "$dark_targets"
+    else
+        printf 'App appearance unchanged: no supported writable setting. Theme installation will continue.\n'
+    fi
 fi
 if $ACTIVATE && ! $REMOVE; then
     case ${DESKTOP^^} in
@@ -481,7 +486,9 @@ if $ACTIVATE && ! $REMOVE; then
 fi
 for schema in "${DARK_SETTINGS[@]}"; do
     printf 'Application appearance: prefer-dark (%s color-scheme)\n' "$schema"
-    run gsettings set "$schema" color-scheme prefer-dark
+    if ! run gsettings set "$schema" color-scheme prefer-dark; then
+        printf 'Could not set dark appearance: %s color-scheme. Select dark appearance in desktop/app settings.\n' "$schema" >&2
+    fi
 done
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
 if (("${#EXTRAS[@]}")) && ! $DRY_RUN; then

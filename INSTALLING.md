@@ -17,8 +17,9 @@ Extract the release archive or clone the repository, then run:
 In a terminal this opens guided setup:
 
 1. **Install/update** offers native GTK4/libadwaita styling, desktop selection,
-   an app dark-appearance preference, matching supported GNOME Shell styling
-   and optional application extras.
+   matching supported GNOME Shell styling and optional application extras.
+   Supported app appearance preferences are set to dark automatically, without
+   an extra question, and listed in the final review.
 2. **Remove** selects the theme and any GTK4 links/extras to remove.
 3. **Help** explains setup; **Advanced options** covers a shared system theme
    and selected-app Flatpak configuration.
@@ -42,8 +43,6 @@ native GTK4 override and select supported desktop preferences directly:
 
 ```bash
 ./install.sh -l --activate
-# Also ask supporting applications to prefer a dark appearance:
-./install.sh -l --activate --prefer-dark
 ```
 
 Run user setup **without sudo**. `--dry-run` prints operations without applying
@@ -164,28 +163,30 @@ The theme does not replace an application's syntax color scheme.
 The script does not install icons, cursors, fonts or missing desktop packages.
 For other desktops, select the theme manually. Openbox selection is manual.
 
-App dark mode is a separate, optional choice. Guided setup asks **Prefer dark
-appearance in applications such as Firefox?** when a supported writable setting
-is available. The explicit option is `--prefer-dark`; it can also be used without
-`--activate`. Both the review and `--dry-run` show the selected settings before
-they are written. Theme-only installation and `--activate` alone keep the
-existing appearance preference.
+User installation/update automatically sets supported application appearance
+preferences to dark, with no extra question or flag. Both the guided review and
+`--dry-run` show the selected settings before they are written. This also applies
+without `--activate`, which separately selects the desktop theme. The former
+`--prefer-dark` flag is accepted for compatibility but is no longer needed.
 
-| Session | Settings used by `--prefer-dark`, when available |
+| Session | App appearance settings, when available |
 |---|---|
 | GNOME / Budgie | `org.gnome.desktop.interface color-scheme` |
 | Cinnamon / MATE / Xfce | `org.x.apps.portal color-scheme` and `org.gnome.desktop.interface color-scheme` |
 
 The latter sessions can use either the XApp or GTK settings portal, depending
 on the distribution. Their available supported keys are set together to
-`prefer-dark`, and the review lists each key. Missing keys are skipped; locked
-keys or no supported keys stop an explicit request before replacing files.
-Unknown desktops are not guessed. This does not install or repair a missing
-portal service, and an application's own theme can override the preference.
+`prefer-dark`, and the review lists each key. Missing, unreadable or locked keys
+are skipped. If none are available, theme installation continues and reports
+that app appearance was kept unchanged. A write failure is reported without
+failing theme installation. Unknown desktops are not guessed. This does not
+install or repair a missing portal service, and an application's own theme can
+override the preference.
 
 This is a user-wide preference for supporting apps, rather than Firefox-only
 configuration. It remains selected after removing the theme; removal has no
-saved preference history. Do not combine it with `--remove` or `--system`.
+saved preference history. Removal and shared `--system` installation do not
+change any personal app appearance preferences.
 To return to no preference, use your desktop's Appearance settings or set the
 listed `color-scheme` keys back to `default`. To restore a previous explicit
 light preference instead, select light appearance (`prefer-light`).
@@ -210,10 +211,10 @@ or log out/in after updating, especially on Wayland. GDM is not themed.
 Firefox's window decorations can follow the GTK/window theme while its tabs
 and address bar remain light. With **System theme — auto**, Firefox also reads
 the desktop's color preference through the settings portal. Selecting a dark
-GTK theme alone does not necessarily change that preference. Choose the
-installer's app dark-appearance option or use `--prefer-dark` to set it.
-`--activate` alone selects the themes listed above, keeping that separate
-preference unchanged. The installer does not edit Firefox profile settings.
+GTK theme alone does not necessarily change that preference. User installation
+with this installer now sets supported preferences to dark automatically. Manual
+theme copying/selection does not. The installer does not edit Firefox profile
+settings.
 
 In Firefox, open **Add-ons and themes → Themes** and enable **System theme —
 auto**. On Linux Mint Cinnamon, open **Themes → Settings** and select

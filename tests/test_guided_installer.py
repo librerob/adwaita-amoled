@@ -386,13 +386,15 @@ esac""",
                 t.answer("Choose [1]:", "1")
                 t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
                 t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
-                t.answer("Prefer dark appearance in applications such as Firefox?", "y")
                 t.answer("Copy optional application themes or wallpaper?", "n")
                 t.expect("org.gnome.desktop.interface color-scheme = prefer-dark")
                 t.expect("Apply these changes?")
                 self.assertFalse(log.exists())
                 t.send(answer)
                 output = t.finish()
+                self.assertNotIn(
+                    "Prefer dark appearance in applications such as Firefox?", output
+                )
                 if answer == "y":
                     expected = [
                         "set org.gnome.desktop.interface color-scheme prefer-dark"
@@ -411,14 +413,16 @@ esac""",
                             output,
                         )
 
-    def test_declining_dark_preference_preserves_app_settings(self):
+    def test_unavailable_dark_preference_does_not_add_question_or_block_installation(
+        self,
+    ):
         self.env["XDG_CURRENT_DESKTOP"] = "GNOME"
         self.fake(
             "gsettings",
             """case $1 in
 range) printf "enum\\n'prefer-dark'\\n" ;;
 get) echo "'Original'" ;;
-writable) echo true ;;
+writable) echo false ;;
 *) exit 99 ;;
 esac""",
         )
@@ -426,11 +430,14 @@ esac""",
         t.answer("Choose [1]:", "1")
         t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
         t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
-        t.answer("Prefer dark appearance in applications such as Firefox?", "n")
         t.answer("Copy optional application themes or wallpaper?", "n")
         t.answer("Apply these changes?", "y")
         output = t.finish()
         self.assertNotIn("Application appearance: prefer-dark", output)
+        self.assertNotIn(
+            "Prefer dark appearance in applications such as Firefox?", output
+        )
+        self.assertIn("App appearance unchanged", output)
         self.assertTrue(self.theme.is_dir())
 
     def flatpak(self):
