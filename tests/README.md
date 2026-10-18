@@ -249,7 +249,10 @@ limit, catchable signal interruptions and a concurrent installer. It verifies
 previous-theme preservation/restoration, staging cleanup and retained original
 files with a reported recovery path when restoration itself fails. It also
 checks that unused Neovim settings and failed package-query stdout do not block
-unrelated installation. These tests do not establish power-loss/SIGKILL or
+unrelated installation. Signal fixtures wait for their wrapper's stopped state
+in Linux `/proc` before injecting a signal and continuing it. This avoids a
+race between the old ready marker and a subsequently forked sleep process.
+These tests do not establish power-loss/SIGKILL or
 hardware-level crash consistency, nor atomicity across every config/desktop.
 
 The `flatpak-sandbox` CI job builds a tiny GTK4/libadwaita application and a minimal

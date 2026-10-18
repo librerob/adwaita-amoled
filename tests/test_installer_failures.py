@@ -146,29 +146,44 @@ class InstallerFailureTests(unittest.TestCase):
 
     def wait_for_marker(self, marker, process):
         deadline = time.monotonic() + 10
-        while (
-            not marker.exists()
-            and time.monotonic() < deadline
-            and process.poll() is None
-        ):
+        while time.monotonic() < deadline and process.poll() is None:
+            try:
+                pid = int(marker.read_text())
+                status = Path(f"/proc/{pid}/status").read_text()
+                if any(
+                    line.startswith("State:") and line.split()[1] == "T"
+                    for line in status.splitlines()
+                ):
+                    return
+            except (OSError, ValueError):
+                pass
             time.sleep(0.01)
-        self.assertTrue(marker.exists(), "Installer did not reach the injected pause")
+        self.fail("Installer did not reach the stopped injection point")
 
     def paused_installer(self, phase):
         ready = self.base / ("ready-" + str(time.monotonic_ns()))
         real_mv = shlex.quote(shutil.which("mv"))
         real_cp = shlex.quote(shutil.which("cp"))
         self.env["TEST_READY"] = str(ready)
+        # Publish a PID and stop this wrapper with Bash builtins. Waiting for
+        # /proc's stopped state avoids signalling between touch and a new sleep
+        # process, which can miss SIGINT and keep the directory lock for 30s.
+        pause = """trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
+printf '%s\\n' "$BASHPID" > "$TEST_READY"
+kill -STOP "$BASHPID"
+"""
         if phase == "copy":
-            self.fake_program(
-                "cp", 'touch "$TEST_READY"\nsleep 30\nexec ' + real_cp + ' "$@"'
-            )
+            self.fake_program("cp", pause + "exec " + real_cp + ' "$@"')
         else:
             self.fake_program(
                 "mv",
                 "if [[ $4 == */previous ]]; then "
                 + real_mv
-                + ' "$@"; touch "$TEST_READY"; sleep 30; exit 0; fi\nexec '
+                + ' "$@";\n'
+                + pause
+                + "exit 0; fi\nexec "
                 + real_mv
                 + ' "$@"',
             )
@@ -185,14 +200,24 @@ class InstallerFailureTests(unittest.TestCase):
         return process
 
     def stop_process(self, process):
-        if process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
+        try:
+            self.signal_installer(process, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
         process.communicate(timeout=10)
+
+    def signal_installer(self, process, signum):
+        os.killpg(process.pid, signum)
+        # A stopped wrapper handles its pending signal after being continued.
+        try:
+            os.killpg(process.pid, signal.SIGCONT)
+        except ProcessLookupError:
+            pass
 
     def test_sigterm_during_copy_preserves_previous_theme(self):
         marker = self.installed_marker()
         process = self.paused_installer("copy")
-        os.killpg(process.pid, signal.SIGTERM)
+        self.signal_installer(process, signal.SIGTERM)
         process.communicate(timeout=10)
         self.assertNotEqual(process.returncode, 0)
         self.assertEqual(marker.read_text(), "previous version\n")
@@ -201,7 +226,7 @@ class InstallerFailureTests(unittest.TestCase):
     def test_sigterm_between_directory_renames_restores_previous_theme(self):
         marker = self.installed_marker()
         process = self.paused_installer("rename")
-        os.killpg(process.pid, signal.SIGTERM)
+        self.signal_installer(process, signal.SIGTERM)
         process.communicate(timeout=10)
         self.assertNotEqual(process.returncode, 0)
         self.assertEqual(marker.read_text(), "previous version\n")
@@ -214,7 +239,7 @@ class InstallerFailureTests(unittest.TestCase):
         result = self.run_cli(env=env, success=False)
         self.assertIn("Another installer is using this destination", result.stderr)
         self.assertEqual(marker.read_text(), "previous version\n")
-        os.killpg(process.pid, signal.SIGTERM)
+        self.signal_installer(process, signal.SIGTERM)
         process.communicate(timeout=10)
         self.assert_no_staging_left()
 
@@ -241,7 +266,7 @@ class InstallerFailureTests(unittest.TestCase):
             with self.subTest(signal=signum):
                 marker = self.installed_marker()
                 process = self.paused_installer("rename")
-                os.killpg(process.pid, signum)
+                self.signal_installer(process, signum)
                 process.communicate(timeout=10)
                 self.assertNotEqual(process.returncode, 0)
                 self.assertEqual(marker.read_text(), "previous version\n")
