@@ -12,6 +12,44 @@ class SystemInstallerTests(unittest.TestCase):
     setUp = base.InstallerTests.setUp
     run_cli = base.InstallerTests.run_cli
 
+    def test_shared_accent_update_retains_color_and_root_owned_link(self):
+        self.assertEqual(os.geteuid(), 0)
+        dest = self.base / "shared/themes"
+        links = self.base / "usr/themes"
+        self.run_cli(
+            "--system",
+            "--dest",
+            str(dest),
+            "--link",
+            str(links),
+            "--accent",
+            "orange",
+            "--shell-version",
+            "46",
+        )
+        self.run_cli(
+            "--system",
+            "--dest",
+            str(dest),
+            "--link",
+            str(links),
+            "--shell-version",
+            "46",
+        )
+        theme = links / base.THEME
+        self.assertTrue(theme.is_symlink())
+        self.assertEqual((theme / "accent-name").read_text(), "orange\n")
+        self.assertEqual(
+            (theme / "gtk-3.0/gtk.gresource").read_bytes(),
+            (base.ROOT / "accents/orange/gtk-3.0/gtk.gresource").read_bytes(),
+        )
+        self.assertEqual(
+            (theme / "gnome-shell/gnome-shell.css").read_bytes(),
+            (base.ROOT / "accents/orange/gnome-shell/gnome-shell-46.css").read_bytes(),
+        )
+        self.assertEqual((theme / "accent-name").stat().st_uid, 0)
+        self.assertFalse(self.config.exists())
+
     def test_shared_theme_ownership_readability_update_and_remove(self):
         self.assertEqual(
             os.geteuid(), 0, "Run this suite as root in temporary staging roots"

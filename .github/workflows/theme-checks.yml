@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
+            libglib2.0-dev sassc rsync shellcheck zsh kitty neovim vim-airline \
             python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
             libmetacity3 xvfb xauth bat rofi flatpak xfconf libxfconf-0-3 dbus-x11 gsettings-desktop-schemas librsvg2-bin python3-pyqt5 python3-pyqt6 \
             libgtk2.0-0t64 gtk2-engines-murrine xapps-common
@@ -28,7 +28,9 @@ jobs:
       - name: Check resources, installation and extras
         run: |
           python3 tools/generate_palette.py --check
+          python3 tools/build_accents.py --check
           python3 tests/test_palette.py
+          python3 tests/test_accents.py
           python3 tests/test_runtime_package.py
           python3 tests/test_guided_installer.py GuidedInstallerTests
           python3 tests/test_installer.py
@@ -55,6 +57,12 @@ jobs:
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-consumers
         run: xvfb-run -a python3 tests/test_consumers.py
+      - name: Check every preset in GTK, Qt and application extras
+        run: |
+          xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/accent_native.py gtk '${{ runner.temp }}/theme-test-output/accents-gtk'
+          xvfb-run -a python3 tests/accent_native.py qt '${{ runner.temp }}/theme-test-output/accents-qt'
+          xvfb-run -a python3 tests/accent_native.py extras '${{ runner.temp }}/theme-test-output/accents-extras'
+          xvfb-run -a python3 tests/accent_native.py edges '${{ runner.temp }}/theme-test-output/accents-edges'
       - name: Upload additional consumer evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -96,6 +104,10 @@ jobs:
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern/borders
         run: xvfb-run -a python3 tests/test_borders.py BorderTests.test_gtk4_decorative_borders_and_input_edges
+      - name: Check every preset with modern GTK4 and libadwaita
+        run: |
+          xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/accent_native.py gtk '${{ runner.temp }}/theme-test-output-modern/accents'
+          xvfb-run -a python3 tests/accent_native.py edges '${{ runner.temp }}/theme-test-output-modern/accents-edges'
       - name: Upload modern rendering evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -119,6 +131,8 @@ jobs:
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-shell
         run: python3 tests/test_shell.py
+      - name: Check seven fixed Shell accents against every GNOME system accent
+        run: python3 tests/accent_native.py shell51 '${{ runner.temp }}/theme-test-output-shell/accents'
       - name: Upload Shell rendering evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -136,12 +150,14 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             git ca-certificates gnome-shell gnome-shell-extensions mutter-14-tests \
-            python3-dbusmock python3-dbus sassc pipewire wireplumber librsvg2-common
+            python3-dbusmock python3-dbus python3-gi gir1.2-gdkpixbuf-2.0 sassc pipewire wireplumber librsvg2-common librsvg2-bin
       - uses: actions/checkout@v7
       - name: Check GNOME 46 source and actual pointer interactions
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-shell46
         run: python3 tests/test_shell46.py
+      - name: Check every preset with native GNOME 46 interactions
+        run: python3 tests/accent_native.py shell46 '${{ runner.temp }}/theme-test-output-shell46/accents'
       - name: Upload GNOME 46 interaction evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -172,6 +188,7 @@ jobs:
           dbus-daemon --system --fork --nopidfile
           xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
             dbus-run-session -- python3 tests/cinnamon_colors.py . /tmp/cinnamon-color-evidence
+          python3 tests/accent_native.py cinnamon /tmp/cinnamon-color-evidence/accents
       - name: Upload Cinnamon color evidence
         if: always()
         uses: actions/upload-artifact@v7

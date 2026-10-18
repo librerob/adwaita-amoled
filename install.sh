@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 THEME=Adwaita-AMOLED
+ACCENT=auto
 DATA=${XDG_DATA_HOME:-$HOME/.local/share}
 CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}
 DESKTOP=${XDG_CURRENT_DESKTOP:-}
@@ -14,7 +15,9 @@ CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
 LINK_PARENT=''
 EXTRAS=() FLATPAKS=() TARGETS=()
 PAYLOAD=()
-REQUIRED=(index.theme gtk-2.0/gtkrc gtk-3.0/gtk.css gtk-3.0/gtk.gresource
+ACCENT_PAYLOAD=()
+declare -A ACCENT_OVERRIDES=()
+REQUIRED=(accent-name index.theme gtk-2.0/gtkrc gtk-3.0/gtk.css gtk-3.0/gtk.gresource
           gtk-4.0/gtk.css gtk-4.0/gtk.gresource cinnamon/cinnamon.css
           metacity-1/metacity-theme-3.xml openbox-3/themerc
           gnome-shell/gnome-shell-46.css gnome-shell/gnome-shell-51.css
@@ -32,6 +35,8 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
 
   -l, --libadwaita          Replace native GTK4 override files with theme links
   -a, --activate            Select the theme for the current desktop
+      --accent COLOR        blue, yellow, gold, purple, green, red, orange, pink
+                            Default: keep installed color, or blue for a new install
       --shell               Require a matching GNOME Shell theme (46 or 51)
       --extras LIST         Copy optional themes: qt,kitty,alacritty,bat,nvim,
                             rofi,zsh,wallpaper or all (select them in each app)
@@ -59,6 +64,12 @@ App themes are copied without rewriting your .zshrc, init.lua or other settings.
 User installation sets supported application appearance preferences to dark.
 Unavailable or locked appearance settings are skipped; system/removal leave them alone.
 EOF
+}
+
+installed_accent() {
+    local name=blue
+    if [[ -f $1/accent-name && ! -L $1/accent-name ]]; then IFS= read -r name < "$1/accent-name" || :; fi
+    case $name in blue|yellow|gold|purple|green|red|orange|pink) printf '%s\n' "$name" ;; *) printf 'blue\n' ;; esac
 }
 
 # GTK theme selection and the portal's app appearance preference are separate.
@@ -122,6 +133,7 @@ while (($#)); do
         -h|--help) usage; exit 0 ;;
         -l|--libadwaita) LIBADWAITA=true ;;
         -a|--activate) ACTIVATE=true ;;
+        --accent) value "$@"; ACCENT=$2; shift ;;
         --prefer-dark) ;; # Accepted for v1.6.0 command compatibility; now the user-install default.
         --shell) SHELL_THEME=true ;;
         --system) SYSTEM=true ;;
@@ -145,6 +157,7 @@ for tool in realpath rm mkdir cp ln chmod mv mktemp flock stat; do
 done
 [[ $GTK_MODE =~ ^(auto|legacy|modern)$ ]] || die 'GTK4 mode must be auto, legacy or modern.'
 [[ $SHELL_VERSION =~ ^(auto|46|51)$ ]] || die 'Shell version must be auto, 46 or 51.'
+case $ACCENT in auto|blue|yellow|gold|purple|green|red|orange|pink) ;; *) die 'Unknown accent color. Use blue, yellow, gold, purple, green, red, orange or pink.' ;; esac
 if $SYSTEM; then
     ((EUID == 0)) || die 'Use sudo with --system.'
     $CUSTOM_DEST || DEST=/usr/local/share/themes
@@ -160,6 +173,7 @@ for path in "$HOME" "$DATA" "$CONFIG" "$DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
 done
 DEST=$(realpath -m -- "$DEST")
 TARGET=$DEST/$THEME
+[[ $ACCENT != auto ]] || ACCENT=$(installed_accent "$TARGET")
 LINK_PATH=''
 GTK2_LINK=''
 if [[ -n $LINK_PARENT ]]; then
@@ -264,6 +278,33 @@ read_runtime_files() {
     done
 }
 
+read_accent_files() {
+    local directory=$ROOT/accents/$ACCENT digest name parent
+    local -A permitted=() seen=()
+    for name in "${PAYLOAD[@]}"; do permitted[$name]=1; done
+    [[ -f $directory/SHA256SUMS && ! -L $ROOT/accents && ! -L $directory && ! -L $directory/SHA256SUMS ]] || die "Incomplete accent download: $ACCENT"
+    while read -r digest name || [[ -n $digest || -n $name ]]; do
+        [[ $digest =~ ^[0-9a-f]{64}$ && $name =~ ^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$ && /$name/ != *'/../'* && /$name/ != *'/./'* ]] || die 'Invalid accent manifest.'
+        [[ ${permitted[$name]+yes} && ! ${seen[$name]+yes} ]] || die "Unexpected or duplicate accent path: $name"
+        seen[$name]=1
+        ACCENT_OVERRIDES[$name]=1
+        parent=$name
+        while [[ -n $parent ]]; do
+            [[ ! -L $directory/$parent ]] || die "Linked accent path is not supported: $parent"
+            if [[ $parent == */* ]]; then parent=${parent%/*}; else parent=''; fi
+        done
+        [[ -f $directory/$name && -r $directory/$name ]] || die "Missing accent file: $name"
+        ACCENT_PAYLOAD+=("$name")
+    done < "$directory/SHA256SUMS"
+    [[ ${seen[accent-name]+yes} && $(installed_accent "$directory") == "$ACCENT" ]] || die 'Accent identity is missing or incorrect.'
+    (cd -- "$directory" && sha256sum --check --status SHA256SUMS) || die 'Accent checksum verification failed.'
+}
+
+accent_source() {
+    if [[ $ACCENT != blue && ${ACCENT_OVERRIDES[$1]+yes} ]]; then printf '%s\n' "$ROOT/accents/$ACCENT/$1"
+    else printf '%s\n' "$ROOT/$1"; fi
+}
+
 # Build the new copy first. Keep the previous directory only during the rename
 # so an ordinary copy/promotion error or catchable signal can restore it.
 replace_theme() (
@@ -295,7 +336,11 @@ replace_theme() (
     mkdir -- "$stage/new"
     (cd -- "$ROOT" && cp -a --no-preserve=ownership --parents -- "${PAYLOAD[@]}" "$stage/new/")
     validate_runtime "$stage/new"
-    cp --remove-destination -T -- "$ROOT/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
+    if ((${#ACCENT_PAYLOAD[@]})); then
+        (cd -- "$ROOT/accents/$ACCENT" && cp -a --no-preserve=ownership --parents -- "${ACCENT_PAYLOAD[@]}" "$stage/new/")
+        (cd -- "$stage/new" && sha256sum --check --status "$ROOT/accents/$ACCENT/SHA256SUMS") || die 'Staged accent checksum verification failed.'
+    fi
+    cp --remove-destination -T -- "$stage/new/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
     chmod -R a+rX,go-w -- "$stage/new"
     if [[ -e $target ]]; then mv -T -- "$target" "$stage/previous"; fi
     mv -T -- "$stage/new" "$target"
@@ -367,6 +412,10 @@ if ! $REMOVE; then
     read_runtime_files
     if [[ -f $ROOT/ARCHIVE_CONTENTS.sha256 ]]; then command -v sha256sum >/dev/null || die 'sha256sum is required to verify this archive.'; fi
     validate_runtime "$ROOT"
+    if [[ $ACCENT != blue ]]; then
+        command -v sha256sum >/dev/null || die 'sha256sum is required to verify accent files.'
+        read_accent_files
+    fi
 fi
 
 # Check requested desktop tools before copying anything.
@@ -417,7 +466,7 @@ if ! $DRY_RUN; then
         lock_parent "$parent"
     done
 fi
-if $REMOVE; then printf 'Removing %s\n' "$THEME"; else printf 'Installing %s\n' "$THEME"; fi
+if $REMOVE; then printf 'Removing %s\n' "$THEME"; else printf 'Installing %s (%s accent)\n' "$THEME" "$ACCENT"; fi
 if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
     for target in "${TARGETS[@]}"; do
         printf 'Theme: %s\n' "$target"
@@ -441,7 +490,7 @@ fi
 if $LIBADWAITA; then gtk_links "$CONFIG/gtk-4.0" "$GTK_MODE"; fi
 
 extra_file() {
-    if $REMOVE; then run rm -f -- "$2"; else copy_file "$ROOT/extra/$1" "$2"; fi
+    if $REMOVE; then run rm -f -- "$2"; else copy_file "$(accent_source "extra/$1")" "$2"; fi
 }
 for extra in "${EXTRAS[@]}"; do
     case "$extra" in

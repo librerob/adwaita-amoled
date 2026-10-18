@@ -25,16 +25,16 @@ let g:colors_name = 'adwaita-amoled'
 hi Normal          guifg={{foreground}}   guibg={{background}}      gui=NONE
 hi NormalNC        guifg={{secondary_text}}   guibg={{background}}      gui=NONE
 
-" Float bg is blue-tinted dark (#111820) — distinguishable from both bg
+" Float bg is blue-tinted dark ({{accent_surface}}) — distinguishable from both bg
 " ({{background}}) and surface_card ({{surface}}) without breaking the AMOLED aesthetic.
-hi NormalFloat     guifg={{foreground}}   guibg=#111820   gui=NONE
-hi FloatBorder     guifg={{accent_text}}   guibg=#111820   gui=NONE
-hi FloatTitle      guifg={{accent_text}}   guibg=#111820   gui=bold
+hi NormalFloat     guifg={{foreground}}   guibg={{accent_surface}}   gui=NONE
+hi FloatBorder     guifg={{accent_text}}   guibg={{accent_surface}}   gui=NONE
+hi FloatTitle      guifg={{accent_text}}   guibg={{accent_surface}}   gui=bold
 
 hi LineNr          guifg={{muted_text}}   guibg=NONE      gui=NONE
 hi CursorLineNr    guifg={{syntax_yellow}}   guibg=NONE      gui=bold
 " Cursor-line and selected text use distinct dark blue-tinted surfaces.
-hi CursorLine      guifg=NONE      guibg=#0c1a2e   gui=NONE
+hi CursorLine      guifg=NONE      guibg={{accent_cursorline}}   gui=NONE
 hi ColorColumn     guifg=NONE      guibg={{surface}}   gui=NONE
 
 " SignColumn / FoldColumn — brought to {{muted_text}} for readability.
@@ -70,8 +70,8 @@ hi TabLineFill     guifg=NONE      guibg={{surface}}   gui=NONE
 " Selection / search
 " ─────────────────────────────────────────────────────────────────────────────
 " Selection keeps ordinary text readable on the dark blue-tinted surface.
-hi Visual          guifg=NONE      guibg=#1a2d4a   gui=NONE
-hi VisualNOS       guifg=NONE      guibg=#1a2d4a   gui=NONE
+hi Visual          guifg=NONE      guibg={{accent_selection}}   gui=NONE
+hi VisualNOS       guifg=NONE      guibg={{accent_selection}}   gui=NONE
 
 " Search matches use black text on warning yellow.
 
@@ -90,11 +90,11 @@ hi Substitute      guifg={{background}}   guibg={{syntax_yellow}}   gui=bold
 " ─────────────────────────────────────────────────────────────────────────────
 " Popup / completion menu
 " ─────────────────────────────────────────────────────────────────────────────
-hi Pmenu           guifg={{foreground}}   guibg=#111820   gui=NONE
+hi Pmenu           guifg={{foreground}}   guibg={{accent_surface}}   gui=NONE
 hi PmenuSel        guifg={{background}}   guibg={{accent_text}}   gui=bold
 hi PmenuSbar       guifg=NONE      guibg={{hover}}   gui=NONE
 hi PmenuThumb      guifg=NONE      guibg={{accent_text}}   gui=NONE
-hi PmenuMatch      guifg={{syntax_yellow}}   guibg=#111820   gui=bold
+hi PmenuMatch      guifg={{syntax_yellow}}   guibg={{accent_surface}}   gui=bold
 hi PmenuMatchSel   guifg={{background}}   guibg={{accent_text}}   gui=bold,underline
 
 " ─────────────────────────────────────────────────────────────────────────────
@@ -152,10 +152,10 @@ hi DiagnosticSignWarn           guifg={{syntax_yellow}}   guibg=NONE   gui=NONE
 hi DiagnosticSignInfo           guifg={{accent_text}}   guibg=NONE   gui=NONE
 hi DiagnosticSignHint           guifg={{muted_text}}   guibg=NONE   gui=NONE
 
-hi DiagnosticFloatingError      guifg={{error_text}}   guibg=#111820 gui=NONE
-hi DiagnosticFloatingWarn       guifg={{syntax_yellow}}   guibg=#111820 gui=NONE
-hi DiagnosticFloatingInfo       guifg={{accent_text}}   guibg=#111820 gui=NONE
-hi DiagnosticFloatingHint       guifg={{muted_text}}   guibg=#111820 gui=NONE
+hi DiagnosticFloatingError      guifg={{error_text}}   guibg={{accent_surface}} gui=NONE
+hi DiagnosticFloatingWarn       guifg={{syntax_yellow}}   guibg={{accent_surface}} gui=NONE
+hi DiagnosticFloatingInfo       guifg={{accent_text}}   guibg={{accent_surface}} gui=NONE
+hi DiagnosticFloatingHint       guifg={{muted_text}}   guibg={{accent_surface}} gui=NONE
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Syntax — base groups
@@ -214,7 +214,7 @@ hi Todo            guifg={{background}}   guibg={{syntax_yellow}} gui=bold
 hi Title           guifg={{accent_text}}   guibg=NONE   gui=bold
 hi Directory       guifg={{accent_text}}   guibg=NONE   gui=bold
 hi WildMenu        guifg={{background}}   guibg={{accent_text}} gui=bold
-hi QuickFixLine    guifg=NONE      guibg=#1a2d4a gui=NONE
+hi QuickFixLine    guifg=NONE      guibg={{accent_selection}} gui=NONE
 
 " ─────────────────────────────────────────────────────────────────────────────
 " Treesitter — explicit @-namespace groups (Neovim 0.8+ parser highlights)
@@ -246,7 +246,7 @@ hi! link @variable.builtin   Special
 hi! link @variable.member    @property
 " Object/struct properties use light blue-tinted white.
 " Distinct from plain Identifier while staying within the blue-tinted palette.
-hi   @property               guifg=#c8d8f8   guibg=NONE   gui=NONE
+hi   @property               guifg={{accent_syntax_soft}}   guibg=NONE   gui=NONE
 
 " Functions
 hi! link @function           Function
@@ -348,18 +348,18 @@ hi @lsp.mod.readonly         gui=italic
 " ── Telescope ──────────────────────────────────────────────────────────────
 hi! link TelescopeNormal         NormalFloat
 hi! link TelescopePreviewNormal  NormalFloat
-hi   TelescopeBorder             guifg={{accent_text}}   guibg=#111820   gui=NONE
+hi   TelescopeBorder             guifg={{accent_text}}   guibg={{accent_surface}}   gui=NONE
 hi! link TelescopePromptBorder   TelescopeBorder
 hi! link TelescopeResultsBorder  TelescopeBorder
 hi! link TelescopePreviewBorder  TelescopeBorder
-hi   TelescopeTitle              guifg={{accent_text}}   guibg=#111820   gui=bold
+hi   TelescopeTitle              guifg={{accent_text}}   guibg={{accent_surface}}   gui=bold
 hi! link TelescopePromptTitle    TelescopeTitle
 hi! link TelescopeResultsTitle   TelescopeTitle
 hi! link TelescopePreviewTitle   TelescopeTitle
 hi   TelescopePromptPrefix       guifg={{accent_text}}   guibg=NONE      gui=bold
-hi   TelescopeSelectionCaret     guifg={{accent_text}}   guibg=#1a2d4a   gui=NONE
-hi   TelescopeSelection          guifg={{foreground}}   guibg=#1a2d4a   gui=NONE
-hi   TelescopeMultiSelection     guifg={{accent_text_hover}}   guibg=#1a2d4a   gui=NONE
+hi   TelescopeSelectionCaret     guifg={{accent_text}}   guibg={{accent_selection}}   gui=NONE
+hi   TelescopeSelection          guifg={{foreground}}   guibg={{accent_selection}}   gui=NONE
+hi   TelescopeMultiSelection     guifg={{accent_text_hover}}   guibg={{accent_selection}}   gui=NONE
 hi   TelescopeMatching           guifg={{syntax_yellow}}   guibg=NONE      gui=bold
 hi   TelescopePromptCounter      guifg={{muted_text}}   guibg=NONE      gui=NONE
 
@@ -451,7 +451,7 @@ hi   CmpItemKindText             guifg={{foreground}}   guibg=NONE   gui=NONE
 hi   CmpItemKindMethod           guifg={{syntax_green}}   guibg=NONE   gui=NONE
 hi! link CmpItemKindFunction     CmpItemKindMethod
 hi! link CmpItemKindConstructor  CmpItemKindMethod
-hi   CmpItemKindField            guifg=#c8d8f8   guibg=NONE   gui=NONE
+hi   CmpItemKindField            guifg={{accent_syntax_soft}}   guibg=NONE   gui=NONE
 hi! link CmpItemKindProperty     CmpItemKindField
 hi! link CmpItemKindVariable     Identifier
 hi   CmpItemKindClass            guifg={{accent_text_hover}}   guibg=NONE   gui=NONE

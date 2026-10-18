@@ -1,5 +1,8 @@
 # Color readability audit — 2026-10-16
 
+The optional seven-color presets and their measurements are documented in
+[Accent presets](ACCENT_COLORS.md). The blue-theme findings below remain historical.
+
 This records the original v1.2.0 readability work. The subsequent
 [repository-wide color follow-up](COLOR_COMPLETENESS.md) documents additional
 failures found by broader tests, their fixes and the current coverage.

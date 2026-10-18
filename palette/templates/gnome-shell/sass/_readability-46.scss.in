@@ -6,7 +6,7 @@
   &:focus { background-color: {{accent_fill}}; color: {{foreground}}; }
   &:hover, &:focus:hover { background-color: {{accent_fill_hover}}; color: {{foreground}}; }
   &:active, &:active:hover, &:active:focus, &:active:focus:hover {
-    background-color: #2459bc;
+    background-color: {{accent_fill_pressed}};
     color: {{foreground}};
   }
 }

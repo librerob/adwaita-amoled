@@ -34,6 +34,7 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 ## Features
 
 - True AMOLED base (`#000000`) with layered depth
+- Blue by default; optional yellow, gold, purple, green, red, orange and pink accents
 - Clear visual hierarchy across all widget states, unfocused, hover, active
 - Correct GTK3 widget rendering: checkboxes show ✓, radio buttons show ●, indeterminate states work
 - Refined XFCE panel with accent underline focus indicator, no flat white blocks
@@ -54,7 +55,7 @@ fixes and the expanded file/paint review.
 ## Installation
 
 The compiled theme is included. The installer is plain **Bash**: no Python,
-compiler, downloads or saved installer state.
+compiler, downloads or installer database.
 
 ```bash
 git clone https://github.com/librerob/adwaita-amoled.git
@@ -68,6 +69,11 @@ and supported Shell activation, and sets supported app appearance preferences
 to dark automatically. It then shows the destinations and settings before you choose
 **Apply**, **Cancel** or **Preview**. GTK4 replacement is optional and defaults to
 keeping existing overrides. No extra menu package is needed.
+
+Choose **Accent color** in the main menu to change from blue. Each preset keeps
+black surfaces, uses a light accent for text/focus and darker fills with white
+labels. Updates retain the installed color. See [accent choices and measured
+contrast](ACCENT_COLORS.md), including why yellow/gold buttons use darker fills.
 
 The default user theme location is `~/.local/share/themes/Adwaita-AMOLED`.
 Advanced menus cover shared system setup and selected Flatpak apps. App themes
@@ -86,6 +92,7 @@ files do not block copying. Restart affected apps afterward.
 
 ```bash
 ./install.sh --extras qt,kitty,nvim  # Copy optional app theme files
+./install.sh --accent purple -l --activate  # Choose a color without menus
 ./install.sh --dry-run             # Preview file operations
 sudo ./install.sh --system         # Shared theme, without user configuration
 sudo ./install.sh --system --link /usr/share/themes  # Link to the root-owned copy
@@ -106,6 +113,8 @@ updated; links pointing elsewhere are reported without being overwritten.
 Checkout installs and release archives use the same `runtime-files.txt` list:
 runtime styles, assets, app extras, wallpaper and license notices are included;
 the logo, screenshots and development build sources stay in the repository.
+Downloads include precompiled color overlays; only the selected color is copied
+into the installed theme, under the same **Adwaita-AMOLED** name.
 [The installation guide](INSTALLING.md) explains every destination, optional
 per-app Flatpak setup, GNOME Shell selection and manual configuration.
 
@@ -116,13 +125,16 @@ for the Linux Mint setting and a Firefox-only alternative.
 
 ### Manual installation
 
+The manual instructions install the default blue theme. Use the installer to
+select a different accent consistently across compiled resources and app extras.
+
 From the extracted theme/repository directory, copy the compiled theme folders:
 
 ```bash
 amoled_theme="${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED"
 mkdir -p "$amoled_theme"
 cp -R cinnamon gnome-shell gtk-2.0 gtk-3.0 gtk-4.0 metacity-1 openbox-3 extra "$amoled_theme/"
-cp index.theme LICENSE "$amoled_theme/"
+cp index.theme LICENSE accent-name "$amoled_theme/"
 mkdir -p "$HOME/.themes"
 if [ ! -e "$HOME/.themes/Adwaita-AMOLED" ] && [ ! -L "$HOME/.themes/Adwaita-AMOLED" ]; then
   ln -s "$amoled_theme" "$HOME/.themes/Adwaita-AMOLED"
@@ -218,6 +230,16 @@ palette, regenerate the shared files and rebuild **both** variants (requires `sa
 ./gnome-shell/build.sh
 ./gnome-shell/build.sh --shell-version 46
 ```
+
+Then rebuild/check the seven precompiled accent overlays:
+
+```bash
+python3 tools/build_accents.py
+python3 tools/build_accents.py --check
+```
+
+Preset definitions are in [palette/accents.json](palette/accents.json). The build
+runs in temporary directories and leaves the default blue outputs unchanged.
 
 Build an installer-enabled runtime archive (without source GTK files or tests):
 

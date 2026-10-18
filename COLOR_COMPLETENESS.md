@@ -1,5 +1,8 @@
 # Repository-wide color follow-up — 2026-10-16
 
+The optional seven-color presets and their measurements are documented in
+[Accent presets](ACCENT_COLORS.md). The blue-theme findings below remain historical.
+
 **17 October follow-up:** decorative button/card frames, header/sidebar and
 toolbar separators now use the subtle border palette after a Cinnamon user
 report showed that identifying-control brightness had been applied too broadly.

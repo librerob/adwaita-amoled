@@ -33,6 +33,73 @@ def runtime_paths(root):
     return names
 
 
+def accent_paths(root):
+    """Distribution-only overlays are not copied wholesale into installed themes."""
+    directory = root / "accents"
+    manifest = directory / "SHA256SUMS"
+    if not manifest.exists():
+        if directory.exists() or directory.is_symlink():
+            raise ValueError("missing accent distribution manifest")
+        return []
+    if directory.is_symlink() or manifest.is_symlink():
+        raise ValueError("linked accent distribution manifest")
+    runtime = set(runtime_paths(root))
+    names = []
+    seen = set()
+    for line in manifest.read_text().splitlines():
+        digest, name = line.split("  ", 1)
+        path = Path(name)
+        if (
+            not re.fullmatch(r"[0-9a-f]{64}", digest)
+            or not re.fullmatch(r"[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*", name)
+            or any(p in (".", "..") for p in path.parts)
+        ):
+            raise ValueError("invalid accent manifest")
+        if (
+            path.parts[0]
+            not in {"yellow", "gold", "purple", "green", "red", "orange", "pink"}
+            or str(Path(*path.parts[1:])) not in runtime | {"SHA256SUMS"}
+            or name in seen
+        ):
+            raise ValueError("unexpected accent path: " + name)
+        source = directory / path
+        if (
+            any(p.is_symlink() for p in (source, *source.parents) if p != root)
+            or not source.is_file()
+            or hashlib.sha256(source.read_bytes()).hexdigest() != digest
+        ):
+            raise ValueError("invalid accent file: " + name)
+        seen.add(name)
+        names.append("accents/" + name)
+    if not names:
+        raise ValueError("empty accent manifest")
+    for accent in ("yellow", "gold", "purple", "green", "red", "orange", "pink"):
+        expected = {
+            name.removeprefix(accent + "/")
+            for name in seen
+            if name.startswith(accent + "/")
+        }
+        if not {"SHA256SUMS", "accent-name"}.issubset(expected):
+            raise ValueError("incomplete accent: " + accent)
+        if (directory / accent / "accent-name").read_text() != accent + "\n":
+            raise ValueError("incorrect accent identity: " + accent)
+        checksums = {}
+        for line in (directory / accent / "SHA256SUMS").read_text().splitlines():
+            digest, name = line.split("  ", 1)
+            if name in checksums or name not in expected - {"SHA256SUMS"}:
+                raise ValueError("unexpected accent checksum: " + name)
+            checksums[name] = digest
+        if set(checksums) != expected - {"SHA256SUMS"}:
+            raise ValueError("incomplete accent checksums: " + accent)
+        for name, digest in checksums.items():
+            if (
+                hashlib.sha256((directory / accent / name).read_bytes()).hexdigest()
+                != digest
+            ):
+                raise ValueError("incorrect accent checksum: " + accent + "/" + name)
+    return sorted(names) + ["accents/SHA256SUMS"]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -57,6 +124,7 @@ def main():
             )
         )
     for required in [
+        "accent-name",
         "install.sh",
         "setup-menu.sh",
         "INSTALLING.md",
@@ -83,6 +151,11 @@ def main():
         for name, data, _ in files
     ).encode()
     files.append((Path("ARCHIVE_CONTENTS.sha256"), manifest, 0o644))
+    try:
+        for name in accent_paths(ROOT):
+            files.append((Path(name), (ROOT / name).read_bytes(), 0o644))
+    except (OSError, ValueError) as error:
+        parser.error(str(error))
     output.parent.mkdir(parents=True, exist_ok=True)
     # Fixed timestamps, IDs, modes and gzip filename make repeat builds identical.
     with output.open("wb") as raw, gzip.GzipFile(

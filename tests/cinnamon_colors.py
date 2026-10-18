@@ -1,4 +1,4 @@
-import json, os, subprocess, sys, tempfile, time
+import json, os, signal, subprocess, sys, tempfile, time
 from pathlib import Path
 import gi
 from gi.repository import Gio, GLib
@@ -8,6 +8,9 @@ out = Path(sys.argv[2])
 out.mkdir(parents=True, exist_ok=True)
 with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
     home = Path(temporary)
+    # The stock grouped-window-list applet also reads this literal home path,
+    # independently of the fixture's XDG_CONFIG_HOME.
+    (home / ".config/autostart").mkdir(parents=True)
     env = dict(
         {
             key: value
@@ -60,6 +63,7 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
             env=env,
             stdout=log,
             stderr=subprocess.STDOUT,
+            start_new_session=True,
         )
         try:
             proxy = Gio.DBusProxy.new_for_bus_sync(
@@ -83,7 +87,9 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
                 assert success, result
                 return result
 
-            for _ in range(200):
+            # Software-rendered CI sessions may take longer while other native
+            # consumers run. Poll actual readiness rather than assuming startup.
+            for _ in range(900):
                 assert process.poll() is None, "Cinnamon exited; see session.log"
                 try:
                     if (
@@ -274,10 +280,20 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
                 env=env,
                 check=True,
             )
+        except BaseException as error:
+            detail = str(error) + "\n" + (out / "session.log").read_text(errors="replace")[-15000:]
+            print(detail, file=sys.stderr, flush=True)
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                escaped = detail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+                print("::error title=Cinnamon native fixture::" + escaped, flush=True)
+            raise
         finally:
-            process.terminate()
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
             try:
                 process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                process.kill()
+                os.killpg(process.pid, signal.SIGKILL)
                 process.wait()

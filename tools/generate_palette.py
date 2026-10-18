@@ -20,15 +20,16 @@ OUTPUT_ROOTS = {
 }
 
 
-def load_colors(path):
-    def unique(pairs):
-        result = {}
-        for key, value in pairs:
-            if key in result:
-                raise ValueError(f"duplicate palette key: {key}")
-            result[key] = value
-        return result
+def unique(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate palette key: {key}")
+        result[key] = value
+    return result
 
+
+def load_colors(path):
     palette = json.loads(path.read_text(), object_pairs_hook=unique)
     if (
         not isinstance(palette, dict)
@@ -68,8 +69,40 @@ def render(text, colors):
     return result.encode("utf-8")
 
 
-def outputs(root):
+def preset_colors(root, name):
     colors = load_colors(root / "palette/colors.json")
+    if name == "blue":
+        return colors
+    data = json.loads(
+        (root / "palette/accents.json").read_text(), object_pairs_hook=unique
+    )
+    if (
+        not isinstance(data, dict)
+        or set(data) != {"version", "presets"}
+        or data["version"] != 1
+        or not isinstance(data["presets"], dict)
+        or name not in data["presets"]
+    ):
+        raise ValueError(f"unknown accent preset: {name}")
+    preset = data["presets"][name]
+    if not isinstance(preset, dict) or set(preset) != {"colors"}:
+        raise ValueError(f"invalid accent preset: {name}")
+    overrides = preset["colors"]
+    accent_roles = {key for key in colors if key.startswith("accent_")}
+    if not isinstance(overrides, dict) or set(overrides) != accent_roles:
+        raise ValueError(f"invalid accent overrides: {name}")
+    for key, value in overrides.items():
+        if (
+            not key.startswith("accent_")
+            or not isinstance(value, str)
+            or not re.fullmatch(r"#[0-9a-f]{6}", value)
+        ):
+            raise ValueError(f"invalid accent role: {name}/{key}")
+    return colors | overrides
+
+
+def outputs(root, colors=None):
+    colors = colors if colors is not None else load_colors(root / "palette/colors.json")
     templates = root / "palette/templates"
     rendered = {}
     for template in sorted(templates.rglob("*.in")):
@@ -91,9 +124,9 @@ def outputs(root):
     return rendered
 
 
-def generate(root, check=False):
+def generate(root, check=False, colors=None):
     # Render and validate everything before writing any output.
-    rendered = outputs(root)
+    rendered = outputs(root, colors)
     changed = []
     for name, data in rendered.items():
         target = root / name

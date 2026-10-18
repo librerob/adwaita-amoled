@@ -13,7 +13,7 @@
      --fg-dim:      rgba({{foreground.r}},{{foreground.g}},{{foreground.b}},0.7)   secondary text
      --fg-muted:    {{muted_text}}   readable tertiary text
      --accent:      {{accent_text}}   standalone text / focus
-     --accent-dim:  rgba(56,122,242,0.25)   accent translucent
+     --accent-dim:  rgba({{accent_indicator.r}},{{accent_indicator.g}},{{accent_indicator.b}},0.25)   accent translucent
      --destroy:     {{destructive_fill}}   destructive red
      --warning:     #e5a50a   warning amber
      --success:     {{success_fill}}   success green
@@ -100,7 +100,7 @@ StScrollBar StButton#hhandle:active {
   width: 50px;
   height: 50px;
   border-radius: 25px;
-  background-color: rgba(56, 122, 242, 0.25);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.25);
   box-shadow: 0 0 2px 2px {{accent_text}};
 }
 
@@ -716,11 +716,11 @@ StScrollBar StButton#hhandle:active {
   color: {{foreground}};
   border-color: transparent;
   box-shadow: inset 0 -3px {{accent_text}};
-  background-color: rgba(56, 122, 242, 0.08);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.08);
 }
 
 .window-list-item-box .progress {
-  background-color: rgba(56, 122, 242, 0.25);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.25);
 }
 
 /* Urgent / attention — flash red background */
@@ -839,7 +839,7 @@ StScrollBar StButton#hhandle:active {
   color: {{foreground}};
   border-color: transparent;
   box-shadow: none;
-  background-color: rgba(56, 122, 242, 0.08);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.08);
   border-image: url("common-assets/panel/border-bottom-active.svg") 2;
 }
 
@@ -861,7 +861,7 @@ StScrollBar StButton#hhandle:active {
 /* Hover while active */
 .grouped-window-list-item-box:hover:active,
 .grouped-window-list-item-box:hover:checked {
-  background-color: rgba(56, 122, 242, 0.14);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.14);
   border-image: url("common-assets/panel/border-bottom-active-hover.svg") 2;
 }
 
@@ -886,18 +886,18 @@ StScrollBar StButton#hhandle:active {
   color: {{foreground}};
   box-shadow: inset 0 -3px {{accent_text}};
   border-image: none;
-  background-color: rgba(56, 122, 242, 0.08);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.08);
 }
 
 .grouped-window-list-item-box:hover:active:focus,
 .grouped-window-list-item-box:hover:checked:focus {
-  background-color: rgba(56, 122, 242, 0.14);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.14);
   box-shadow: inset 0 -3px {{accent_text}};
   border-image: none;
 }
 
 .grouped-window-list-item-box .progress {
-  background-color: rgba(56, 122, 242, 0.25);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.25);
 }
 
 /* Urgent */
@@ -962,7 +962,7 @@ StScrollBar StButton#hhandle:active {
 
 .grouped-window-list-thumbnail-menu .item-box:selected {
   border: 1px solid {{accent_text}};
-  background: rgba(56, 122, 242, 0.12);
+  background: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.12);
 }
 
 .grouped-window-list-thumbnail-menu .thumbnail {
@@ -1263,7 +1263,7 @@ StScrollBar StButton#hhandle:active {
   padding: 7px;
   caret-size: 1px;
   caret-color: rgba({{foreground.r}}, {{foreground.g}}, {{foreground.b}}, 0.8);
-  selection-background-color: rgba(56, 122, 242, 0.4);
+  selection-background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.4);
   selected-color: {{foreground}};
   transition-duration: 300ms;
   border-radius: 5px;
@@ -1274,7 +1274,7 @@ StScrollBar StButton#hhandle:active {
 
 .notification StEntry:focus {
   color: {{foreground}};
-  background-color: rgba(56, 122, 242, 0.15);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.15);
   border: 1px solid {{accent_text}};
 }
 
@@ -1296,7 +1296,7 @@ StScrollBar StButton#hhandle:active {
 .popup-menu #notification StEntry {
   padding: 7px;
   caret-size: 1px;
-  selection-background-color: rgba(56, 122, 242, 0.4);
+  selection-background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.4);
   selected-color: {{foreground}};
   transition-duration: 300ms;
   border-radius: 5px;
@@ -1575,7 +1575,7 @@ StScrollBar StButton#hhandle:active {
 
 .calendar-event-button:hover {
   background-color: {{accent_fill}};
-  border: 1px solid rgba(56, 122, 242, 0.5);
+  border: 1px solid rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.5);
 }
 
 .calendar-event-button:hover .calendar-event-time-past,
@@ -1620,7 +1620,7 @@ StScrollBar StButton#hhandle:active {
 }
 
 .calendar-today-home-button-enabled:hover {
-  background-color: rgba(56, 122, 242, 0.2);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.2);
 }
 
 .calendar-today-home-button-enabled:hover .calendar-today-day-label,
@@ -1715,7 +1715,7 @@ StScrollBar StButton#hhandle:active {
 .calendar-day-base:hover {
   font-weight: bold;
   color: {{foreground}};
-  background-color: rgba(56, 122, 242, 0.3);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.3);
   border-radius: 6px;
 }
 
@@ -1741,7 +1741,7 @@ StScrollBar StButton#hhandle:active {
 
 .calendar-today {
   color: {{foreground}};
-  background-color: rgba(56, 122, 242, 0.25);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.25);
   border-width: 0;
   border-radius: 6px;
 }
@@ -1910,7 +1910,7 @@ StScrollBar StButton#hhandle:active {
 .expo-workspaces-name-entry:focus,
 .expo-workspaces-name-entry#selected:focus {
   border: 1px solid {{accent_text}};
-  background-color: rgba(56, 122, 242, 0.15);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.15);
   color: {{foreground}};
   font-style: italic;
   transition-duration: 300ms;
@@ -2543,7 +2543,7 @@ StScrollBar StButton#hhandle:active {
 
 .desklet-drag-placeholder {
   border: 2px solid {{accent_text}};
-  background-color: rgba(56, 122, 242, 0.15);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.15);
 }
 
 .photoframe-box {
@@ -2561,21 +2561,21 @@ StScrollBar StButton#hhandle:active {
    ═══════════════════════════════════════════════════════════════════════════*/
 
 .tile-preview {
-  background-color: rgba(56, 122, 242, 0.15);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.15);
   border: 1px solid {{accent_text}};
 }
 
 .tile-preview.snap {
-  background-color: rgba(56, 122, 242, 0.35);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.35);
 }
 
 .tile-hud {
-  background-color: rgba(56, 122, 242, 0.15);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.15);
   border: 1px solid {{accent_text}};
 }
 
 .tile-hud.snap {
-  background-color: rgba(56, 122, 242, 0.35);
+  background-color: rgba({{accent_indicator.r}}, {{accent_indicator.g}}, {{accent_indicator.b}}, 0.35);
 }
 
 .tile-hud:top    { border-top-width: 0px; }
@@ -2660,8 +2660,8 @@ StScrollBar StButton#hhandle:active {
 
 .dialog .dialog-button:active:default,
 .dialog .dialog-button:checked:default {
-  background-color: #2d67d8;
-  border-color: #2d67d8;
+  background-color: {{accent_checked}};
+  border-color: {{accent_checked}};
 }
 
 .dialog .dialog-button:insensitive:default {

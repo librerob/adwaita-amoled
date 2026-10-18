@@ -1,0 +1,71 @@
+[colors]
+draw_bold_text_with_bright_colors = true
+
+[colors.primary]
+background = '#000000'      # surface_bg — pure AMOLED black
+foreground = '#ffffff'      # primary text
+
+[colors.cursor]
+cursor = '#d2cf89'          # @accent — primary blue
+text   = '#000000'          # background behind cursor text
+
+[colors.vi_mode_cursor]
+cursor = '#d2cf89'          # @accent
+text   = '#000000'
+
+[colors.selection]
+background = '#2f2e18'      # blue-tinted selection
+text       = '#ffffff'      # readable selection text
+
+[colors.search.matches]
+background = '#1a1200'      # warm dark bg for non-focused matches
+foreground = '#f1ac00'      # warning yellow
+
+[colors.search.focused_match]
+background = '#d2cf89'      # @accent — active match
+foreground = '#000000'      # readable text on the pale accent
+
+[colors.footer_bar]
+background = '#000000'      # surface_bg
+foreground = '#c0c0c0'      # disabled/backdrop text
+
+# Normal colors — mapped from Adwaita AMOLED semantic tokens
+[colors.normal]
+black   = '#000000'         # pure black (terminal fill)
+red     = '#ff7b7b'         # error — softened from #ff0000
+green   = '#0aeea0'         # success
+yellow  = '#f1ac00'         # warning
+blue    = '#8ab4f8'         # @accent
+magenta = '#d49bea'         # readable syntax magenta
+cyan    = '#01c1f1'         # link color
+white   = '#ffffff'         # primary fg
+
+# Bright colors — rendered for bold text (draw_bold_text_with_bright_colors)
+[colors.bright]
+black   = '#a0a0a0'         # readable bright-black text
+red     = '#ff9a9a'         # brighter error
+green   = '#4affc4'         # brighter success
+yellow  = '#ffcc44'         # brighter warning
+blue    = '#aecbfa'         # @accent_hover
+magenta = '#e599ff'         # bright magenta
+cyan    = '#44ddff'         # bright cyan
+white   = '#fafafa'         # backdrop text
+
+# Dim colors — explicit faint/dim ANSI palette
+[colors.dim]
+black   = '#0f0f0f'         # surface_card
+red     = '#d46a74'         # faint red text
+green   = '#00aa70'         # dimmed success
+yellow  = '#aa7800'         # dimmed warning
+blue    = '#6c91ce'         # faint blue text
+magenta = '#aa77c8'         # dimmed magenta
+cyan    = '#0a88aa'         # dimmed cyan
+white   = '#c0c0c0'         # disabled/backdrop text
+
+# -----------------------------------------------------------------------------
+# Bell
+# -----------------------------------------------------------------------------
+[bell]
+animation = "EaseOutExpo"
+duration  = 0
+color     = "#d2cf89"       # @accent

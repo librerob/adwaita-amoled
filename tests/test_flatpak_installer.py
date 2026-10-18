@@ -37,6 +37,31 @@ class FlatpakInstallerTests(unittest.TestCase):
             (self.home / ".var/app/org.example.Old/config/gtk-4.0").exists()
         )
 
+    def test_selected_app_links_follow_preset_changes_without_reconfiguration(self):
+        self.fake_flatpak()
+        for accent in ("gold", "pink"):
+            arguments = (
+                ("--flatpak", "org.example.App=modern", "-l", "--gtk4-mode", "modern")
+                if accent == "gold"
+                else ()
+            )
+            self.run_cli("--accent", accent, *arguments)
+            for css in (
+                self.config / "gtk-4.0/gtk.css",
+                self.home / ".var/app/org.example.App/config/gtk-4.0/gtk.css",
+            ):
+                self.assertTrue(css.is_symlink())
+                self.assertEqual(
+                    css.read_bytes(),
+                    (base.ROOT / "extra/libadwaita/gtk-modern.css").read_bytes(),
+                )
+                self.assertEqual(
+                    (css.parent / "gtk-dark.css").read_bytes(),
+                    (
+                        base.ROOT / "accents" / accent / "extra/libadwaita/gtk-dark.css"
+                    ).read_bytes(),
+                )
+
     def test_selected_app_remove_keeps_host_theme_and_other_app(self):
         log = self.fake_flatpak()
         self.run_cli(

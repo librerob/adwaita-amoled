@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Adwaita-AMOLED Metacity/Muffin/Marco Window Manager Theme
+  Based on Adwaita metacity-theme-3, adapted for AMOLED palette.
+
+  Palette:
+    bg_focused   = #0e0e0e  (headerbar focused)
+    bg_unfocused = #000000  (headerbar unfocused)
+    border       = #1e1e1e
+    title_focused   = #ffffff
+    title_unfocused = #c0c0c0
+    button_normal   = rgba(255,255,255,0.15)
+    button_hover    = rgba(255,255,255,0.25)
+    button_active   = rgba(255,255,255,0.08)
+    accent          = #d2cf89
+    close_hover     = #e01b24
+-->
+
+<metacity_theme version=">=3.2">
+  <info>
+    <name>Adwaita-AMOLED</name>
+    <author>Adwaita-AMOLED contributors</author>
+    <description>AMOLED window decorations based on Adwaita</description>
+    <copyright>Adwaita-AMOLED contributors</copyright>
+    <date>2026-10-16</date>
+  </info>
+
+  <!-- ── Geometry constants ─────────────────────────────────────────── -->
+  <constant name="TitleHeight"      value="37"/>
+  <constant name="ButtonSize"       value="24"/>
+  <constant name="ButtonMargin"     value="6"/>
+  <constant name="BorderWidth"      value="0"/>
+  <constant name="CornerRadius"     value="8"/>
+  <constant name="TitlePad"         value="8"/>
+
+  <!-- ── Colors ─────────────────────────────────────────────────────── -->
+  <!-- Focused -->
+  <constant name="ActiveBg"         value="#0e0e0e"/>
+  <constant name="ActiveBorder"     value="#1a1a1a"/>
+  <constant name="ActiveTitle"      value="#ffffff"/>
+  <constant name="ActiveHighlight"  value="rgba(255,255,255,0.07)"/>
+
+  <!-- Unfocused (backdrop) -->
+  <constant name="InactiveBg"       value="#000000"/>
+  <constant name="InactiveBorder"   value="#111111"/>
+  <constant name="InactiveTitle"    value="#c0c0c0"/>
+
+  <!-- Buttons -->
+  <constant name="BtnNormal"        value="rgba(255,255,255,0.12)"/>
+  <constant name="BtnHover"         value="rgba(255,255,255,0.22)"/>
+  <constant name="BtnActive"        value="rgba(255,255,255,0.06)"/>
+  <constant name="CloseHover"       value="#c01c28"/>
+  <constant name="CloseActive"      value="#a51d2d"/>
+
+  <frame_geometry name="normal"
+            title_scale="medium"
+            rounded_top_left="8"
+            rounded_top_right="8"
+            rounded_bottom_left="0"
+            rounded_bottom_right="0">
+    <distance name="left_width"           value="0"/>
+    <distance name="right_width"          value="0"/>
+    <distance name="bottom_height"        value="0"/>
+    <distance name="left_titlebar_edge"   value="0"/>
+    <distance name="right_titlebar_edge"  value="0"/>
+    <distance name="title_vertical_pad"   value="4"/>
+    <border   name="title_border"
+              top="3" bottom="3" left="12" right="12"/>
+    <border   name="button_border"
+              top="0" bottom="0" left="2" right="2"/>
+    <aspect_ratio name="button" value="1.0"/>
+  </frame_geometry>
+
+  <frame_geometry name="maximized" parent="normal"
+                  rounded_top_left="0" rounded_top_right="0"/>
+  <frame_geometry name="border" parent="normal" has_title="false" hide_buttons="true">
+    <distance name="title_vertical_pad" value="0"/>
+    <border name="title_border" top="0" bottom="0" left="0" right="0"/>
+  </frame_geometry>
+
+  <!-- ── Draw operations ────────────────────────────────────────────── -->
+
+  <!-- Title bar background (focused) -->
+  <draw_ops name="titlebar_bg_focused">
+    <gradient type="vertical"
+              x="0" y="0" width="width" height="height">
+      <color value="#111111"/>
+      <color value="#0a0a0a"/>
+    </gradient>
+    <!-- Top highlight line -->
+    <line color="rgba(255,255,255,0.07)"
+          x1="0" y1="0" x2="width" y2="0"/>
+    <!-- Bottom border -->
+    <line color="#1e1e1e"
+          x1="0" y1="(height - 1)" x2="width" y2="(height - 1)"/>
+  </draw_ops>
+
+  <!-- Title bar background (unfocused) -->
+  <draw_ops name="titlebar_bg_unfocused">
+    <rectangle filled="true" color="#000000"
+          x="0" y="0" width="width" height="height"/>
+    <line color="#111111"
+          x1="0" y1="(height - 1)" x2="width" y2="(height - 1)"/>
+  </draw_ops>
+
+  <!-- Generic window frame (no solid border for CSD-style) -->
+  <draw_ops name="frame_bg">
+    <rectangle filled="true" color="#000000"
+          x="0" y="0" width="width" height="height"/>
+  </draw_ops>
+
+  <!-- Close button - circle -->
+  <draw_ops name="btn_close_normal">
+    <arc color="rgba(255,255,255,0.12)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <!-- X icon -->
+    <line color="rgba(255,255,255,0.75)"
+          x1="(ButtonSize/2 - 3)" y1="(ButtonSize/2 - 3)"
+          x2="(ButtonSize/2 + 3)" y2="(ButtonSize/2 + 3)"/>
+    <line color="rgba(255,255,255,0.75)"
+          x1="(ButtonSize/2 + 3)" y1="(ButtonSize/2 - 3)"
+          x2="(ButtonSize/2 - 3)" y2="(ButtonSize/2 + 3)"/>
+  </draw_ops>
+
+  <draw_ops name="btn_close_hover">
+    <arc color="#c01c28" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <line color="rgba(255,255,255,0.9)"
+          x1="(ButtonSize/2 - 3)" y1="(ButtonSize/2 - 3)"
+          x2="(ButtonSize/2 + 3)" y2="(ButtonSize/2 + 3)"/>
+    <line color="rgba(255,255,255,0.9)"
+          x1="(ButtonSize/2 + 3)" y1="(ButtonSize/2 - 3)"
+          x2="(ButtonSize/2 - 3)" y2="(ButtonSize/2 + 3)"/>
+  </draw_ops>
+
+  <draw_ops name="btn_close_active">
+    <arc color="#a51d2d" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <line color="rgba(255,255,255,0.8)"
+          x1="(ButtonSize/2 - 3)" y1="(ButtonSize/2 - 3)"
+          x2="(ButtonSize/2 + 3)" y2="(ButtonSize/2 + 3)"/>
+    <line color="rgba(255,255,255,0.8)"
+          x1="(ButtonSize/2 + 3)" y1="(ButtonSize/2 - 3)"
+          x2="(ButtonSize/2 - 3)" y2="(ButtonSize/2 + 3)"/>
+  </draw_ops>
+
+  <!-- Maximize button -->
+  <draw_ops name="btn_max_normal">
+    <arc color="rgba(255,255,255,0.12)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <rectangle color="rgba(255,255,255,0.7)" filled="false"
+               x="(ButtonSize/2 - 4)" y="(ButtonSize/2 - 4)"
+               width="8" height="8"/>
+  </draw_ops>
+
+  <draw_ops name="btn_max_hover">
+    <arc color="rgba(255,255,255,0.22)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <rectangle color="rgba(255,255,255,0.9)" filled="false"
+               x="(ButtonSize/2 - 4)" y="(ButtonSize/2 - 4)"
+               width="8" height="8"/>
+  </draw_ops>
+
+  <draw_ops name="btn_max_active">
+    <arc color="rgba(255,255,255,0.06)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <rectangle color="rgba(255,255,255,0.7)" filled="false"
+               x="(ButtonSize/2 - 4)" y="(ButtonSize/2 - 4)"
+               width="8" height="8"/>
+  </draw_ops>
+
+  <!-- Minimize button -->
+  <draw_ops name="btn_min_normal">
+    <arc color="rgba(255,255,255,0.12)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <line color="rgba(255,255,255,0.7)"
+          x1="(ButtonSize/2 - 4)" y1="(ButtonSize/2)"
+          x2="(ButtonSize/2 + 4)" y2="(ButtonSize/2)"/>
+  </draw_ops>
+
+  <draw_ops name="btn_min_hover">
+    <arc color="rgba(255,255,255,0.22)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <line color="rgba(255,255,255,0.9)"
+          x1="(ButtonSize/2 - 4)" y1="(ButtonSize/2)"
+          x2="(ButtonSize/2 + 4)" y2="(ButtonSize/2)"/>
+  </draw_ops>
+
+  <draw_ops name="btn_min_active">
+    <arc color="rgba(255,255,255,0.06)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+    <line color="rgba(255,255,255,0.7)"
+          x1="(ButtonSize/2 - 4)" y1="(ButtonSize/2)"
+          x2="(ButtonSize/2 + 4)" y2="(ButtonSize/2)"/>
+  </draw_ops>
+
+  <!-- Inactive button (unfocused window) -->
+  <draw_ops name="btn_inactive">
+    <arc color="rgba(255,255,255,0.05)" filled="true"
+         x="1" y="1" width="(ButtonSize - 2)" height="(ButtonSize - 2)"
+         start_angle="0" extent_angle="360"/>
+  </draw_ops>
+
+  <draw_ops name="empty"/>
+  <draw_ops name="title_focused">
+    <title color="#ffffff" x="0" y="0"/>
+  </draw_ops>
+  <draw_ops name="title_unfocused">
+    <title color="#c0c0c0" x="0" y="0"/>
+  </draw_ops>
+  <draw_ops name="btn_menu">
+    <line color="#c0c0c0" x1="8" y1="9" x2="16" y2="9"/>
+    <line color="#c0c0c0" x1="8" y1="12" x2="16" y2="12"/>
+    <line color="#c0c0c0" x1="8" y1="15" x2="16" y2="15"/>
+  </draw_ops>
+
+  <draw_ops name="btn_shade">
+    <line color="#c0c0c0" x1="8" y1="14" x2="12" y2="10"/>
+    <line color="#c0c0c0" x1="12" y1="10" x2="16" y2="14"/>
+  </draw_ops>
+  <draw_ops name="btn_unshade">
+    <line color="#c0c0c0" x1="8" y1="10" x2="12" y2="14"/>
+    <line color="#c0c0c0" x1="12" y1="14" x2="16" y2="10"/>
+  </draw_ops>
+  <draw_ops name="btn_above">
+    <line color="#c0c0c0" x1="8" y1="14" x2="12" y2="10"/>
+    <line color="#c0c0c0" x1="12" y1="10" x2="16" y2="14"/>
+  </draw_ops>
+  <draw_ops name="btn_unabove">
+    <line color="#c0c0c0" x1="8" y1="10" x2="12" y2="14"/>
+    <line color="#c0c0c0" x1="12" y1="14" x2="16" y2="10"/>
+  </draw_ops>
+  <draw_ops name="btn_stick">
+    <line color="#c0c0c0" x1="8" y1="9" x2="16" y2="9"/>
+    <line color="#c0c0c0" x1="12" y1="9" x2="12" y2="17"/>
+  </draw_ops>
+  <draw_ops name="btn_unstick">
+    <line color="#d2cf89" x1="8" y1="9" x2="16" y2="9"/>
+    <line color="#d2cf89" x1="12" y1="9" x2="12" y2="17"/>
+  </draw_ops>
+
+  <!-- ── Frame style: normal window ────────────────────────────────── -->
+  <frame_style name="normal_focused"
+               geometry="normal">
+    <piece position="entire_background" draw_ops="frame_bg"/>
+    <piece position="titlebar" draw_ops="titlebar_bg_focused"/>
+    <piece position="title" draw_ops="title_focused"/>
+    <button function="menu" state="normal" draw_ops="btn_menu"/>
+    <button function="menu" state="prelight" draw_ops="btn_menu"/>
+    <button function="menu" state="pressed" draw_ops="btn_menu"/>
+    <button function="shade" state="normal" draw_ops="btn_shade"/>
+    <button function="shade" state="prelight" draw_ops="btn_shade"/>
+    <button function="shade" state="pressed" draw_ops="btn_shade"/>
+    <button function="unshade" state="normal" draw_ops="btn_unshade"/>
+    <button function="unshade" state="prelight" draw_ops="btn_unshade"/>
+    <button function="unshade" state="pressed" draw_ops="btn_unshade"/>
+    <button function="above" state="normal" draw_ops="btn_above"/>
+    <button function="above" state="prelight" draw_ops="btn_above"/>
+    <button function="above" state="pressed" draw_ops="btn_above"/>
+    <button function="unabove" state="normal" draw_ops="btn_unabove"/>
+    <button function="unabove" state="prelight" draw_ops="btn_unabove"/>
+    <button function="unabove" state="pressed" draw_ops="btn_unabove"/>
+    <button function="stick" state="normal" draw_ops="btn_stick"/>
+    <button function="stick" state="prelight" draw_ops="btn_stick"/>
+    <button function="stick" state="pressed" draw_ops="btn_stick"/>
+    <button function="unstick" state="normal" draw_ops="btn_unstick"/>
+    <button function="unstick" state="prelight" draw_ops="btn_unstick"/>
+    <button function="unstick" state="pressed" draw_ops="btn_unstick"/>
+    <button function="close"        state="normal"     draw_ops="btn_close_normal"/>
+    <button function="close"        state="prelight"   draw_ops="btn_close_hover"/>
+    <button function="close"        state="pressed"    draw_ops="btn_close_active"/>
+    <button function="maximize"     state="normal"     draw_ops="btn_max_normal"/>
+    <button function="maximize"     state="prelight"   draw_ops="btn_max_hover"/>
+    <button function="maximize"     state="pressed"    draw_ops="btn_max_active"/>
+    <button function="minimize"     state="normal"     draw_ops="btn_min_normal"/>
+    <button function="minimize"     state="prelight"   draw_ops="btn_min_hover"/>
+    <button function="minimize"     state="pressed"    draw_ops="btn_min_active"/>
+  </frame_style>
+
+  <frame_style name="normal_unfocused" parent="normal_focused">
+    <piece position="titlebar" draw_ops="titlebar_bg_unfocused"/>
+    <piece position="title" draw_ops="title_unfocused"/>
+  </frame_style>
+
+  <frame_style name="maximized_focused" parent="normal_focused" geometry="maximized"/>
+  <frame_style name="maximized_unfocused" parent="normal_unfocused" geometry="maximized"/>
+  <frame_style name="border" parent="normal_focused" geometry="border">
+    <piece position="title" draw_ops="empty"/>
+  </frame_style>
+
+  <!-- ── Frame style sets ───────────────────────────────────────────── -->
+  <frame_style_set name="normal">
+    <frame focus="yes" state="normal" resize="none" style="normal_focused"/>
+    <frame focus="yes" state="normal" resize="vertical" style="normal_focused"/>
+    <frame focus="yes" state="normal" resize="horizontal" style="normal_focused"/>
+    <frame focus="yes" state="normal" resize="both" style="normal_focused"/>
+    <frame focus="yes" state="shaded" resize="none" style="normal_focused"/>
+    <frame focus="yes" state="shaded" resize="vertical" style="normal_focused"/>
+    <frame focus="yes" state="shaded" resize="horizontal" style="normal_focused"/>
+    <frame focus="yes" state="shaded" resize="both" style="normal_focused"/>
+    <frame focus="yes" state="maximized" style="maximized_focused"/>
+    <frame focus="yes" state="maximized_and_shaded" style="maximized_focused"/>
+    <frame focus="yes" state="tiled_left" style="normal_focused"/>
+    <frame focus="yes" state="tiled_right" style="normal_focused"/>
+    <frame focus="yes" state="tiled_left_and_shaded" style="normal_focused"/>
+    <frame focus="yes" state="tiled_right_and_shaded" style="normal_focused"/>
+    <frame focus="no" state="normal" resize="none" style="normal_unfocused"/>
+    <frame focus="no" state="normal" resize="vertical" style="normal_unfocused"/>
+    <frame focus="no" state="normal" resize="horizontal" style="normal_unfocused"/>
+    <frame focus="no" state="normal" resize="both" style="normal_unfocused"/>
+    <frame focus="no" state="shaded" resize="none" style="normal_unfocused"/>
+    <frame focus="no" state="shaded" resize="vertical" style="normal_unfocused"/>
+    <frame focus="no" state="shaded" resize="horizontal" style="normal_unfocused"/>
+    <frame focus="no" state="shaded" resize="both" style="normal_unfocused"/>
+    <frame focus="no" state="maximized" style="maximized_unfocused"/>
+    <frame focus="no" state="maximized_and_shaded" style="maximized_unfocused"/>
+    <frame focus="no" state="tiled_left" style="normal_unfocused"/>
+    <frame focus="no" state="tiled_right" style="normal_unfocused"/>
+    <frame focus="no" state="tiled_left_and_shaded" style="normal_unfocused"/>
+    <frame focus="no" state="tiled_right_and_shaded" style="normal_unfocused"/>
+  </frame_style_set>
+  <frame_style_set name="utility" parent="normal"/>
+  <frame_style_set name="dialog" parent="normal"/>
+  <frame_style_set name="modal_dialog" parent="normal"/>
+  <frame_style_set name="border" parent="normal">
+    <frame focus="yes" state="normal" resize="none" style="border"/>
+    <frame focus="yes" state="normal" resize="vertical" style="border"/>
+    <frame focus="yes" state="normal" resize="horizontal" style="border"/>
+    <frame focus="yes" state="normal" resize="both" style="border"/>
+    <frame focus="yes" state="shaded" resize="none" style="border"/>
+    <frame focus="yes" state="shaded" resize="vertical" style="border"/>
+    <frame focus="yes" state="shaded" resize="horizontal" style="border"/>
+    <frame focus="yes" state="shaded" resize="both" style="border"/>
+    <frame focus="yes" state="maximized" style="border"/>
+    <frame focus="yes" state="maximized_and_shaded" style="border"/>
+    <frame focus="yes" state="tiled_left" style="border"/>
+    <frame focus="yes" state="tiled_right" style="border"/>
+    <frame focus="yes" state="tiled_left_and_shaded" style="border"/>
+    <frame focus="yes" state="tiled_right_and_shaded" style="border"/>
+    <frame focus="no" state="normal" resize="none" style="border"/>
+    <frame focus="no" state="normal" resize="vertical" style="border"/>
+    <frame focus="no" state="normal" resize="horizontal" style="border"/>
+    <frame focus="no" state="normal" resize="both" style="border"/>
+    <frame focus="no" state="shaded" resize="none" style="border"/>
+    <frame focus="no" state="shaded" resize="vertical" style="border"/>
+    <frame focus="no" state="shaded" resize="horizontal" style="border"/>
+    <frame focus="no" state="shaded" resize="both" style="border"/>
+    <frame focus="no" state="maximized" style="border"/>
+    <frame focus="no" state="maximized_and_shaded" style="border"/>
+    <frame focus="no" state="tiled_left" style="border"/>
+    <frame focus="no" state="tiled_right" style="border"/>
+    <frame focus="no" state="tiled_left_and_shaded" style="border"/>
+    <frame focus="no" state="tiled_right_and_shaded" style="border"/>
+  </frame_style_set>
+  <frame_style_set name="menu" parent="border"/>
+  <frame_style_set name="attached" parent="normal"/>
+
+  <window type="normal" style_set="normal"/>
+  <window type="utility" style_set="utility"/>
+  <window type="dialog" style_set="dialog"/>
+  <window type="modal_dialog" style_set="modal_dialog"/>
+  <window type="border" style_set="border"/>
+  <window type="menu" style_set="menu"/>
+  <window type="attached" style_set="attached"/>
+
+</metacity_theme>

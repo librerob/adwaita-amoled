@@ -116,10 +116,16 @@ guided_system() {
     fi
     printf '\nShared system theme (administrator)\n'
     printf 'Copies theme files for all users; personal GTK4/app settings stay separate.\n'
-    printf '  1. Install/update\n  2. Remove\n  0. Exit\n'
-    menu_number 2 0
-    MENU_ARGS=(--system)
-    case $MENU_NUMBER in 0) printf 'Cancelled; no changes made.\n'; exit 0 ;; 2) MENU_ARGS+=(--remove) ;; esac
+    MENU_ACCENT=auto
+    while true; do
+        printf '  1. Install/update\n  2. Remove\n  3. Accent color (%s)\n  0. Exit\n' "$MENU_ACCENT"
+        menu_number 3 0
+        case $MENU_NUMBER in
+            0) printf 'Cancelled; no changes made.\n'; exit 0 ;;
+            3) guided_accent ;;
+            *) MENU_ARGS=(--system --accent "$MENU_ACCENT"); [[ $MENU_NUMBER != 2 ]] || MENU_ARGS+=(--remove); break ;;
+        esac
+    done
     printf '\nSelect the theme location (use the original location when removing):\n'
     printf '  1. /usr/local/share/themes (recommended)\n  2. /usr/share/themes (real copy)\n  0. Exit\n'
     menu_number 2 1
@@ -141,8 +147,8 @@ guided_advanced() {
         case $MENU_NUMBER in
             0) return 1 ;;
             1) guided_system; return 0 ;;
-            2) if guided_flatpaks; then MENU_ARGS=(install "${MENU_APP_ARGS[@]}"); return 0; fi ;;
-            3) if guided_flatpaks; then MENU_ARGS=(--remove "${MENU_APP_ARGS[@]}"); return 0; fi ;;
+            2) if guided_flatpaks; then MENU_ARGS=(install --accent "$MENU_ACCENT" "${MENU_APP_ARGS[@]}"); return 0; fi ;;
+            3) if guided_flatpaks; then MENU_ARGS=(--remove --accent "$MENU_ACCENT" "${MENU_APP_ARGS[@]}"); return 0; fi ;;
         esac
     done
 }
@@ -159,22 +165,36 @@ guided_user_themes_ready() {
     [[ $(gsettings get org.gnome.shell disable-user-extensions 2>/dev/null) == false ]]
 }
 
+guided_accent() {
+    local -a names=(blue yellow gold purple green red orange pink)
+    local i
+    printf '\nAccent color (AMOLED backgrounds are unchanged):\n'
+    for i in "${!names[@]}"; do printf '  %s. %s\n' "$((i+1))" "${names[$i]}"; done
+    printf '  0. Back\n'
+    menu_number 8 0
+    ((MENU_NUMBER == 0)) || MENU_ACCENT=${names[$((MENU_NUMBER-1))]}
+    return 0
+}
+
 guided_setup() {
     MENU_ARGS=()
     if [[ -n ${SUDO_USER:-} ]] && ((EUID == 0)); then guided_system; return; fi
     local existing=false default=y version='' output name select_desktop=false gnome_desktop=false
+    MENU_ACCENT=$(installed_accent "$DEST/$THEME")
     while true; do
         printf '\nAdwaita-AMOLED setup\n\n  1. Install/update for this user (recommended)\n'
-        printf '  2. Remove for this user\n  3. Help\n  4. Advanced options\n  0. Exit\n'
-        menu_number 4 1
+        printf '  2. Remove for this user\n  3. Help\n  4. Advanced options\n  5. Accent color (%s)\n  0. Exit\n' "$MENU_ACCENT"
+        menu_number 5 1
         case $MENU_NUMBER in
             0) printf 'Cancelled; no changes made.\n'; exit 0 ;;
             1) MENU_ARGS=(install); break ;;
             2) MENU_ARGS=(--remove); break ;;
             3) printf '\nSetup shows a review before changing anything. Choose Preview to print operations only.\nGTK4/libadwaita styles modern GNOME apps through user CSS. Existing overrides are replaced only if selected.\nExtras need selection in each app. Root/shared and selected-app Flatpak setup are under Advanced options.\nFor command-line options, run ./install.sh --help.\n' ;;
             4) if guided_advanced; then return; fi ;;
+            5) guided_accent ;;
         esac
     done
+    MENU_ARGS+=(--accent "$MENU_ACCENT")
     printf '\nDesktop: %s\nTheme files: %s/%s\n' "${DESKTOP:-not detected}" "$DEST" "$THEME"
     if [[ ${MENU_ARGS[0]} == --remove ]]; then
         if menu_yes "Remove this theme's native GTK4 links too? Custom replacement CSS is kept." y; then MENU_ARGS+=(-l); fi
@@ -232,6 +252,7 @@ guided_gtk_mode() {
 guided_review() {
     local path extra directory executable
     printf '\nReview selected changes\n'
+    if ! $REMOVE; then printf 'Accent color: %s\n' "$ACCENT"; fi
     if $REMOVE && ((${#FLATPAKS[@]})); then
         printf 'Remove selected Flatpak styling; installed theme files will be kept.\n'
     else
