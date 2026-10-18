@@ -64,7 +64,9 @@ cd adwaita-amoled
 
 In a terminal, this opens numbered menus for installation/update, removal and
 optional app themes. Setup detects your desktop, offers native GTK4/libadwaita
-and supported Shell activation, then shows the destinations before you choose
+and supported Shell activation, and offers a separate dark-appearance preference
+for supporting apps such as Firefox. It then shows the destinations and settings
+before you choose
 **Apply**, **Cancel** or **Preview**. GTK4 replacement is optional and defaults to
 keeping existing overrides. No extra menu package is needed.
 
@@ -109,8 +111,9 @@ the logo, screenshots and development build sources stay in the repository.
 per-app Flatpak setup, GNOME Shell selection and manual configuration.
 
 If Firefox's tabs/address bar stay light, select **System theme — auto** in
-Firefox and enable your desktop's dark appearance preference. The GTK theme
-and that preference are separate; see [Firefox dark appearance](INSTALLING.md#firefox-dark-appearance)
+Firefox and choose **Prefer dark appearance** during setup. The explicit option
+is `./install.sh --prefer-dark`; ordinary theme installation/`--activate` alone
+keeps this preference unchanged. See [Firefox dark appearance](INSTALLING.md#firefox-dark-appearance)
 for the Linux Mint setting and a Firefox-only alternative.
 
 ### Manual installation

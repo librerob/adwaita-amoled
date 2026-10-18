@@ -345,7 +345,7 @@ class GuidedInstallerTests(unittest.TestCase):
         self.env["SETTINGS_LOG"] = str(log)
         self.fake(
             "gsettings",
-            'if [[ $1 == get ]]; then echo "old-theme"; else printf "%s\\n" "$*" >> "$SETTINGS_LOG"; fi',
+            'case $1 in get) echo "old-theme" ;; range) exit 1 ;; *) printf "%s\\n" "$*" >> "$SETTINGS_LOG" ;; esac',
         )
         for apply in ["n", "y"]:
             t = self.terminal()
@@ -358,6 +358,80 @@ class GuidedInstallerTests(unittest.TestCase):
             t.send(apply)
             t.finish()
         self.assertEqual(len(log.read_text().splitlines()), 3)
+
+    def test_dark_preference_review_cancel_preview_and_apply(self):
+        log = self.base / "appearance.log"
+        self.env["SETTINGS_LOG"] = str(log)
+        self.fake(
+            "gsettings",
+            """case $1 in
+range) printf "enum\\n'prefer-dark'\\n'default'\\n'prefer-light'\\n" ;;
+get) echo "'Original'" ;;
+writable) echo true ;;
+set) printf '%s\\n' "$*" >> "$SETTINGS_LOG" ;;
+*) exit 1 ;;
+esac""",
+        )
+        for desktop, answer in [
+            ("Cinnamon", "n"),
+            ("Cinnamon", "p"),
+            ("GNOME", "y"),
+            ("Cinnamon", "y"),
+        ]:
+            with self.subTest(desktop=desktop, answer=answer):
+                if log.exists():
+                    log.unlink()
+                self.env["XDG_CURRENT_DESKTOP"] = desktop
+                t = self.terminal()
+                t.answer("Choose [1]:", "1")
+                t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
+                t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
+                t.answer("Prefer dark appearance in applications such as Firefox?", "y")
+                t.answer("Copy optional application themes or wallpaper?", "n")
+                t.expect("org.gnome.desktop.interface color-scheme = prefer-dark")
+                t.expect("Apply these changes?")
+                self.assertFalse(log.exists())
+                t.send(answer)
+                output = t.finish()
+                if answer == "y":
+                    expected = [
+                        "set org.gnome.desktop.interface color-scheme prefer-dark"
+                    ]
+                    if desktop == "Cinnamon":
+                        expected.insert(
+                            0, "set org.x.apps.portal color-scheme prefer-dark"
+                        )
+                    self.assertEqual(log.read_text().splitlines(), expected)
+                else:
+                    self.assertFalse(log.exists())
+                    self.assertFalse(self.theme.exists())
+                    if answer == "p":
+                        self.assertIn(
+                            "gsettings set org.x.apps.portal color-scheme prefer-dark",
+                            output,
+                        )
+
+    def test_declining_dark_preference_preserves_app_settings(self):
+        self.env["XDG_CURRENT_DESKTOP"] = "GNOME"
+        self.fake(
+            "gsettings",
+            """case $1 in
+range) printf "enum\\n'prefer-dark'\\n" ;;
+get) echo "'Original'" ;;
+writable) echo true ;;
+*) exit 99 ;;
+esac""",
+        )
+        t = self.terminal()
+        t.answer("Choose [1]:", "1")
+        t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
+        t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
+        t.answer("Prefer dark appearance in applications such as Firefox?", "n")
+        t.answer("Copy optional application themes or wallpaper?", "n")
+        t.answer("Apply these changes?", "y")
+        output = t.finish()
+        self.assertNotIn("Application appearance: prefer-dark", output)
+        self.assertTrue(self.theme.is_dir())
 
     def flatpak(self):
         log = self.base / "flatpak.log"

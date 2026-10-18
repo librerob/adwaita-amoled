@@ -7,7 +7,7 @@ Install the tools on Debian/Ubuntu:
 sudo apt install libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
   python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
   libmetacity3 xvfb xauth bat rofi flatpak xfconf libxfconf-0-3 dbus-x11 gsettings-desktop-schemas librsvg2-bin python3-pyqt5 python3-pyqt6 \
-  libgtk2.0-0t64 gtk2-engines-murrine
+  libgtk2.0-0t64 gtk2-engines-murrine xapps-common
 ```
 
 From the repository root:
@@ -92,6 +92,21 @@ The GTK regression tests above use software rendering under X11. They do not est
 Wayland, Brave, Flatpak, full Cinnamon/Marco session, physical OLED, or GPU-driver
 correctness. GTK's older `alpha()` color function keeps the Chromium rules
 compatible with GTK4 releases before `color-mix()` support.
+
+## App dark appearance
+
+The installer app-appearance checks use real GNOME/XApp schemas and isolated
+keyfile preferences (`xapps-common` and `gsettings-desktop-schemas`):
+
+```bash
+python3 tests/test_install_settings.py DarkAppearanceTests
+```
+
+They cover opt-in/repeat behavior, desktop mappings and missing-key fallbacks,
+theme-only preservation, preview, removal and rejection before replacement.
+The guided tests also check cancel/preview/apply and declining dark appearance.
+These checks do not establish that a distribution has a working settings portal
+or that a particular browser profile follows its automatic theme.
 
 ## GNOME Shell 51
 

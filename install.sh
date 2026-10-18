@@ -8,7 +8,7 @@ DATA=${XDG_DATA_HOME:-$HOME/.local/share}
 CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}
 DESKTOP=${XDG_CURRENT_DESKTOP:-}
 DEST=$DATA/themes
-LIBADWAITA=false ACTIVATE=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
+LIBADWAITA=false ACTIVATE=false PREFER_DARK=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
 GUIDED=false
 CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
 LINK_PARENT=''
@@ -32,6 +32,7 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
 
   -l, --libadwaita          Replace native GTK4 override files with theme links
   -a, --activate            Select the theme for the current desktop
+      --prefer-dark         Ask supporting apps to prefer a dark appearance
       --shell               Require a matching GNOME Shell theme (46 or 51)
       --extras LIST         Copy optional themes: qt,kitty,alacritty,bat,nvim,
                             rofi,zsh,wallpaper or all (select them in each app)
@@ -49,6 +50,7 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
 Examples:
   ./install.sh
   ./install.sh -l --activate
+  ./install.sh -l --activate --prefer-dark
   ./install.sh --extras qt,kitty
   sudo ./install.sh --system
   sudo ./install.sh --system --link /usr/share/themes
@@ -57,6 +59,33 @@ GTK4 linking replaces gtk.css, gtk-dark.css, libadwaita-tweaks.css and assets
 under the selected gtk-4.0 config directory. No backup is created.
 App themes are copied without rewriting your .zshrc, init.lua or other settings.
 EOF
+}
+
+# GTK theme selection and the portal's app appearance preference are separate.
+# Non-GNOME sessions may use either the GTK or XApp settings portal. Configure
+# their available keys together; the guided review lists each one explicitly.
+dark_preference_settings() {
+    local schema range writable
+    local -a candidates=() dark_schemas=()
+    command -v gsettings >/dev/null || { printf 'gsettings is unavailable.\n' >&2; return 1; }
+    case ${DESKTOP^^} in
+        *CINNAMON*|*MATE*|*XFCE*) candidates=(org.x.apps.portal org.gnome.desktop.interface) ;;
+        *GNOME*|*BUDGIE*) candidates=(org.gnome.desktop.interface) ;;
+        *) printf 'No supported dark-appearance setting for this desktop.\n' >&2; return 1 ;;
+    esac
+    for schema in "${candidates[@]}"; do
+        range=$(gsettings range "$schema" color-scheme 2>/dev/null) || continue
+        [[ $range == enum$'\n'* && $range == *"'prefer-dark'"* ]] || continue
+        gsettings get "$schema" color-scheme >/dev/null 2>&1 || return 1
+        writable=$(gsettings writable "$schema" color-scheme) || return 1
+        [[ $writable == true ]] || {
+            printf 'Dark appearance setting is locked: %s color-scheme\n' "$schema" >&2
+            return 1
+        }
+        dark_schemas+=("$schema")
+    done
+    ((${#dark_schemas[@]})) || { printf 'No supported color-scheme key is installed.\n' >&2; return 1; }
+    printf '%s\n' "${dark_schemas[@]}"
 }
 
 if [[ ${1:-} == --interactive ]] || { (($# == 0)) && [[ -t 0 && -t 1 ]]; }; then
@@ -90,6 +119,7 @@ while (($#)); do
         -h|--help) usage; exit 0 ;;
         -l|--libadwaita) LIBADWAITA=true ;;
         -a|--activate) ACTIVATE=true ;;
+        --prefer-dark) PREFER_DARK=true ;;
         --shell) SHELL_THEME=true ;;
         --system) SYSTEM=true ;;
         --link) value "$@"; LINK_PARENT=$2; shift ;;
@@ -115,12 +145,13 @@ done
 if $SYSTEM; then
     ((EUID == 0)) || die 'Use sudo with --system.'
     $CUSTOM_DEST || DEST=/usr/local/share/themes
-    if $LIBADWAITA || $ACTIVATE || (("${#EXTRAS[@]}" || "${#FLATPAKS[@]}")); then
+    if $LIBADWAITA || $ACTIVATE || $PREFER_DARK || (("${#EXTRAS[@]}" || "${#FLATPAKS[@]}")); then
         die '--system copies only the shared theme. Run user configuration separately without sudo.'
     fi
 elif [[ -n ${SUDO_USER:-} ]]; then
     die 'Run user setup without sudo, or use --system for shared theme files.'
 fi
+$REMOVE && $PREFER_DARK && die '--prefer-dark cannot be combined with --remove; choose another appearance in desktop settings.'
 [[ -z $LINK_PARENT ]] || $SYSTEM || die '--link requires --system; it must point to a root-owned copy, not a user theme.'
 for path in "$HOME" "$DATA" "$CONFIG" "$DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
     [[ $path == /* && $path != / && $path != *$'\n'* ]] || die "Expected an absolute directory other than /: $path"
@@ -338,7 +369,12 @@ fi
 
 # Check requested desktop tools before copying anything.
 SETTINGS=()
+DARK_SETTINGS=()
 SCHEMA_ARGS=()
+if $PREFER_DARK; then
+    dark_targets=$(dark_preference_settings) || die 'Cannot configure dark appearance; omit --prefer-dark and use your desktop/app Appearance settings.'
+    while IFS= read -r schema; do DARK_SETTINGS+=("$schema"); done <<< "$dark_targets"
+fi
 if $ACTIVATE && ! $REMOVE; then
     case ${DESKTOP^^} in
         *CINNAMON*) SETTINGS+=(org.cinnamon.desktop.interface:gtk-theme org.cinnamon.desktop.wm.preferences:theme org.cinnamon.theme:name) ;;
@@ -443,6 +479,10 @@ if $ACTIVATE && ! $REMOVE; then
         run gsettings "${SCHEMA_ARGS[@]}" set org.gnome.shell.extensions.user-theme name "$THEME"
     fi
 fi
+for schema in "${DARK_SETTINGS[@]}"; do
+    printf 'Application appearance: prefer-dark (%s color-scheme)\n' "$schema"
+    run gsettings set "$schema" color-scheme prefer-dark
+done
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
 if (("${#EXTRAS[@]}")) && ! $DRY_RUN; then
     if $REMOVE; then printf 'Selected app theme files removed. Existing app settings were not rewritten.\n'

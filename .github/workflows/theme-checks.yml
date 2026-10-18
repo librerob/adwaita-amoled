@@ -20,7 +20,7 @@ jobs:
             libglib2.0-dev rsync shellcheck zsh kitty neovim vim-airline \
             python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
             libmetacity3 xvfb xauth bat rofi flatpak xfconf libxfconf-0-3 dbus-x11 gsettings-desktop-schemas librsvg2-bin python3-pyqt5 python3-pyqt6 \
-            libgtk2.0-0t64 gtk2-engines-murrine
+            libgtk2.0-0t64 gtk2-engines-murrine xapps-common
       - name: Check shell syntax
         run: |
           shellcheck install.sh setup-menu.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh tests/gnome-shell/session46.sh
@@ -44,7 +44,7 @@ jobs:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/borders
         run: xvfb-run -a python3 tests/test_borders.py
       - name: Check GNOME, Budgie and Xfce preference activation
-        run: dbus-run-session -- python3 tests/test_install_settings.py DesktopSettingTests.test_gnome_and_budgie_activation DesktopSettingTests.test_xfce_activation
+        run: dbus-run-session -- python3 tests/test_install_settings.py DesktopSettingTests.test_gnome_and_budgie_activation DesktopSettingTests.test_xfce_activation DarkAppearanceTests
       - name: Check Bash-installed native applications
         run: xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_install_consumers.py
       - name: Check native parsing and rendering
@@ -79,10 +79,12 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             git ca-certificates python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
-            gir1.2-adw-1 libmetacity3 xvfb xauth libgtk2.0-0t64 gtk2-engines-murrine
+            gir1.2-adw-1 libmetacity3 xvfb xauth libgtk2.0-0t64 gtk2-engines-murrine xapps-common
       - uses: actions/checkout@v7
       - name: Check guided administrator preview in isolated system paths
         run: python3 tests/test_guided_installer.py SystemMenuTests
+      - name: Check opt-in app dark appearance with real settings backends
+        run: python3 tests/test_install_settings.py DarkAppearanceTests
       - name: Check native GTK2 discovery and automatic modern GTK4 links
         run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk2_discovers_default_user_installation InstalledConsumerTests.test_native_gtk4_automatic_loading_and_removal
       - name: Check modern native parsing, rendering and text colors
