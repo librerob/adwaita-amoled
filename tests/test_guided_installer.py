@@ -246,6 +246,16 @@ class GuidedInstallerTests(unittest.TestCase):
         personal.write_text("font_size 14\n")
         t = self.terminal()
         self.install_choices(t, extras="y")
+        for choice in ["2", "0"]:
+            t.answer("Choose [0]:", choice)
+        t.answer("Apply these changes?", "p")
+        preview = t.finish()
+        self.assertIn("Dry run: nothing changed.", preview)
+        self.assertNotIn("App theme files copied.", preview)
+        self.assertFalse(self.theme.exists())
+        self.assertFalse((self.config / "kitty/themes").exists())
+        t = self.terminal()
+        self.install_choices(t, extras="y")
         for choice in ["2", "2", "2", "5", "0"]:
             t.answer("Choose [0]:", choice)
         t.expect(

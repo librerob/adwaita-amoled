@@ -421,7 +421,7 @@ if $ACTIVATE && ! $REMOVE; then
     fi
 fi
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
-if (("${#EXTRAS[@]}")); then
+if (("${#EXTRAS[@]}")) && ! $DRY_RUN; then
     if $REMOVE; then printf 'Selected app theme files removed. Existing app settings were not rewritten.\n'
     else printf 'App theme files copied. Select them in each app; see INSTALLING.md. Existing app settings were not rewritten.\n'; fi
 fi
