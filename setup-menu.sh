@@ -177,7 +177,7 @@ guided_setup() {
     done
     printf '\nDesktop: %s\nTheme files: %s/%s\n' "${DESKTOP:-not detected}" "$DEST" "$THEME"
     if [[ ${MENU_ARGS[0]} == --remove ]]; then
-        if menu_yes "Remove this theme's native GTK4 links too? Custom replacement CSS is kept." y; then MENU_ARGS+=(-l); fi
+        printf "Native GTK4 links pointing to this theme are removed automatically. Custom replacement CSS is kept.\n"
         if menu_yes 'Also remove selected copied app themes or wallpaper?' n; then guided_extras; fi
         printf 'Flatpak styling is separate: remove it under Advanced options before deleting the shared theme files.\n'
         return
@@ -240,7 +240,7 @@ guided_review() {
     fi
     [[ -z $LINK_PATH ]] || printf 'Shared link: %s -> %s\n' "$LINK_PATH" "$TARGET"
     [[ -z $GTK2_LINK ]] || printf 'GTK2 compatibility link: %s -> %s\n' "$GTK2_LINK" "$TARGET"
-    if $LIBADWAITA; then
+    if $LIBADWAITA || { $REMOVE && ! $SYSTEM && ((${#FLATPAKS[@]} == 0)); }; then
         if $REMOVE; then printf 'Unlink only this theme\047s GTK4 overrides in %s/gtk-4.0\n' "$CONFIG"
         else
             printf 'GTK4 overrides (%s): %s/gtk-4.0\n' "$GTK_MODE" "$CONFIG"

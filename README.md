@@ -81,15 +81,17 @@ Existing explicit options work without prompts, even in a terminal:
 
 Run user setup without sudo. `-l` replaces the GTK4 CSS/assets overrides with
 symlinks to the theme; **no backups are made**. Rerun from a newer download with
-the same options to update. Old installer state and locally changed installed
-files do not block copying. Restart affected apps afterward.
+the same options to update. Known theme files are replaced, including local
+edits to them. Git checkouts and unlisted local files stop replacement/removal;
+move those outside the installation destination first. Old installer state
+outside the theme is not consulted. Restart affected apps afterward.
 
 ```bash
 ./install.sh --extras qt,kitty,nvim  # Copy optional app theme files
 ./install.sh --dry-run             # Preview file operations
 sudo ./install.sh --system         # Shared theme, without user configuration
 sudo ./install.sh --system --link /usr/share/themes  # Link to the root-owned copy
-./install.sh --remove -l           # Remove theme and its native GTK4 links
+./install.sh --remove              # Remove theme and its owned native GTK4 links
 ./install.sh install               # Install without menus
 ```
 
