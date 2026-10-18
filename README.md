@@ -1,35 +1,44 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/librerob/adwaita-amoled/main/extra/logo/logo.png" alt="Adwaita AMOLED Logo" width="320">
+  <img src="extra/logo/logo.png" alt="Adwaita AMOLED logo" width="280">
 </p>
 <h1 align="center">Adwaita AMOLED</h1>
 <p align="center">
-A true black, AMOLED-optimized take on the classic Adwaita design.
+  <strong>True black. Eight accents. Classic Adwaita.</strong><br>
+  A coordinated AMOLED theme for your desktop and favorite applications.
 </p>
 <p align="center">
-<img src="https://img.shields.io/badge/GTK2-✓-black">
-<img src="https://img.shields.io/badge/GTK3-✓-black">
-<img src="https://img.shields.io/badge/GTK4-✓-black">
-<img src="https://img.shields.io/badge/libadwaita-✓-black">
-<img src="https://img.shields.io/badge/GNOME_Shell-46_%7C_51-black">
-<img src="https://img.shields.io/badge/XFCE-✓-black">
-<img src="https://img.shields.io/badge/Cinnamon-✓-black">
-<img src="https://img.shields.io/badge/Openbox-✓-black">
-<img src="https://img.shields.io/badge/Qt5ct-✓-black">
-<img src="https://img.shields.io/badge/Qt6ct-✓-black">
+  <a href="https://github.com/librerob/adwaita-amoled/releases/latest"><img src="https://img.shields.io/github/v/release/librerob/adwaita-amoled?style=for-the-badge&amp;label=Download&amp;color=2d6be0" alt="Download latest release"></a>
+  <a href="#installation"><img src="https://img.shields.io/badge/Install-Bash-252525?style=for-the-badge" alt="Install with Bash"></a>
+  <a href="ACCENT_COLORS.md"><img src="https://img.shields.io/badge/Accents-8-252525?style=for-the-badge" alt="Explore eight accent colors"></a>
+</p>
+<p align="center">
+  <a href="COMPATIBILITY.md"><img src="https://img.shields.io/badge/GTK-2_%7C_3_%7C_4-252525" alt="GTK 2, 3 and 4 compatibility"></a>
+  <a href="INSTALLING.md#gtk4-and-libadwaita-overrides"><img src="https://img.shields.io/badge/libadwaita-optional-252525" alt="Optional libadwaita overrides"></a>
+  <a href="gnome-shell/README.md"><img src="https://img.shields.io/badge/GNOME_Shell-46_%7C_51-252525" alt="GNOME Shell 46 and 51 guide"></a>
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Qt-5ct_%7C_6ct-252525" alt="Qt5ct and Qt6ct setup"></a>
+</p>
+<p align="center">
+  <a href="#features">Features</a> ·
+  <a href="#installation">Installation</a> ·
+  <a href="#compatibility">Compatibility</a> ·
+  <a href="#documentation">Documentation</a>
 </p>
 
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/librerob/adwaita-amoled/main/extra/screenshot/screenshot.png" alt="Adwaita AMOLED Screenshot">
+  <a href="extra/screenshot/screenshot2.png"><img src="extra/screenshot/screenshot2.png" alt="Adwaita AMOLED desktop with a file manager and calendar" width="960"></a><br>
+  <sub>Black surfaces, subtle layers and familiar controls. Click to view full size.</sub>
 </p>
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/librerob/adwaita-amoled/main/extra/screenshot/screenshot2.png" alt="Adwaita AMOLED Screenshot">
-</p>
+<details>
+<summary>More screenshots — desktop and terminal</summary>
 
+![Adwaita AMOLED desktop with a terminal](extra/screenshot/screenshot.png)
 
----
+These screenshots show the theme's appearance; application icons and panel layout depend on your setup.
+
+</details>
 
 ## Features
 
@@ -43,6 +52,12 @@ A true black, AMOLED-optimized take on the classic Adwaita design.
 Accents use light text/focus colors and darker filled buttons with white labels.
 All eight Shell presets match the selected theme accent independently of GNOME
 Settings. See [accent choices and measured contrast](ACCENT_COLORS.md).
+
+<p align="center">
+  <a href="ACCENT_COLORS.md"><img src="extra/readme/accent-presets.svg" alt="Eight accent presets: blue, yellow, gold, purple, green, red, orange and pink. Each pairs light accent text with a darker button and white label." width="960"></a><br>
+  <sub>One black foundation. Light accents for text and focus; deeper fills with white labels.</sub>
+</p>
+
 
 ## Installation
 
