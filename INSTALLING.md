@@ -46,9 +46,10 @@ native GTK4 override and select supported desktop preferences directly:
 ```
 
 Run user setup **without sudo**. `--dry-run` prints operations without applying
-them, and `--help` lists the options. To copy only the theme without menus, run
-`./install.sh install`. Bare `./install.sh` also retains this original behavior
+them, and `--help` lists the options. To install without menus, run
+`./install.sh install`. Bare `./install.sh` also uses noninteractive installation
 when stdin or stdout is not a terminal, so existing automation does not hang.
+Both set supported app appearance preferences to dark during user installation.
 `./install.sh --interactive` forces guided setup, requires a terminal, and must
 be used without other options.
 
