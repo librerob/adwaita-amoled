@@ -280,6 +280,13 @@ with tempfile.TemporaryDirectory(prefix="amoled-colors-cinnamon-") as temporary:
                 env=env,
                 check=True,
             )
+        except BaseException as error:
+            detail = str(error) + "\n" + (out / "session.log").read_text(errors="replace")[-15000:]
+            print(detail, file=sys.stderr, flush=True)
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                escaped = detail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+                print("::error title=Cinnamon native fixture::" + escaped, flush=True)
+            raise
         finally:
             try:
                 os.killpg(process.pid, signal.SIGTERM)

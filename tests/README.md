@@ -257,8 +257,7 @@ xvfb-run -a python3 tests/accent_native.py edges /tmp/accent-edges
 xvfb-run -a python3 tests/accent_native.py extras /tmp/accent-extras
 python3 tests/accent_native.py shell46 /tmp/accent-shell46  # on GNOME 46 test image
 python3 tests/accent_native.py shell51 /tmp/accent-shell51  # on GNOME 51 test image
-xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
-  dbus-run-session -- python3 tests/accent_native.py cinnamon /tmp/accent-cinnamon
+python3 tests/accent_native.py cinnamon /tmp/accent-cinnamon
 ```
 
 GTK covers GTK2/Murrine, GTK3 compound states, plain GTK4 and libadwaita, light
@@ -272,7 +271,8 @@ image check measures focused checkbox ring pixels rendered by librsvg against
 black, `#141414` and `#252525`, requiring at least 3:1.
 Shell 51 checks each fixed preset against all nine GNOME system accents,
 including unchanged preset colors, text/glyph pairs and selection borders.
-Cinnamon checks its native 125 text/state/overlay pairs and decorative edges.
+Cinnamon checks its native 125 text/state/overlay pairs and decorative edges,
+with a separate virtual display and D-Bus session for every preset.
 Use the isolated images and packages described above; these are development
 tests, not commands to run inside your everyday desktop session.
 

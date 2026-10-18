@@ -159,8 +159,21 @@ def main():
                     ][color]["colors"]
                     env["THEME_TEST_FIXED_ACCENT_FILL"] = preset["accent_fill"]
                 with (evidence / f"command-{index}.log").open("w") as log:
+                    invocation = [sys.executable, *command]
+                    if args.group == "cinnamon":
+                        # A separate display and bus prevent a previous session's
+                        # autostart processes/name owners affecting the next color.
+                        invocation = [
+                            "xvfb-run",
+                            "-a",
+                            "-s",
+                            "-screen 0 1600x1200x24 +extension GLX +render -noreset",
+                            "dbus-run-session",
+                            "--",
+                            *invocation,
+                        ]
                     result = subprocess.run(
-                        [sys.executable, *command],
+                        invocation,
                         env=env,
                         stdout=log,
                         stderr=subprocess.STDOUT,

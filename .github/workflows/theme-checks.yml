@@ -188,8 +188,7 @@ jobs:
           dbus-daemon --system --fork --nopidfile
           xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
             dbus-run-session -- python3 tests/cinnamon_colors.py . /tmp/cinnamon-color-evidence
-          xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
-            dbus-run-session -- python3 tests/accent_native.py cinnamon /tmp/cinnamon-color-evidence/accents
+          python3 tests/accent_native.py cinnamon /tmp/cinnamon-color-evidence/accents
       - name: Upload Cinnamon color evidence
         if: always()
         uses: actions/upload-artifact@v7
