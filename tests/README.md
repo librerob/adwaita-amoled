@@ -281,6 +281,13 @@ rendering does not verify physical OLED panels or every application's own CSS.
 
 ## Direct Bash installer
 
+`python3 tests/test_installer_preservation.py` reproduces Git checkout and local
+data protection in default/legacy/custom destinations, valid obsolete runtime
+assets, malformed installed manifests, and automatic native GTK4 link cleanup.
+Custom CSS, foreign links and dry-run behavior are checked separately. Existing
+copy/signal/rollback failure tests use a recognized theme file as their marker,
+so they still reach the intended injected failures rather than a data guard.
+
 `test_installer.py` runs the actual Bash script with isolated HOME/XDG roots.
 It checks fresh copies, overwrite updates despite changed files/modes and old
 state, GTK4 links for both entry points, no-Python PATH installation, absent

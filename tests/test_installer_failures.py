@@ -21,7 +21,7 @@ class InstallerFailureTests(unittest.TestCase):
     fake_program = base.InstallerTests.fake_program
 
     def installed_marker(self):
-        path = self.theme / "previous-working-theme"
+        path = self.theme / "README.md"
         self.write(path, "previous version\n")
         return path
 
@@ -284,7 +284,7 @@ kill -STOP "$BASHPID"
         result = self.run_cli(success=False)
         previous = list(
             self.theme.parent.glob(
-                ".Adwaita-AMOLED-install.*/previous/previous-working-theme"
+                ".Adwaita-AMOLED-install.*/previous/" + marker.name
             )
         )
         self.assertEqual(len(previous), 1)

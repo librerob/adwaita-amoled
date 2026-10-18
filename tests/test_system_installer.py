@@ -272,6 +272,18 @@ w.destroy()
         self.assertFalse(dest.exists())
         self.assertEqual(link.lstat().st_uid, 1000)
 
+    def test_shared_checkout_is_protected_for_update_and_removal(self):
+        self.assertEqual(os.geteuid(), 0)
+        dest = self.base / "shared/themes"
+        marker = dest / base.THEME / ".git/config"
+        marker.parent.mkdir(parents=True)
+        marker.write_text("repository data")
+        for args in [(), ("--remove",)]:
+            result = self.run_cli("--system", "--dest", str(dest), *args, success=False)
+            self.assertIn("Git checkout", result.stderr)
+            self.assertEqual(marker.read_text(), "repository data")
+            self.assertFalse(self.config.exists())
+
 
 if __name__ == "__main__":
     from report import main

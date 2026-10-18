@@ -20,7 +20,7 @@ In a terminal this opens guided setup:
    matching supported GNOME Shell styling and optional application extras.
    Supported app appearance preferences are set to dark automatically, without
    an extra question, and listed in the final review.
-2. **Remove** selects the theme and any GTK4 links/extras to remove.
+2. **Remove** removes the theme and its owned native GTK4 links, with optional extras.
 3. **Help** explains setup; **Advanced options** covers a shared system theme
    and selected-app Flatpak configuration.
 4. **Accent color** chooses blue (default), yellow, gold, purple, green, red,
@@ -128,7 +128,9 @@ without creating lock files.
 The script normally installs to the XDG location above and creates
 `~/.themes/Adwaita-AMOLED` as a compatibility link to it: GTK2 does not discover
 themes in `XDG_DATA_HOME/themes`. If a regular legacy directory already exists,
-the default user install refreshes that copy instead. A legacy link pointing
+the default user install refreshes that copy instead, provided it contains only
+known runtime files. Git checkouts and unlisted local data are kept unchanged.
+A legacy link pointing
 elsewhere is reported before changing installed files; it is never overwritten.
 Default removal also removes a matching compatibility link. `--dest DIR`
 selects a different theme parent and updates only that location, without adding
@@ -144,21 +146,33 @@ you want, for example:
 ./install.sh -l --activate
 ```
 
-Options are not remembered. The former `install`, `update`, `--yes` and
+For GTK4 links and app extras, repeat your selections on each update. The
+former `install`, `update`, `--yes` and
 `--components gtk,libadwaita` spellings are accepted for convenience, but there
 is no state tracking. State/backups from the old Python installer are left
-untouched and never consulted; changed installed files do not block copying.
+untouched and never consulted. Known theme files are replaced, including local
+edits to those files. A `.git` directory/file/link or unlisted local files stop
+both replacement and removal before any theme is changed. This also protects an
+old clone under `~/.themes/Adwaita-AMOLED`. Move the checkout or local data to a
+safe location outside the installation destinations, then rerun setup. The
+installer does not move/delete that data or create an automatic backup.
+The installed runtime manifest allows obsolete theme assets from older releases
+to be updated normally; it must contain valid relative runtime paths.
 Do not run the old installer's undo after switching to this script.
 
-To remove the shared theme and its native GTK4 links:
+To remove the user theme and its owned native GTK4 links:
 
 ```bash
-./install.sh --remove -l
+./install.sh --remove
 ```
 
 Removal deletes the theme; it does not restore earlier files or desktop
 preferences. GTK4 removal only unlinks symlinks pointing into this installed
-theme, leaving replacement custom CSS alone. Choose another desktop theme in
+theme, leaving replacement custom CSS and links to other themes alone. This
+cleanup happens even without `-l`; that option remains accepted for older
+commands. Empty configuration directories are left in place. System-wide
+removal leaves personal GTK4 configuration alone, and removing selected Flatpak
+styling keeps native links and the installed theme. Choose another desktop theme in
 Appearance settings. Include `--extras LIST` to remove those copied app theme
 files too; existing app settings are not reset.
 

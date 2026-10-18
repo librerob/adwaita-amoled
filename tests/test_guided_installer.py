@@ -269,7 +269,7 @@ class GuidedInstallerTests(unittest.TestCase):
         self.assertFalse((self.config / "qt5ct").exists())
         t = self.terminal()
         t.answer("Choose [1]:", "2")
-        t.answer("native GTK4 links too?", "n")
+        t.expect("Native GTK4 links pointing to this theme are removed automatically")
         t.answer("Also remove selected copied app themes or wallpaper?", "y")
         for choice in ["2", "5", "0"]:
             t.answer("Choose [0]:", choice)
@@ -548,7 +548,7 @@ esac""",
         base.InstallerTests.run_cli(self, "-l", "--gtk4-mode", "legacy")
         t = self.terminal()
         t.answer("Choose [1]:", "2")
-        t.answer("native GTK4 links too?", "")
+        t.expect("Native GTK4 links pointing to this theme are removed automatically")
         t.answer("Also remove selected copied app themes or wallpaper?", "n")
         t.expect("Remove theme files:")
         t.answer("Apply these changes?", "y")

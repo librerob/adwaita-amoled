@@ -46,7 +46,7 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
   -d, --dest DIR            Theme parent directory
       --system              Install for all users in /usr/local/share/themes
       --link DIR            Link DIR/Adwaita-AMOLED to the system copy (root only)
-  -r, --remove              Remove the theme and explicitly selected links/extras
+  -r, --remove              Remove the theme, its native GTK4 links and selected extras
       --dry-run             Print operations without changing files/settings
       --interactive         Open guided setup (terminal required; use alone)
   -h, --help                Show this help
@@ -60,6 +60,9 @@ Examples:
 
 GTK4 linking replaces gtk.css, gtk-dark.css, libadwaita-tweaks.css and assets
 under the selected gtk-4.0 config directory. No backup is created.
+Existing Git checkouts and unlisted local files block theme replacement/removal.
+Move them outside the installation destination first; known theme files are replaced.
+Native GTK4 removal unlinks only links pointing into this theme; custom CSS stays.
 App themes are copied without rewriting your .zshrc, init.lua or other settings.
 User installation sets supported application appearance preferences to dark.
 Unavailable or locked appearance settings are skipped; system/removal leave them alone.
@@ -237,6 +240,44 @@ remove_link() {
     [[ $resolved == "$TARGET/"* ]] && run rm -f -- "$dest"
     return 0
 }
+
+# A theme update may replace known theme files, never a checkout or unrelated
+# local data. Include the installed manifest so obsolete runtime assets from an
+# older release can still be refreshed/removed without blocking normal updates.
+check_existing_theme() (
+    local target=$1 manifest name parent directory path relative
+    local -a pending=("$target")
+    local -A known_paths=([ARCHIVE_CONTENTS.sha256]=1) known_directories=()
+    [[ -e $target ]] || return 0
+    [[ -d $target ]] || die "Theme destination is not a directory: $target"
+    [[ ! -e $target/.git && ! -L $target/.git ]] || die "Keeping Git checkout unchanged: $target. Move it outside the installation destination first."
+    [[ -f $ROOT/runtime-files.txt ]] || die 'Incomplete installer download: runtime-files.txt is missing.'
+    for manifest in "$ROOT/runtime-files.txt" "$target/runtime-files.txt"; do
+        [[ ! -L $manifest ]] || die "Keeping linked runtime manifest unchanged: $manifest"
+        [[ -f $manifest ]] || continue
+        [[ -r $manifest ]] || die "Cannot read installed runtime manifest: $manifest"
+        while IFS= read -r name || [[ -n $name ]]; do
+            [[ $name =~ ^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$ && /$name/ != *'/../'* && /$name/ != *'/./'* && /$name/ != *'/.git/'* ]] || die "Invalid runtime path; keeping installed files: $manifest"
+            known_paths[$name]=1
+            parent=$name
+            while [[ $parent == */* ]]; do parent=${parent%/*}; known_directories[$parent]=1; done
+        done < "$manifest"
+    done
+    shopt -s dotglob nullglob
+    while ((${#pending[@]})); do
+        directory=${pending[-1]}; unset 'pending[-1]'
+        [[ -r $directory && -x $directory ]] || die "Cannot inspect installed directory; keeping it unchanged: $directory"
+        for path in "$directory"/*; do
+            relative=${path#"$target/"}
+            if [[ -d $path && ! -L $path ]]; then
+                [[ ${known_directories[$relative]+yes} ]] || die "Keeping local directory unchanged: $path. Move it outside the theme before updating/removing."
+                pending+=("$path")
+            else
+                [[ ${known_paths[$relative]+yes} || ( -L $path && ${known_directories[$relative]+yes} ) ]] || die "Keeping local file unchanged: $path. Move it outside the theme before updating/removing."
+            fi
+        done
+    done
+)
 
 # A directory descriptor lock leaves no lock file or saved installation state.
 lock_parent() {
@@ -418,6 +459,10 @@ if ! $REMOVE; then
     fi
 fi
 
+if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
+    for target in "${TARGETS[@]}"; do check_existing_theme "$target"; done
+fi
+
 # Check requested desktop tools before copying anything.
 SETTINGS=()
 DARK_SETTINGS=()
@@ -487,7 +532,7 @@ if [[ -n $LINK_PATH ]]; then
         run ln -s -- "$TARGET" "$LINK_PATH"
     fi
 fi
-if $LIBADWAITA; then gtk_links "$CONFIG/gtk-4.0" "$GTK_MODE"; fi
+if $LIBADWAITA || { $REMOVE && ! $SYSTEM && ((${#FLATPAKS[@]} == 0)); }; then gtk_links "$CONFIG/gtk-4.0" "$GTK_MODE"; fi
 
 extra_file() {
     if $REMOVE; then run rm -f -- "$2"; else copy_file "$(accent_source "extra/$1")" "$2"; fi
