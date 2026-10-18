@@ -41,6 +41,7 @@ class SystemInstallerTests(unittest.TestCase):
             ("-l",),
             ("--extras", "qt"),
             ("--activate",),
+            ("--prefer-dark",),
             ("--flatpak", "org.example.App=modern"),
         ]:
             dest = self.base / "system/themes"

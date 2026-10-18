@@ -1,6 +1,7 @@
 """Bash desktop selection through real isolated preference backends."""
 
 import os
+import shutil
 import subprocess
 import unittest
 import test_installer as base
@@ -120,6 +121,136 @@ class DesktopSettingTests(unittest.TestCase):
             (self.theme / "gnome-shell/gnome-shell.css").read_bytes(),
             (base.ROOT / "gnome-shell/gnome-shell-46.css").read_bytes(),
         )
+
+
+class DarkAppearanceTests(unittest.TestCase):
+    """Opt-in appearance through real installed schemas and isolated keyfiles."""
+
+    run_cli = base.InstallerTests.run_cli
+    fake_program = base.InstallerTests.fake_program
+    native = DesktopSettingTests.native
+
+    GNOME = "org.gnome.desktop.interface"
+    XAPP = "org.x.apps.portal"
+
+    def setUp(self):
+        base.InstallerTests.setUp(self)
+        self.gsettings = shutil.which("gsettings")
+        self.env.update(XDG_CURRENT_DESKTOP="GNOME", GSETTINGS_BACKEND="keyfile")
+        for schema in [self.GNOME, self.XAPP]:
+            self.native(
+                ["gsettings", "set", schema, "color-scheme", "prefer-light"], self.env
+            )
+
+    def preference(self, schema):
+        return self.native([self.gsettings, "get", schema, "color-scheme"], self.env)
+
+    def test_opt_in_maps_desktops_without_selecting_theme(self):
+        self.native(["gsettings", "set", self.GNOME, "gtk-theme", "Original"], self.env)
+        for desktop in [
+            "GNOME",
+            "Budgie:GNOME",
+            "X-Cinnamon:GNOME",
+            "MATE:GNOME",
+            "XFCE",
+        ]:
+            with self.subTest(desktop=desktop):
+                for schema in [self.GNOME, self.XAPP]:
+                    self.native(
+                        ["gsettings", "set", schema, "color-scheme", "prefer-light"],
+                        self.env,
+                    )
+                env = dict(self.env, XDG_CURRENT_DESKTOP=desktop)
+                for _ in range(2):
+                    self.run_cli("--prefer-dark", env=env)
+                self.assertEqual(self.preference(self.GNOME), "'prefer-dark'")
+                expected = (
+                    "'prefer-light'"
+                    if desktop in ["GNOME", "Budgie:GNOME"]
+                    else "'prefer-dark'"
+                )
+                self.assertEqual(self.preference(self.XAPP), expected)
+                self.assertEqual(
+                    self.native(["gsettings", "get", self.GNOME, "gtk-theme"], env),
+                    "'Original'",
+                )
+
+    def test_theme_activation_alone_preserves_preference(self):
+        self.run_cli("--activate")
+        for schema in [self.GNOME, self.XAPP]:
+            self.assertEqual(self.preference(schema), "'prefer-light'")
+
+    def test_dry_run_does_not_install_or_change_preferences(self):
+        result = self.run_cli("--prefer-dark", "--dry-run")
+        self.assertIn(
+            "gsettings set org.gnome.desktop.interface color-scheme prefer-dark",
+            result.stdout,
+        )
+        self.assertFalse(self.theme.exists())
+        self.assertEqual(self.preference(self.GNOME), "'prefer-light'")
+
+    def test_remove_keeps_preference_and_cannot_request_dark(self):
+        self.run_cli("--prefer-dark")
+        self.run_cli("--remove", "--prefer-dark", success=False)
+        self.assertTrue(self.theme.is_dir())
+        self.run_cli("--remove")
+        self.assertFalse(self.theme.exists())
+        self.assertEqual(self.preference(self.GNOME), "'prefer-dark'")
+
+    def test_unknown_desktop_fails_before_installation(self):
+        result = self.run_cli(
+            "--prefer-dark",
+            env=dict(self.env, XDG_CURRENT_DESKTOP="KDE"),
+            success=False,
+        )
+        self.assertIn("Cannot configure dark appearance", result.stderr)
+        self.assertFalse(self.theme.exists())
+        self.assertEqual(self.preference(self.GNOME), "'prefer-light'")
+
+    def test_locked_setting_rejected_before_replacing_existing_theme(self):
+        self.run_cli()
+        sentinel = self.theme / "untouched.txt"
+        sentinel.write_text("existing installation\n")
+        self.fake_program(
+            "gsettings",
+            'case $1 in range) printf "enum\\n\047prefer-dark\047\\n" ;; get) echo "\047prefer-light\047" ;; writable) echo false ;; *) exit 99 ;; esac',
+        )
+        result = self.run_cli("--prefer-dark", success=False)
+        self.assertIn("setting is locked", result.stderr)
+        self.assertEqual(sentinel.read_text(), "existing installation\n")
+        self.assertEqual(self.preference(self.GNOME), "'prefer-light'")
+
+    def test_cinnamon_with_only_gnome_key_uses_installed_fallback(self):
+        real = self.native(["sh", "-c", "command -v gsettings"], self.env)
+        self.fake_program(
+            "gsettings",
+            "[[ ${2:-} != org.x.apps.portal ]] || exit 1\nexec " + real + ' "$@"',
+        )
+        self.run_cli(
+            "--prefer-dark", env=dict(self.env, XDG_CURRENT_DESKTOP="Cinnamon")
+        )
+        self.assertEqual(self.preference(self.GNOME), "'prefer-dark'")
+        self.assertEqual(self.preference(self.XAPP), "'prefer-light'")
+
+    def test_missing_or_incompatible_keys_rejected_without_copying(self):
+        for body in ["exit 1", '[[ $1 != range ]] || echo "type s"']:
+            self.fake_program("gsettings", body)
+            self.run_cli("--prefer-dark", success=False)
+            self.assertFalse(self.theme.exists())
+
+    def test_cinnamon_with_only_xapp_key_uses_installed_fallback(self):
+        real = self.gsettings
+        self.fake_program(
+            "gsettings",
+            "[[ ${2:-} != org.gnome.desktop.interface ]] || exit 1\nexec "
+            + real
+            + ' "$@"',
+        )
+        self.run_cli(
+            "--prefer-dark", env=dict(self.env, XDG_CURRENT_DESKTOP="Cinnamon")
+        )
+        self.assertEqual(self.preference(self.XAPP), "'prefer-dark'")
+        self.assertEqual(self.preference(self.GNOME), "'prefer-light'")
 
 
 if __name__ == "__main__":
