@@ -36,12 +36,34 @@ class SystemInstallerTests(unittest.TestCase):
         self.run_cli("--system", "--dest", str(dest), "--remove")
         self.assertFalse(theme.exists())
 
+    def test_shared_install_does_not_change_personal_app_appearance(self):
+        self.assertEqual(os.geteuid(), 0)
+        env = dict(self.env, XDG_CURRENT_DESKTOP="GNOME", GSETTINGS_BACKEND="keyfile")
+        command = [
+            "gsettings",
+            "set",
+            "org.gnome.desktop.interface",
+            "color-scheme",
+            "prefer-light",
+        ]
+        subprocess.run(command, env=env, check=True, capture_output=True)
+        dest = self.base / "system/themes"
+        for arguments in [(), ("--remove",)]:
+            self.run_cli("--system", "--dest", str(dest), *arguments, env=env)
+            result = subprocess.run(
+                ["gsettings", "get", "org.gnome.desktop.interface", "color-scheme"],
+                env=env,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.stdout.strip(), "'prefer-light'")
+
     def test_shared_scope_refuses_personal_configuration_before_copying(self):
         for args in [
             ("-l",),
             ("--extras", "qt"),
             ("--activate",),
-            ("--prefer-dark",),
             ("--flatpak", "org.example.App=modern"),
         ]:
             dest = self.base / "system/themes"

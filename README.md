@@ -64,9 +64,8 @@ cd adwaita-amoled
 
 In a terminal, this opens numbered menus for installation/update, removal and
 optional app themes. Setup detects your desktop, offers native GTK4/libadwaita
-and supported Shell activation, and offers a separate dark-appearance preference
-for supporting apps such as Firefox. It then shows the destinations and settings
-before you choose
+and supported Shell activation, and sets supported app appearance preferences
+to dark automatically. It then shows the destinations and settings before you choose
 **Apply**, **Cancel** or **Preview**. GTK4 replacement is optional and defaults to
 keeping existing overrides. No extra menu package is needed.
 
@@ -91,13 +90,13 @@ files do not block copying. Restart affected apps afterward.
 sudo ./install.sh --system         # Shared theme, without user configuration
 sudo ./install.sh --system --link /usr/share/themes  # Link to the root-owned copy
 ./install.sh --remove -l           # Remove theme and its native GTK4 links
-./install.sh install               # Theme files only, without menus
+./install.sh install               # Install without menus
 ```
 
 Extras create missing folders but leave existing app settings alone; select or
 include their theme files in each app. XDG directory overrides are honored.
-Bare `./install.sh` keeps its original theme-files-only behavior when input or
-output is not a terminal. `--interactive` explicitly requests menus and requires
+Bare `./install.sh` uses noninteractive installation when input or output is
+not a terminal, including supported app dark preferences. `--interactive` explicitly requests menus and requires
 a terminal; it is used alone.
 The script prepares each replacement before switching it into place and checks
 release-archive checksums. Temporary staging is cleaned up without saved history.
@@ -110,10 +109,9 @@ the logo, screenshots and development build sources stay in the repository.
 [The installation guide](INSTALLING.md) explains every destination, optional
 per-app Flatpak setup, GNOME Shell selection and manual configuration.
 
-If Firefox's tabs/address bar stay light, select **System theme — auto** in
-Firefox and choose **Prefer dark appearance** during setup. The explicit option
-is `./install.sh --prefer-dark`; ordinary theme installation/`--activate` alone
-keeps this preference unchanged. See [Firefox dark appearance](INSTALLING.md#firefox-dark-appearance)
+User installation sets supported app appearance preferences to dark without an
+extra question. If Firefox's tabs/address bar stay light, select **System theme —
+auto** in Firefox. See [Firefox dark appearance](INSTALLING.md#firefox-dark-appearance)
 for the Linux Mint setting and a Firefox-only alternative.
 
 ### Manual installation

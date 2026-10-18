@@ -200,12 +200,6 @@ guided_setup() {
         *) printf 'Select Adwaita-AMOLED manually in your desktop Appearance settings afterward.\n' ;;
     esac
     if $select_desktop; then MENU_ARGS+=(--activate); fi
-    if dark_preference_settings >/dev/null 2>&1; then
-        printf '\nDark appearance is separate from GTK theme selection. This preference affects apps that honor it; explicit app themes still take precedence.\n'
-        if menu_yes 'Prefer dark appearance in applications such as Firefox?' y; then MENU_ARGS+=(--prefer-dark); fi
-    else
-        printf 'No supported writable app appearance preference detected; use your desktop/app Appearance settings if apps stay light.\n'
-    fi
     case ${DESKTOP^^} in
         *BUDGIE*|*CINNAMON*|*MATE*|*XFCE*) ;; # These sessions may also include :GNOME.
         *GNOME*) gnome_desktop=true ;;
@@ -276,7 +270,7 @@ guided_review() {
     done
     if $SHELL_THEME; then printf 'GNOME Shell stylesheet: %s\n' "$SHELL_VERSION"; fi
     if $ACTIVATE; then printf 'Select desktop theme for: %s\n' "$DESKTOP"; fi
-    if $PREFER_DARK; then
+    if ((${#DARK_SETTINGS[@]})); then
         printf 'Prefer dark appearance in supporting applications:\n'
         for path in "${DARK_SETTINGS[@]}"; do printf '  %s color-scheme = prefer-dark\n' "$path"; done
         printf 'This user preference is separate from the theme and remains selected after removal. Firefox must use System theme — auto to follow it.\n'

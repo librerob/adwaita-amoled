@@ -102,9 +102,9 @@ keyfile preferences (`xapps-common` and `gsettings-desktop-schemas`):
 python3 tests/test_install_settings.py DarkAppearanceTests
 ```
 
-They cover opt-in/repeat behavior, desktop mappings and missing-key fallbacks,
-theme-only preservation, preview, removal and rejection before replacement.
-The guided tests also check cancel/preview/apply and declining dark appearance.
+They cover automatic/repeat behavior, desktop mappings and missing-key fallbacks,
+preview, removal, shared-system preservation, and unavailable/locked/failed writes.
+The guided tests check cancel/preview/apply and the absence of a dark-mode question.
 These checks do not establish that a distribution has a working settings portal
 or that a particular browser profile follows its automatic theme.
 
