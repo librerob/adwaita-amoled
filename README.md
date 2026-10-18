@@ -54,76 +54,37 @@ fixes and the expanded file/paint review.
 
 ## Installation
 
-The compiled theme is included. The installer is plain **Bash**: no Python,
-compiler, downloads or installer database.
+Download the **Adwaita-AMOLED `.tar.gz` archive** from the
+[latest release](https://github.com/librerob/adwaita-amoled/releases/latest),
+extract it, and open a terminal inside the **Adwaita-AMOLED** folder:
 
 ```bash
-git clone https://github.com/librerob/adwaita-amoled.git
-cd adwaita-amoled
 ./install.sh
 ```
 
-In a terminal, this opens numbered menus for installation/update, removal and
-optional app themes. Setup detects your desktop, offers native GTK4/libadwaita
-and supported Shell activation, and sets supported app appearance preferences
-to dark automatically. It then shows the destinations and settings before you choose
-**Apply**, **Cancel** or **Preview**. GTK4 replacement is optional and defaults to
-keeping existing overrides. No extra menu package is needed.
+Run user setup **without sudo**. The installer uses Bash; no Python, compiler
+or additional menu package is required.
 
-Choose **Accent color** in the main menu to change from blue. Each preset keeps
-black surfaces, uses a light accent for text/focus and darker fills with white
-labels. Updates retain the installed color. See [accent choices and measured
-contrast](ACCENT_COLORS.md), including why yellow/gold buttons use darker fills.
+Choose **Accent color** if you want a different preset, then **Install/update
+for this user**. Guided setup offers GTK4/libadwaita styling, desktop selection,
+matching supported GNOME Shell styling and optional app themes. Review the
+changes, then choose **Apply**, **Cancel** or **Preview**.
 
-The default user theme location is `~/.local/share/themes/Adwaita-AMOLED`.
-Advanced menus cover shared system setup and selected Flatpak apps. App themes
-still need selection in their own applications.
+Selecting GTK4/libadwaita setup replaces existing CSS/assets overrides **without
+backups**; guided setup defaults to keeping existing overrides. App extras
+still need selection or inclusion in each application.
 
-Existing explicit options work without prompts, even in a terminal:
+To update, extract a newer release into a fresh folder and rerun setup. Updates
+replace installed theme files and retain your accent choice. Select optional
+extras again to update their copied files. Restart affected apps afterward.
 
-```bash
-./install.sh -l --activate
-```
+Supported app appearance preferences are set to dark automatically. If Firefox
+stays light, select **System theme — auto**; see
+[Firefox setup](INSTALLING.md#firefox-dark-appearance).
 
-Run user setup without sudo. `-l` replaces the GTK4 CSS/assets overrides with
-symlinks to the theme; **no backups are made**. Rerun from a newer download with
-the same options to update. Known theme files are replaced, including local
-edits to them. Git checkouts and unlisted local files stop replacement/removal;
-move those outside the installation destination first. Old installer state
-outside the theme is not consulted. Restart affected apps afterward.
-
-```bash
-./install.sh --extras qt,kitty,nvim  # Copy optional app theme files
-./install.sh --accent purple -l --activate  # Choose a color without menus
-./install.sh --dry-run             # Preview file operations
-sudo ./install.sh --system         # Shared theme, without user configuration
-sudo ./install.sh --system --link /usr/share/themes  # Link to the root-owned copy
-./install.sh --remove              # Remove theme and its owned native GTK4 links
-./install.sh install               # Install without menus
-```
-
-Extras create missing folders but leave existing app settings alone; select or
-include their theme files in each app. XDG directory overrides are honored.
-Bare `./install.sh` uses noninteractive installation when input or output is
-not a terminal, including supported app dark preferences. `--interactive` explicitly requests menus and requires
-a terminal; it is used alone.
-The script prepares each replacement before switching it into place and checks
-release-archive checksums. Temporary staging is cleaned up without saved history.
-Default user installs expose the XDG theme through a `~/.themes/Adwaita-AMOLED`
-compatibility link so GTK2 can discover it. Existing real legacy copies are
-updated; links pointing elsewhere are reported without being overwritten.
-Checkout installs and release archives use the same `runtime-files.txt` list:
-runtime styles, assets, app extras, wallpaper and license notices are included;
-the logo, screenshots and development build sources stay in the repository.
-Downloads include precompiled color overlays; only the selected color is copied
-into the installed theme, under the same **Adwaita-AMOLED** name.
-[The installation guide](INSTALLING.md) explains every destination, optional
-per-app Flatpak setup, GNOME Shell selection and manual configuration.
-
-User installation sets supported app appearance preferences to dark without an
-extra question. If Firefox's tabs/address bar stay light, select **System theme —
-auto** in Firefox. See [Firefox dark appearance](INSTALLING.md#firefox-dark-appearance)
-for the Linux Mint setting and a Firefox-only alternative.
+See the [installation guide](INSTALLING.md) for command-line options, exact
+paths, Flatpak, system-wide setup, removal and manual configuration. See
+[accent choices and measured contrast](ACCENT_COLORS.md) for the palette details.
 
 ### Manual installation
 
