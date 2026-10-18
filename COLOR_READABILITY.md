@@ -60,10 +60,13 @@ text; dark blue filled buttons retain white labels, as requested by the owner.
   text/state pairs. Those 77 pairs now meet 4.5:1. Unchecked SVG controls and
   scrollbar handles receive visible identifying paints. The workspace add button
   keeps a dark blue fill behind its white plus.
-- Native GNOME Shell accent testing found 364 failures in 432 opaque control
+- The initial native GNOME Shell audit found 364 failures in 432 opaque control
   pairs across nine system accents. State-specific darker fills bring all 432
   above 4.5:1; the lowest measured pair is 4.796:1. All 963 upstream layout rules
   and the 50 pinned upstream source/asset files remain checked against upstream.
+  Current builds pin all eight theme presets to their measured text/fill roles,
+  independent of GNOME Settings. Blue Shell 46 checkbox focus rings now also use
+  derived assets; actual SVG paint is checked on three dark surfaces.
 - GTK2 scrollbar/scale thumbs now use a visible dark accent. Native Murrine
   painting checks their interiors as well as button labels. Xfce panel-specific
   resets now retain visible keyboard-focus outlines. GTK3 backdrop checkbox and

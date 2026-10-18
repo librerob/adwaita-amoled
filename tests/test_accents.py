@@ -133,7 +133,7 @@ class AccentTests(unittest.TestCase):
         for version in ("46", "51"):
             name = f"gnome-shell/gnome-shell-{version}.css"
             original = rules((base.ROOT / name).read_text())
-            for accent in COLORS:
+            for accent in ("blue", *COLORS):
                 with self.subTest(accent=accent, version=version):
                     text = self.expected(accent, name).read_text()
                     self.assertNotIn("-st-accent", text)
@@ -149,6 +149,22 @@ class AccentTests(unittest.TestCase):
                         for (key, value), (_, new_value) in zip(before, after):
                             if key not in properties and not key.endswith("-color"):
                                 self.assertEqual(value, new_value, f"{selector}: {key}")
+
+    def test_all_shell46_presets_use_derived_palette_controls_and_keep_originals(self):
+        import shell_palette
+
+        for accent in ("blue", *COLORS):
+            colors = palette.preset_colors(base.ROOT, accent)
+            css = self.expected(accent, "gnome-shell/gnome-shell-46.css").read_text()
+            for name in shell_palette.CONTROLS:
+                with self.subTest(accent=accent, asset=name):
+                    source = base.ROOT / "gnome-shell/assets/46" / name
+                    expected = shell_palette.shell46_asset(source.read_text(), colors)
+                    actual = self.expected(accent, "gnome-shell/assets/46-themed/" + name)
+                    self.assertEqual(actual.read_text(), expected)
+                    self.assertNotIn("assets/46/" + name, css)
+                    self.assertIn("assets/46-themed/" + name, css)
+                    self.assertFalse((base.ROOT / "accents" / accent / "gnome-shell/assets/46" / name).exists())
 
     def test_every_installed_file_matches_selected_variant_and_retains_color(self):
         listing = (base.ROOT / "runtime-files.txt").read_text().splitlines()

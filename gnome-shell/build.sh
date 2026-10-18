@@ -21,6 +21,10 @@ if ! command -v sassc >/dev/null 2>&1; then
     echo 'Install with: sudo apt install sassc (Debian/Ubuntu), or sudo pacman -S sassc (Arch).' >&2
     exit 1
 fi
+if ! command -v python3 >/dev/null 2>&1; then
+    echo 'ERROR: python3 is required to apply the shared Shell palette during development builds.' >&2
+    exit 1
+fi
 
 TEMP_CSS="$(mktemp)"
 TEMP_OUTPUT="$(mktemp)"
@@ -32,6 +36,9 @@ if [[ "$VERSION" == 46 ]]; then
     ASSETS=assets/46/
 fi
 sassc -t expanded "$SOURCE" "$TEMP_CSS"
+sed "s|resource:///org/gnome/shell/theme/|$ASSETS|g" "$TEMP_CSS" > "$TEMP_OUTPUT"
+python3 "$THEME_DIR/../tools/shell_palette.py" --root "$THEME_DIR/.." \
+    --version "$VERSION" "$TEMP_OUTPUT" "$TEMP_CSS"
 {
     cat <<NOTICE
 /* Adwaita-AMOLED GNOME Shell $VERSION theme; modified 2026-10-17.
@@ -40,8 +47,7 @@ sassc -t expanded "$SOURCE" "$TEMP_CSS"
  * Upstream copyright and license notice retained below.
  */
 NOTICE
-    # Ship matching assets instead of depending on a system theme resource.
-    sed "s|resource:///org/gnome/shell/theme/|$ASSETS|g" "$TEMP_CSS"
+    cat "$TEMP_CSS"
 } > "$TEMP_OUTPUT"
 chmod 644 "$TEMP_OUTPUT"
 mv "$TEMP_OUTPUT" "$TARGET"

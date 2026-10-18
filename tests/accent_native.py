@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-COLORS = ("yellow", "gold", "purple", "green", "red", "orange", "pink")
+COLORS = ("blue", "yellow", "gold", "purple", "green", "red", "orange", "pink")
 
 
 def main():
@@ -154,10 +154,11 @@ def main():
                     PYTHONDONTWRITEBYTECODE="1",
                 )
                 if args.group == "shell51":
-                    preset = json.loads((ROOT / "palette/accents.json").read_text())[
-                        "presets"
-                    ][color]["colors"]
+                    preset = json.loads((ROOT / "palette/colors.json").read_text())["colors"]
+                    if color != "blue":
+                        preset |= json.loads((ROOT / "palette/accents.json").read_text())["presets"][color]["colors"]
                     env["THEME_TEST_FIXED_ACCENT_FILL"] = preset["accent_fill"]
+                    env["THEME_TEST_FIXED_ACCENT_TEXT"] = preset["accent_text"]
                 with (evidence / f"command-{index}.log").open("w") as log:
                     invocation = [sys.executable, *command]
                     if args.group == "cinnamon":

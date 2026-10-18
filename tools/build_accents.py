@@ -2,6 +2,7 @@
 """Build sparse, precompiled accent overlays; users need only the Bash installer."""
 import argparse
 import hashlib
+import json
 import re
 from pathlib import Path
 import shutil
@@ -51,75 +52,6 @@ def airline_preset(text, colors):
     return text
 
 
-def shell46_asset(text, colors):
-    """Derive preset controls without modifying the pinned blue SVG originals."""
-
-    def style(match):
-        value = match[1]
-        role = "accent_text" if "fill:none;" in value else "accent_fill"
-        if role == "accent_text" and "stroke:#3584e4;" in value:
-            # Inherited 35% focus rings paint below 3:1 on AMOLED. A 60%
-            # ring is measured on black and both raised popup surfaces.
-            value = re.sub(
-                r"stroke-opacity:(?:\.35|\.34999999)(?=;|$)", "stroke-opacity:.6", value
-            )
-        return 'style="' + value.replace("#3584e4", colors[role]) + '"'
-
-    text = re.sub(r'style="([^"]*)"', style, text)
-    for old, role in (
-        ("#3081e3", "accent_fill"),
-        ("#0b2e52", "accent_disabled"),
-        ("#1862af", "accent_fill_pressed"),
-    ):
-        text = text.replace(old, colors[role])
-    return text
-
-
-def shell_preset(css, colors):
-    """Resolve upstream's dynamic accent only in a named preset's compiled CSS.
-
-    Preserve selectors, geometry and upstream sources. Text and opaque fills
-    have separate contrast roles; the default blue build retains system hues.
-    """
-    lines = []
-    for line in css.splitlines(keepends=True):
-        if "-st-accent" not in line:
-            lines.append(line)
-            continue
-        match = re.match(r"\s*([\w-]+):", line)
-        if not match:
-            raise ValueError("unexpected Shell accent syntax")
-        prop = match[1]
-        role = "accent_fill" if "background" in prop else "accent_text"
-        line = re.sub(r"st-mix\(-st-accent-color, #ffffff, 60%\)", colors[role], line)
-        line = re.sub(
-            r"st-lighten\(-st-accent-color, (\d+)%\)",
-            lambda m: (
-                colors["accent_fill_hover"]
-                if role == "accent_fill"
-                else colors["accent_text_hover" if int(m[1]) >= 20 else "accent_text"]
-            ),
-            line,
-        )
-        line = re.sub(
-            r"st-darken\(-st-accent-color, (\d+)%\)",
-            lambda m: (
-                colors["accent_text"]
-                if role == "accent_text"
-                else colors[
-                    {14: "accent_fill", 10: "accent_fill_hover"}.get(
-                        int(m[1]), "accent_fill_pressed"
-                    )
-                ]
-            ),
-            line,
-        )
-        line = line.replace("-st-accent-fg-color", colors["foreground"])
-        line = line.replace("-st-accent-color", colors[role])
-        lines.append(line)
-    return "".join(lines)
-
-
 def build(root):
     runtime = (root / "runtime-files.txt").read_text().splitlines()
     result = {}
@@ -133,27 +65,24 @@ def build(root):
             shutil.copytree(root / folder, work / folder, dirs_exist_ok=True)
         for name in ["build.sh", "gnome-shell/build.sh"]:
             shutil.copy2(root / name, work / name)
+        for name in ["shell_palette.py", "generate_palette.py"]:
+            dest = work / "tools" / name
+            dest.parent.mkdir(exist_ok=True)
+            shutil.copy2(root / "tools" / name, dest)
         for accent in NAMES:
             colors = palette.preset_colors(root, accent)
+            (work / "palette/colors.json").write_text(
+                json.dumps({"version": 1, "colors": colors}) + "\n"
+            )
             palette.generate(work, colors=colors)
             airline = work / "extra/nvim/autoload/airline/themes/adwaita_amoled.vim"
             airline.write_text(airline_preset(airline.read_text(), colors))
-            for source in (root / "gnome-shell/assets/46").glob("*.svg"):
-                if source.name.startswith(("checkbox", "toggle")):
-                    target = work / source.relative_to(root)
-                    target.write_text(shell46_asset(source.read_text(), colors))
             for args in [
                 ["bash", str(work / "build.sh")],
                 ["bash", str(work / "gnome-shell/build.sh")],
                 ["bash", str(work / "gnome-shell/build.sh"), "--shell-version", "46"],
             ]:
                 subprocess.run(args, check=True, capture_output=True, text=True)
-            for name in [
-                "gnome-shell/gnome-shell.css",
-                "gnome-shell/gnome-shell-51.css",
-            ]:
-                p = work / name
-                p.write_text(shell_preset(p.read_text(), colors))
             (work / "accent-name").write_text(accent + "\n")
             changed = {
                 name: (work / name).read_bytes()

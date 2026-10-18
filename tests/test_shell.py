@@ -58,10 +58,10 @@ class ShellSourceTests(unittest.TestCase):
             self.assertEqual(selector, new_selector)
             self.assertEqual([key for key, _ in before], [key for key, _ in after], selector)
             for (key, value), (_, new_value) in zip(before, after):
-                if key not in color_properties:
+                if key not in color_properties and not key.endswith('-color'):
                     self.assertEqual(value, new_value, f'{selector}: {key}')
                 elif key == 'border':
-                    color = r'(?=#[\da-fA-F]+\b|(?:rgba?|hsla?|st-[\w-]+)\(|\b(?:transparent|currentColor|black|white)\b)'
+                    color = r'(?=-st-accent(?:-fg)?-color\b|#[\da-fA-F]+\b|(?:rgba?|hsla?|st-[\w-]+)\(|\b(?:transparent|currentColor|black|white)\b)'
                     self.assertEqual(re.split(color, value, maxsplit=1)[0].strip(),
                                      re.split(color, new_value, maxsplit=1)[0].strip(), selector)
 
@@ -73,7 +73,9 @@ class ShellRuntimeTests(unittest.TestCase):
             output.mkdir(parents=True, exist_ok=True)
             env = dict(os.environ, THEME_TEST_OUTPUT=str(output),
                        META_DBUS_RUNNER_DISABLE_LOGIND_PASSTHROUGH='1',
-                       PYTHONDONTWRITEBYTECODE='1', G_DEBUG='fatal-criticals')
+                       PYTHONDONTWRITEBYTECODE='1', G_DEBUG='fatal-criticals',
+                       THEME_TEST_FIXED_ACCENT_FILL=os.environ.get('THEME_TEST_FIXED_ACCENT_FILL', '#2d6be0'),
+                       THEME_TEST_FIXED_ACCENT_TEXT=os.environ.get('THEME_TEST_FIXED_ACCENT_TEXT', '#8ab4f8'))
             with (output / 'shell-session.log').open('w') as log:
                 process = subprocess.Popen([sys.executable, str(ROOT / 'tests/gnome-shell/dbus_runner.py'),
                                             '--', 'bash', str(ROOT / 'tests/gnome-shell/session.sh')],
@@ -103,6 +105,9 @@ class ShellRuntimeTests(unittest.TestCase):
             self.assertEqual(result['transitions'], 40)
             self.assertGreater(result['styleNodes'], 1000)
             self.assertEqual(result['accentPairs'], 936)
+            self.assertEqual(result['fixedAccentFill'], env['THEME_TEST_FIXED_ACCENT_FILL'])
+            self.assertEqual(result['fixedAccentText'], env['THEME_TEST_FIXED_ACCENT_TEXT'])
+            self.assertEqual(result['presetTextPairs'], 18)
             self.assertEqual(result['graphicPairs'], 162)
             self.assertGreaterEqual(result['minimumGraphicContrast'], 3)
             self.assertEqual(result['fontPairs'], 3)

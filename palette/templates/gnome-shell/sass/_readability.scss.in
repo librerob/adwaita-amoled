@@ -1,5 +1,6 @@
 // Readability adaptation, 2026-10-16. SPDX-License-Identifier: GPL-2.0-or-later
-// Retain the selected system hue. White labels need darker opaque accent fills
+// The build resolves system accent expressions to shared text/fill palette roles.
+// White labels need darker opaque accent fills
 // in every state; upstream dark-style hover/active lightening loses contrast.
 %default_button {
   background-color: st-darken(-st-accent-color, 14%);

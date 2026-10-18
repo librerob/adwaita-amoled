@@ -132,7 +132,7 @@ jobs:
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-shell
         run: python3 tests/test_shell.py
-      - name: Check seven fixed Shell accents against every GNOME system accent
+      - name: Check all eight fixed Shell accents against every GNOME system accent
         run: python3 tests/accent_native.py shell51 '${{ runner.temp }}/theme-test-output-shell/accents'
       - name: Upload Shell rendering evidence
         if: always()
@@ -187,9 +187,9 @@ jobs:
         run: |
           mkdir -p /run/dbus
           dbus-daemon --system --fork --nopidfile
-          xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
+          python3 tests/report.py xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
             dbus-run-session -- python3 tests/cinnamon_colors.py . /tmp/cinnamon-color-evidence
-          python3 tests/accent_native.py cinnamon /tmp/cinnamon-color-evidence/accents
+          python3 tests/report.py python3 tests/accent_native.py cinnamon /tmp/cinnamon-color-evidence/accents
       - name: Upload Cinnamon color evidence
         if: always()
         uses: actions/upload-artifact@v7

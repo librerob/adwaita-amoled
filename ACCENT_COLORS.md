@@ -18,7 +18,7 @@ neutral surface `#252525`. Button labels are white.
 
 | Preset | Text/focus | Text on black | Text on raised | Filled button | White on fill | White on hover | White on pressed |
 | --- | --- | ---: | ---: | --- | ---: | ---: | ---: |
-| Blue (unchanged) | `#8ab4f8` | 9.96:1 | 7.27:1 | `#2d6be0` | 4.89:1 | 5.62:1 | 6.50:1 |
+| Blue | `#8ab4f8` | 9.96:1 | 7.27:1 | `#2d6be0` | 4.89:1 | 5.62:1 | 6.50:1 |
 | Yellow | `#d2cf89` | 13.03:1 | 9.51:1 | `#7b7505` | 4.78:1 | 5.13:1 | 5.68:1 |
 | Gold | `#edc76f` | 13.00:1 | 9.49:1 | `#956c0b` | 4.74:1 | 5.13:1 | 5.63:1 |
 | Purple | `#dcc1ef` | 12.92:1 | 9.43:1 | `#9a4fd0` | 4.77:1 | 5.14:1 | 5.65:1 |
@@ -37,7 +37,7 @@ warning, success, syntax categories and ANSI terminal colors retain their
 meanings. A red preset still needs error icons/messages; a green preset still
 needs success indicators. Color alone must not communicate those meanings.
 Wallpaper, logos, screenshots and pinned upstream originals remain unchanged.
-Preset Shell 46 switches/checkboxes use derived SVG copies with matching colors.
+All Shell 46 presets, including blue, use derived SVG switches/checkboxes with matching colors.
 Their checkbox focus rings also use a measured 60% opacity; the inherited 35%
 paint was below 3:1 on the AMOLED surfaces.
 
@@ -74,7 +74,7 @@ not a guarantee of perfect OLED behavior or color-vision accessibility.
 
 ## Implementation and testing
 
-`palette/colors.json` defines the unchanged base blue palette.
+`palette/colors.json` defines the base blue palette.
 `palette/accents.json` overrides every `accent_*` role for each new preset.
 Semantic and neutral roles cannot be overridden there. The 76 shared templates
 cover GTK sources, Cinnamon CSS/SVGs, window decorations and application themes.
@@ -90,11 +90,11 @@ installed color unless another is chosen. Rerun with the same optional extras
 to refresh copied app snippets; existing GTK4/Flatpak links follow the installed
 theme. App themes still need selection in their own applications.
 
-Shell 46 uses the theme preset. Shell 51's new presets also use that preset,
-independently of GNOME Settings' accent; the default blue Shell 51 build keeps
-its existing system-accent behavior. Neither changes GNOME's accent preference.
+Shell 46 and 51 use the selected theme preset for all eight colors, including
+blue, independently of GNOME Settings' accent. Neither changes GNOME's saved
+accent preference. Application-owned accent preferences remain separate.
 The build preserves upstream selectors and geometry, and resolves native Shell
-accent expressions into separate text/fill colors for the new presets.
+accent expressions into separate text/fill colors for every preset.
 
 Tests cover every new preset's definitions, compiled output reproducibility,
 distribution checksums, installation/update/color switching/removal, guided

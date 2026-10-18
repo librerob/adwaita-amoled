@@ -28,7 +28,7 @@ for name in ("checkbox-off-focused.svg", "checkbox-focused.svg"):
                 "240",
                 "--output",
                 str(image),
-                str(root / "gnome-shell/assets/46" / name),
+                str(root / "gnome-shell/assets/46-themed" / name),
             ],
             check=True,
         )
