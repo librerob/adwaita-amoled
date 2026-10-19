@@ -30,6 +30,7 @@ jobs:
           python3 tools/generate_palette.py --check
           python3 tools/generate_icons.py --check
           python3 tools/build_accents.py --check
+          python3 tools/showcase_icons.py --check
           python3 tests/test_palette.py
           python3 tests/test_accents.py
           python3 tests/test_runtime_package.py

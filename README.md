@@ -59,6 +59,11 @@ Settings. See [accent choices and measured contrast](ACCENT_COLORS.md).
   <sub>One black foundation. Light accents for text and focus; deeper fills with white labels.</sub>
 </p>
 
+<p align="center">
+  <a href="extra/readme/folder-presets.svg"><img src="extra/readme/folder-presets.svg" alt="Adwaita-AMOLED folders in blue, yellow, gold, purple, green, red, orange and pink, with matching Home and special folders." width="960"></a><br>
+  <sub>Matching Adwaita folders, optional in setup. Click to view full size.</sub>
+</p>
+
 
 ## Installation
 

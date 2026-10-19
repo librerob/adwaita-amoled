@@ -26,6 +26,35 @@ Newest tags are not always stable desktop releases: Cinnamon also publishes
 automated builds, Xfce has a 4.21 development series, and MATE has 1.29
 development components. Those were not substituted for the stable targets.
 
+## Folder icon application checks
+
+On 19 October 2026, all eight folder presets were exercised in actual windows
+of the following applications, installed using the Bash installer:
+
+| Application | Version | Checked with each preset |
+| --- | --- | --- |
+| Nemo | 6.6.4 | Folder view, selection, background context menu, Documents navigation and return |
+| Thunar | 4.20.9 | Same |
+| Caja | 1.26.4 | Same; Caja applies its own tint to selected icons |
+| GNOME Files / Nautilus | 51.0.1 | Same |
+| PCManFM-Qt | 1.4.1, Qt 5.15.13 | Same, with Qt5ct's icon theme and matching palette selected |
+
+The checks use ordinary-user, isolated D-Bus/Xvfb X11 sessions with real
+Cinnamon XSettings and software rendering. They verify preset-colored pixels
+and interaction changes, and save screenshots. GTK selection comes from the
+desktop settings, without a global `GTK_THEME` override. Qt applications need
+working desktop/platform icon integration and an SVG plugin; merely copying
+the Qt color palette does not select an icon theme. Native GTK2/3/4 and Qt5/6
+lookup/render tests separately cover folder aliases, multiple sizes and
+inherited symbolic/application icons.
+
+These results cover the named application versions, not every application or
+a complete GNOME, Xfce, MATE, Cinnamon or KDE login session. Native Wayland
+file-manager sessions and sandboxed file-manager icon discovery were not
+verified in this pass. Applications can deliberately tint selected icons or
+use their own artwork; symbolic icons retain upstream Adwaita styling.
+See the [reproducible GUI driver](tests/README.md#real-file-manager-folder-icons).
+
 ## Reproduced defect and regression checks
 
 The following before/after measurements describe the earlier compatibility fix.
