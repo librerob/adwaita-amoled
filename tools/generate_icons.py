@@ -99,6 +99,8 @@ Type=Scalable
 """
     for name in ("COPYING", "COPYING_LGPL", "COPYING_CCBYSA3"):
         result[name] = (upstream / name).read_bytes()
+    # LGPL v3 incorporates GPL v3; keep both texts with standalone icon installs.
+    result["COPYING_GPL"] = (root / "LICENSE").read_bytes()
     result["README.md"] = (root / "icons/UPSTREAM.md").read_bytes()
     result["accent-name"] = (accent + "\n").encode()
     names = sorted([*result, "runtime-files.txt", "SHA256SUMS"])

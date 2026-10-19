@@ -11,6 +11,7 @@ Generated derivatives live under `extra/icons/Adwaita-AMOLED` and the existing
 accent overlays. Attribution: GNOME Project (https://www.gnome.org).
 These icon derivatives are distributed under GNU LGPL v3; upstream also
 offers CC-BY-SA-3.0-US. License texts accompany the installed icon theme.
+COPYING_GPL adds the repository's GPL v3 text, incorporated by LGPL v3.
 
 Modified 2026-10-19: only the five blue folder colors are mapped to palette-derived shades. Shapes,
 neutral hardware details and emblems are preserved. Symbolic icons are inherited.
