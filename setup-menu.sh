@@ -68,6 +68,8 @@ guided_extras() {
     fi
     printf 'Extras copy theme snippets; select/include them in each app afterward.\n'
     if [[ ${selected[icons]+yes} && ${MENU_ARGS[0]} != --remove ]]; then
+        if ! $MENU_ICON_PICKED; then guided_icon_accent; fi
+        MENU_ARGS+=(--icon-accent "$MENU_ICON_ACCENT")
         printf 'Selecting the icon theme also uses Adwaita application icons, with our colored folders.\n'
         local can_select_icons=false
         case ${DESKTOP^^} in
@@ -128,12 +130,15 @@ guided_system() {
     printf '\nShared system theme (administrator)\n'
     printf 'Copies theme files for all users; personal GTK4/app settings stay separate.\n'
     MENU_ACCENT=auto
+    MENU_ICON_ACCENT=auto
+    MENU_ICON_PICKED=false
     while true; do
-        printf '  1. Install/update\n  2. Remove\n  3. Accent color (%s)\n  0. Exit\n' "$MENU_ACCENT"
-        menu_number 3 0
+        printf '  1. Install/update\n  2. Remove\n  3. Accent color (%s)\n  4. Folder icon color (%s)\n  0. Exit\n' "$MENU_ACCENT" "$MENU_ICON_ACCENT"
+        menu_number 4 0
         case $MENU_NUMBER in
             0) printf 'Cancelled; no changes made.\n'; exit 0 ;;
             3) guided_accent ;;
+            4) guided_icon_accent ;;
             *) MENU_ARGS=(--system --accent "$MENU_ACCENT"); [[ $MENU_NUMBER != 2 ]] || MENU_ARGS+=(--remove); break ;;
         esac
     done
@@ -148,7 +153,10 @@ guided_system() {
                MENU_ARGS+=(--link /usr/share/themes)
            fi ;;
     esac
-    if menu_yes 'Also manage the accent-colored folder icon theme for all users?' n; then MENU_ARGS+=(--icons); fi
+    if menu_yes 'Also manage the accent-colored folder icon theme for all users?' n; then
+        if ! $MENU_ICON_PICKED; then guided_icon_accent; fi
+        MENU_ARGS+=(--icons --icon-accent "$MENU_ICON_ACCENT")
+    fi
 }
 
 guided_advanced() {
@@ -182,10 +190,27 @@ guided_accent() {
     local i
     printf '\nAccent color (AMOLED backgrounds are unchanged):\n'
     for i in "${!names[@]}"; do printf '  %s. %s\n' "$((i+1))" "${names[$i]}"; done
-    printf '  0. Back\n'
+    printf '  0. Keep current choice (%s)\n' "$MENU_ACCENT"
     menu_number 8 0
     ((MENU_NUMBER == 0)) || MENU_ACCENT=${names[$((MENU_NUMBER-1))]}
+    MENU_ACCENT_PICKED=true
     return 0
+}
+
+guided_icon_accent() {
+    local -a names=(blue yellow gold purple green red orange pink)
+    local i
+    printf '\nFolder icon color (independent of the theme accent):\n'
+    printf '  1. Match theme accent (recommended)\n'
+    for i in "${!names[@]}"; do printf '  %s. %s\n' "$((i+2))" "${names[$i]}"; done
+    printf '  0. Keep current choice (%s)\n' "$MENU_ICON_ACCENT"
+    menu_number 9 0
+    case $MENU_NUMBER in
+        0) ;;
+        1) MENU_ICON_ACCENT=match ;;
+        *) MENU_ICON_ACCENT=${names[$((MENU_NUMBER-2))]} ;;
+    esac
+    MENU_ICON_PICKED=true
 }
 
 guided_setup() {
@@ -193,10 +218,13 @@ guided_setup() {
     if [[ -n ${SUDO_USER:-} ]] && ((EUID == 0)); then guided_system; return; fi
     local existing=false default=y version='' output name select_desktop=false gnome_desktop=false
     MENU_ACCENT=$(installed_accent "$DEST/$THEME")
+    MENU_ICON_ACCENT=$(installed_icon_accent "$DEST/$THEME")
+    MENU_ACCENT_PICKED=false
+    MENU_ICON_PICKED=false
     while true; do
         printf '\nAdwaita-AMOLED setup\n\n  1. Install/update for this user (recommended)\n'
-        printf '  2. Remove for this user\n  3. Help\n  4. Advanced options\n  5. Accent color (%s)\n  0. Exit\n' "$MENU_ACCENT"
-        menu_number 5 1
+        printf '  2. Remove for this user\n  3. Help\n  4. Advanced options\n  5. Accent color (%s)\n  6. Folder icon color (%s)\n  7. Change installed colors (refresh existing app themes and icons)\n  0. Exit\n' "$MENU_ACCENT" "$MENU_ICON_ACCENT"
+        menu_number 7 1
         case $MENU_NUMBER in
             0) printf 'Cancelled; no changes made.\n'; exit 0 ;;
             1) MENU_ARGS=(install); break ;;
@@ -204,8 +232,15 @@ guided_setup() {
             3) printf '\nSetup shows a review before changing anything. Choose Preview to print operations only.\nGTK4/libadwaita styles modern GNOME apps through user CSS. Existing overrides are replaced only if selected.\nExtras need selection in each app. Root/shared and selected-app Flatpak setup are under Advanced options.\nFor command-line options, run ./install.sh --help.\n' ;;
             4) if guided_advanced; then return; fi ;;
             5) guided_accent ;;
+            6) guided_icon_accent ;;
+            7)
+                if ! $MENU_ACCENT_PICKED; then guided_accent; fi
+                if [[ -d $ICON_DEST/$THEME ]] && ! $MENU_ICON_PICKED; then guided_icon_accent; fi
+                MENU_ARGS=(--recolor --accent "$MENU_ACCENT" --icon-accent "$MENU_ICON_ACCENT")
+                return ;;
         esac
     done
+    if [[ ${MENU_ARGS[0]} != --remove ]] && ! $MENU_ACCENT_PICKED; then guided_accent; fi
     MENU_ARGS+=(--accent "$MENU_ACCENT")
     printf '\nDesktop: %s\nTheme files: %s/%s\n' "${DESKTOP:-not detected}" "$DEST" "$THEME"
     if [[ ${MENU_ARGS[0]} == --remove ]]; then
@@ -302,7 +337,7 @@ guided_review() {
     [[ -z $LINK_PATH ]] || printf 'Shared link: %s -> %s\n' "$LINK_PATH" "$TARGET"
     [[ -z $GTK2_LINK ]] || printf 'GTK2 compatibility link: %s -> %s\n' "$GTK2_LINK" "$TARGET"
     if $ICONS; then
-        printf 'Folder icon theme (%s): %s (inherits Adwaita; other application icons may change)\n' "$ACCENT" "$ICON_TARGET"
+        printf 'Folder icon theme (%s; choice: %s): %s (inherits Adwaita; other application icons may change)\n' "$ICON_COLOR" "$ICON_ACCENT" "$ICON_TARGET"
         if $ACTIVATE_ICONS; then printf 'Select the icon theme for: %s\n' "$DESKTOP"; fi
     fi
     if $LIBADWAITA || { $REMOVE && ! $SYSTEM && ((${#FLATPAKS[@]} == 0)); }; then

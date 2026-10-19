@@ -24,6 +24,7 @@ python3 tests/test_guided_installer.py GuidedInstallerTests
 python3 tests/test_installer.py
 python3 tests/test_installer_failures.py
 python3 tests/test_installer_preservation.py
+python3 tests/test_color_updates.py
 python3 tests/test_flatpak_installer.py
 python3 tests/test_manual_installation.py
 sudo xvfb-run -a python3 tests/test_system_installer.py
@@ -392,3 +393,24 @@ Other supported application arguments are `thunar`, `caja`, `nautilus` and
 `pcmanfm-qt`. Repeat with each of the eight accent names for the full matrix.
 These are isolated X11 application checks, not complete desktop login sessions
 or a guarantee about other applications, extensions or Wayland compositors.
+
+## Updating colors in a live Cinnamon session
+
+`test_color_updates.py` checks all 64 independent theme/icon combinations,
+remembered matching/independent icon modes, refreshing only existing app themes,
+custom settings preservation, corrupt-overlay rejection and safe reload behavior.
+The guided suite exercises the independent pickers and preview/cancel/apply flows.
+
+With Cinnamon, cinnamon-session, xdotool, GTK3 introspection, Xvfb and system
+D-Bus available, run in a disposable environment:
+
+```bash
+xvfb-run -a -s '-screen 0 1600x1200x24 +extension GLX +render -noreset' \
+  dbus-run-session -- python3 tests/cinnamon_accent_update.py . /tmp/cinnamon-updates
+```
+
+The driver requires fresh wrappers and uses its own temporary HOME. It starts
+a real Cinnamon session, updates the selected theme without changing its name,
+checks seven resolved properties per state and saves actual menu/calendar
+screenshots. Its test-only inspection uses Cinnamon Eval; the installer uses
+only the public ReloadTheme API. Verified locally on Cinnamon 6.0.4 and 6.6.9.

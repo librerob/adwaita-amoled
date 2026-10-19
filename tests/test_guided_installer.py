@@ -121,8 +121,59 @@ class GuidedInstallerTests(unittest.TestCase):
 
     def install_choices(self, terminal, gtk="n", extras="n"):
         terminal.answer("Choose [1]:", "1")
+        terminal.answer("Choose [0]:", "0")  # Keep the current theme accent.
         terminal.answer("Apply the theme to native GTK4/libadwaita apps too?", gtk)
         terminal.answer("Copy optional application themes or wallpaper?", extras)
+
+    def test_install_directly_offers_independent_theme_and_icon_colors(self):
+        t = self.terminal()
+        t.answer("Choose [1]:", "1")
+        t.answer("Choose [0]:", "8")  # Pink theme.
+        t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
+        t.answer("Copy optional application themes or wallpaper?", "y")
+        t.answer("Choose [0]:", "9")  # Icons component.
+        t.answer("Choose [0]:", "0")
+        t.answer("Choose [0]:", "4")  # Gold icons.
+        t.expect("Folder icon theme (gold; choice: gold)")
+        t.answer("Apply these changes?", "y")
+        t.finish()
+        self.assertEqual((self.theme / "accent-name").read_text(), "pink\n")
+        self.assertEqual((self.theme / "icon-accent").read_text(), "gold\n")
+        self.assertEqual((self.data / "icons" / base.THEME / "accent-name").read_text(), "gold\n")
+
+    def test_quick_color_menu_preview_cancel_and_apply(self):
+        base.InstallerTests.run_cli(self, "--icons", "--extras", "kitty")
+        files = [self.theme / "accent-name", self.theme / "icon-accent",
+                 self.data / "icons" / base.THEME / "accent-name",
+                 self.config / "kitty/themes/adwaita-amoled.conf"]
+        before = [p.read_bytes() for p in files]
+        for reply in ("p", "n", "y"):
+            t = self.terminal()
+            t.answer("Choose [1]:", "7")
+            t.answer("Choose [0]:", "5")  # Green theme.
+            t.answer("Choose [0]:", "9")  # Pink icons.
+            t.expect("Folder icon theme (pink; choice: pink)")
+            t.answer("Apply these changes?", reply)
+            t.finish()
+            if reply != "y":
+                self.assertEqual([p.read_bytes() for p in files], before)
+        self.assertEqual(files[0].read_text(), "green\n")
+        self.assertEqual(files[1].read_text(), "pink\n")
+        self.assertEqual(files[2].read_text(), "pink\n")
+        self.assertEqual(files[3].read_bytes(), (base.ROOT / "accents/green/extra/kitty/adwaita-amoled.conf").read_bytes())
+        self.assertFalse((self.config / "qt5ct").exists())
+
+    def test_main_icon_picker_defaults_back_to_matching(self):
+        base.InstallerTests.run_cli(self, "--icons", "--accent", "pink", "--icon-accent", "gold")
+        t = self.terminal()
+        t.answer("Choose [1]:", "6")
+        t.answer("Choose [0]:", "1")
+        t.answer("Choose [1]:", "7")
+        t.answer("Choose [0]:", "0")
+        t.answer("Apply these changes?", "y")
+        t.finish()
+        self.assertEqual((self.theme / "icon-accent").read_text(), "match\n")
+        self.assertEqual((self.data / "icons" / base.THEME / "accent-name").read_text(), "pink\n")
 
     def test_release_archive_contains_and_runs_guided_setup(self):
         archive = self.base / "runtime.tar.gz"
@@ -176,7 +227,7 @@ class GuidedInstallerTests(unittest.TestCase):
     def test_help_invalid_input_and_exit_do_not_install(self):
         t = self.terminal()
         t.answer("Choose [1]:", "bogus")
-        t.expect("Enter a number from 0 to 5.")
+        t.expect("Enter a number from 0 to 7.")
         t.answer("Choose [1]:", "3")
         t.expect("For command-line options")
         t.answer("Choose [1]:", "0")
@@ -245,6 +296,7 @@ class GuidedInstallerTests(unittest.TestCase):
         self.install_choices(t, extras="y")
         for choice in ["10", "0"]:
             t.answer("Choose [0]:", choice)
+        t.answer("Choose [0]:", "0")  # Folder icons match the theme.
         t.answer("Apply these changes?", "d")
         t.expect("About the selected extras")
         t.expect("Apply these changes?")
@@ -279,11 +331,13 @@ esac''')
         for reply in ("p", "y"):
             t = self.terminal()
             t.answer("Choose [1]:", "1")
+            t.answer("Choose [0]:", "0")  # Keep the current accent.
             t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
             t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
             t.answer("Copy optional application themes or wallpaper?", "y")
             for choice in ("9", "0"):
                 t.answer("Choose [0]:", choice)
+            t.answer("Choose [0]:", "0")  # Folder icons match the theme.
             t.expect("also uses Adwaita application icons")
             t.answer("Select the Adwaita-AMOLED icon theme for this desktop now?", "y")
             t.answer("Apply these changes?", reply)
@@ -340,6 +394,7 @@ esac''')
             self.fake("gnome-shell", "echo 'GNOME Shell " + version + "'")
             t = self.terminal()
             t.answer("Choose [1]:", "1")
+            t.answer("Choose [0]:", "0")  # Keep the current accent.
             t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
             t.answer("Select Adwaita-AMOLED for this desktop now?", "y")
             if version == "46.10":
@@ -367,6 +422,7 @@ esac''')
         self.fake("gnome-shell", "echo 'GNOME Shell 46.10'")
         t = self.terminal()
         t.answer("Choose [1]:", "1")
+        t.answer("Choose [0]:", "0")  # Keep the current accent.
         t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
         t.answer("Select Adwaita-AMOLED for this desktop now?", "y")
         t.expect("To apply them, install/allow User Themes")
@@ -384,6 +440,7 @@ esac''')
         self.fake("gnome-shell", "echo 'GNOME Shell 46.10'")
         t = self.terminal()
         t.answer("Choose [1]:", "1")
+        t.answer("Choose [0]:", "0")  # Keep the current accent.
         t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
         t.answer("Select Adwaita-AMOLED for this desktop now?", "y")
         t.answer("Copy optional application themes or wallpaper?", "n")
@@ -403,6 +460,7 @@ esac''')
         for apply in ["n", "y"]:
             t = self.terminal()
             t.answer("Choose [1]:", "1")
+            t.answer("Choose [0]:", "0")  # Keep the current accent.
             t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
             t.answer("Select Adwaita-AMOLED for this desktop now?", "y")
             t.answer("Copy optional application themes or wallpaper?", "n")
@@ -437,6 +495,7 @@ esac""",
                 self.env["XDG_CURRENT_DESKTOP"] = desktop
                 t = self.terminal()
                 t.answer("Choose [1]:", "1")
+                t.answer("Choose [0]:", "0")  # Keep the current accent.
                 t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
                 t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
                 t.answer("Copy optional application themes or wallpaper?", "n")
@@ -505,6 +564,7 @@ esac""",
         )
         t = self.terminal()
         t.answer("Choose [1]:", "1")
+        t.answer("Choose [0]:", "0")  # Keep the current accent.
         t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
         t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
         t.answer("Copy optional application themes or wallpaper?", "n")
@@ -634,13 +694,17 @@ class SystemMenuTests(unittest.TestCase):
         t = self.terminal(("--interactive",))
         t.answer("Choose [0]:", "3")
         t.answer("Choose [0]:", "8")
+        t.answer("Choose [0]:", "4")
+        t.answer("Choose [0]:", "6")  # Independent green icons.
         t.answer("Choose [0]:", "1")
-        t.answer("Choose [1]:", "2")
-        t.answer("Also manage the accent-colored folder icon theme for all users?", "n")
+        t.answer("Choose [1]:", "1")
+        t.answer("Also manage a link under /usr/share/themes", "n")
+        t.answer("Also manage the accent-colored folder icon theme for all users?", "y")
         t.answer("Apply these changes?", "p")
         text = t.finish()
         self.assertIn("Accent color: pink", text)
-        self.assertIn("/usr/share/themes/Adwaita-AMOLED", text)
+        self.assertIn("Folder icon theme (green; choice: green)", text)
+        self.assertIn("/usr/local/share/themes/Adwaita-AMOLED", text)
         self.assertEqual(list(self.home.iterdir()), [])
 
     def test_shared_setup_preview_and_cancel_never_write_system_paths(self):

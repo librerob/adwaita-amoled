@@ -175,6 +175,21 @@ by the environment's namespace restrictions. Budgie's built-in-theme-disabled
 configuration, native Wayland Cinnamon/Xfce sessions, and a full GNOME/MATE
 login session were not verified.
 
+## Cinnamon accent updates (2026-10-19)
+
+A same-session blue-to-pink reinstall reproduced stale menu focus, calendar
+and taskbar CSS on Cinnamon 6.0.4 and 6.6.9. The selected theme name did not
+change, so Cinnamon retained its old stylesheet while newly loaded assets
+could already use the new accent. The installer now calls Cinnamon's public
+`ReloadTheme` D-Bus method when Adwaita-AMOLED is selected.
+
+Disposable non-root X11 sessions on both versions passed all eight accents,
+including a return to blue: 16 update transitions, 126 resolved style assertions
+and 36 menu/calendar screenshots in total. Tests cover both search-entry IDs,
+today's calendar date, grouped/classic taskbar states and popup hover, plus
+actual painted menus and the mapped calendar widget. This does not establish
+coverage of every third-party applet, extension or Wayland session.
+
 ## Official references
 
 - [GNOME 51 build manifest](https://github.com/GNOME/gnome-build-meta/tree/51.0)

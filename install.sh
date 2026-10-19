@@ -5,6 +5,8 @@ set -euo pipefail
 ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 THEME=Adwaita-AMOLED
 ACCENT=auto
+ICON_ACCENT=auto
+RECOLOR=false
 DATA=${XDG_DATA_HOME:-$HOME/.local/share}
 CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}
 DESKTOP=${XDG_CURRENT_DESKTOP:-}
@@ -20,6 +22,7 @@ EXTRAS=() FLATPAKS=() TARGETS=()
 PAYLOAD=()
 ACCENT_PAYLOAD=()
 declare -A ACCENT_OVERRIDES=()
+declare -A ICON_OVERRIDES=()
 REQUIRED=(accent-name index.theme gtk-2.0/gtkrc gtk-3.0/gtk.css gtk-3.0/gtk.gresource
           gtk-4.0/gtk.css gtk-4.0/gtk.gresource cinnamon/cinnamon.css
           metacity-1/metacity-theme-3.xml openbox-3/themerc
@@ -40,6 +43,9 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
   -a, --activate            Select the theme for the current desktop
       --accent COLOR        blue, yellow, gold, purple, green, red, orange, pink
                             Default: keep installed color, or blue for a new install
+      --icon-accent COLOR   Independent folder color, or match (default)
+                            Used with --icons; keeps the installed choice on updates
+      --recolor             Refresh installed colors and existing app/icon themes
       --shell               Require a matching GNOME Shell theme (46 or 51)
       --icons               Install the optional palette-matched folder icon theme
       --activate-icons      Also select the icon theme for this desktop (implies --icons)
@@ -79,6 +85,12 @@ installed_accent() {
     local name=blue
     if [[ -f $1/accent-name && ! -L $1/accent-name ]]; then IFS= read -r name < "$1/accent-name" || :; fi
     case $name in blue|yellow|gold|purple|green|red|orange|pink) printf '%s\n' "$name" ;; *) printf 'blue\n' ;; esac
+}
+
+installed_icon_accent() {
+    local name=match
+    if [[ -f $1/icon-accent && ! -L $1/icon-accent ]]; then IFS= read -r name < "$1/icon-accent" || :; fi
+    case $name in match|blue|yellow|gold|purple|green|red|orange|pink) printf '%s\n' "$name" ;; *) printf 'match\n' ;; esac
 }
 
 # GTK theme selection and the portal's app appearance preference are separate.
@@ -143,6 +155,8 @@ while (($#)); do
         -l|--libadwaita) LIBADWAITA=true ;;
         -a|--activate) ACTIVATE=true ;;
         --accent) value "$@"; ACCENT=$2; shift ;;
+        --icon-accent) value "$@"; ICON_ACCENT=$2; shift ;;
+        --recolor) RECOLOR=true ;;
         --prefer-dark) ;; # Accepted for v1.6.0 command compatibility; now the user-install default.
         --shell) SHELL_THEME=true ;;
         --icons) ICONS=true ;;
@@ -180,6 +194,8 @@ done
 [[ $GTK_MODE =~ ^(auto|legacy|modern)$ ]] || die 'GTK4 mode must be auto, legacy or modern.'
 [[ $SHELL_VERSION =~ ^(auto|46|51)$ ]] || die 'Shell version must be auto, 46 or 51.'
 case $ACCENT in auto|blue|yellow|gold|purple|green|red|orange|pink) ;; *) die 'Unknown accent color. Use blue, yellow, gold, purple, green, red, orange or pink.' ;; esac
+case $ICON_ACCENT in auto|match|blue|yellow|gold|purple|green|red|orange|pink) ;; *) die 'Unknown folder icon color. Use match, blue, yellow, gold, purple, green, red, orange or pink.' ;; esac
+$RECOLOR && { $REMOVE || $LIBADWAITA || ((${#FLATPAKS[@]})); } && die '--recolor changes existing themes; use installation/removal separately for GTK4 overrides or Flatpak permissions.'
 if $SYSTEM; then
     ((EUID == 0)) || die 'Use sudo with --system.'
     $CUSTOM_DEST || DEST=/usr/local/share/themes
@@ -192,7 +208,7 @@ elif [[ -n ${SUDO_USER:-} ]]; then
     die 'Run user setup without sudo, or use --system for shared theme files.'
 fi
 $ACTIVATE_ICONS && $REMOVE && die 'Use --icons --remove without --activate-icons; choose another icon theme in Appearance settings first.'
-$CUSTOM_ICON_DEST && ! $ICONS && die '--icon-dest requires --icons.'
+$CUSTOM_ICON_DEST && ! $ICONS && ! $RECOLOR && die '--icon-dest requires --icons.'
 [[ -z $LINK_PARENT ]] || $SYSTEM || die '--link requires --system; it must point to a root-owned copy, not a user theme.'
 for path in "$HOME" "$DATA" "$CONFIG" "$DEST" "$ICON_DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
     [[ $path == /* && $path != / && $path != *$'\n'* ]] || die "Expected an absolute directory other than /: $path"
@@ -202,6 +218,27 @@ TARGET=$DEST/$THEME
 ICON_DEST=$(realpath -m -- "$ICON_DEST")
 ICON_TARGET=$ICON_DEST/$THEME
 [[ $ACCENT != auto ]] || ACCENT=$(installed_accent "$TARGET")
+[[ $ICON_ACCENT != auto ]] || ICON_ACCENT=$(installed_icon_accent "$TARGET")
+ICON_COLOR=$ICON_ACCENT
+[[ $ICON_COLOR != match ]] || ICON_COLOR=$ACCENT
+if $RECOLOR; then
+    [[ -d $TARGET ]] || die 'Install the theme first, then use Change installed colors.'
+    [[ ! -d $ICON_TARGET ]] || ICONS=true
+    if ! $SYSTEM; then
+        [[ ! -f $CONFIG/qt5ct/colors/$THEME.conf && ! -f $CONFIG/qt6ct/colors/$THEME.conf && ! -f $CONFIG/qt5ct/qss/fusion-simple-scrollbar.qss && ! -f $CONFIG/qt6ct/qss/fusion-simple-scrollbar.qss ]] || EXTRAS+=(qt)
+        [[ ! -f ${KITTY_CONFIG_DIRECTORY:-$CONFIG/kitty}/themes/adwaita-amoled.conf ]] || EXTRAS+=(kitty)
+        [[ ! -f $CONFIG/alacritty/themes/adwaita-amoled.toml ]] || EXTRAS+=(alacritty)
+        bat_parent=${BAT_CONFIG_PATH:+$(dirname -- "$BAT_CONFIG_PATH")}; bat_parent=${bat_parent:-$CONFIG/bat}
+        bat_executable=$(command -v bat || command -v batcat || :)
+        if [[ -n $bat_executable && -z ${BAT_CONFIG_PATH:-} ]]; then bat_parent=$("$bat_executable" --config-dir); fi
+        [[ ! -f $bat_parent/themes/adwaita-amoled.tmTheme ]] || EXTRAS+=(bat)
+        if [[ ${NVIM_APPNAME:-nvim} != */* && ${NVIM_APPNAME:-nvim} != . && ${NVIM_APPNAME:-nvim} != .. ]]; then
+            [[ ! -f $CONFIG/${NVIM_APPNAME:-nvim}/colors/adwaita-amoled.vim && ! -f $CONFIG/${NVIM_APPNAME:-nvim}/autoload/airline/themes/adwaita_amoled.vim ]] || EXTRAS+=(nvim)
+        fi
+        [[ ! -f $CONFIG/rofi/themes/adwaita-amoled.rasi ]] || EXTRAS+=(rofi)
+        [[ ! -f $CONFIG/zsh/adwaita-amoled.zsh ]] || EXTRAS+=(zsh)
+    fi
+fi
 LINK_PATH=''
 GTK2_LINK=''
 if [[ -n $LINK_PARENT ]]; then
@@ -359,7 +396,7 @@ read_runtime_files() {
         PAYLOAD+=("$name")
     done < "$ROOT/runtime-files.txt"
     [[ ${seen[runtime-files.txt]+present} ]] || die 'Runtime list must include runtime-files.txt.'
-    for name in "${REQUIRED[@]}" install.sh setup-menu.sh INSTALLING.md; do
+    for name in "${REQUIRED[@]}" install.sh setup-menu.sh INSTALLING.md icon-accent; do
         [[ ${seen[$name]+present} ]] || die "Incomplete runtime file list: $name"
     done
 }
@@ -389,6 +426,24 @@ read_accent_files() {
 accent_source() {
     if [[ $ACCENT != blue && ${ACCENT_OVERRIDES[$1]+yes} ]]; then printf '%s\n' "$ROOT/accents/$ACCENT/$1"
     else printf '%s\n' "$ROOT/$1"; fi
+}
+
+icon_source() {
+    local path=extra/icons/$THEME/$1
+    if [[ $ICON_COLOR != blue && ${ICON_OVERRIDES[$path]+yes} ]]; then
+        printf '%s\n' "$ROOT/accents/$ICON_COLOR/$path"
+    else printf '%s\n' "$ROOT/$path"; fi
+}
+
+validate_icon_accent() {
+    # Dynamic locals keep validation of the independent icon preset from
+    # changing the selected GTK/app preset or its overlay tables.
+    local ACCENT=$ICON_COLOR
+    local -a ACCENT_PAYLOAD=()
+    local -A ACCENT_OVERRIDES=()
+    read_accent_files
+    local name
+    for name in "${!ACCENT_OVERRIDES[@]}"; do ICON_OVERRIDES[$name]=1; done
 }
 
 # Build the new copy first. Keep the previous directory only during the rename
@@ -422,7 +477,10 @@ replace_theme() (
     stage=$(mktemp -d "${target%/*}/.Adwaita-AMOLED-install.XXXXXX")
     mkdir -- "$stage/new"
     if $icon_copy; then
-        cp -a --no-preserve=ownership -- "$TARGET/extra/icons/$THEME/." "$stage/new/"
+        for name in "${ICON_FILES[@]}"; do
+            mkdir -p -- "$(dirname -- "$stage/new/$name")"
+            cp -a --no-preserve=ownership -- "$(icon_source "$name")" "$stage/new/$name"
+        done
         (cd -- "$stage/new" && sha256sum --check --status SHA256SUMS) || die 'Staged icon checksum verification failed.'
     else
         (cd -- "$ROOT" && cp -a --no-preserve=ownership --parents -- "${PAYLOAD[@]}" "$stage/new/")
@@ -432,6 +490,7 @@ replace_theme() (
             (cd -- "$stage/new" && sha256sum --check --status "$ROOT/accents/$ACCENT/SHA256SUMS") || die 'Staged accent checksum verification failed.'
         fi
         cp --remove-destination -T -- "$stage/new/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
+        printf '%s\n' "$ICON_ACCENT" > "$stage/new/icon-accent"
     fi
     chmod -R a+rX,go-w -- "$stage/new"
     if [[ -e $target ]]; then mv -T -- "$target" "$stage/previous"; fi
@@ -515,6 +574,15 @@ if $ICONS; then
     if ! $REMOVE; then
         command -v sha256sum >/dev/null || die 'sha256sum is required to verify folder icons.'
         (cd -- "$ROOT/extra/icons/$THEME" && sha256sum --check --status SHA256SUMS) || die 'Folder icon checksum verification failed.'
+        if [[ $ICON_COLOR != blue && $ICON_COLOR != "$ACCENT" ]]; then
+            validate_icon_accent
+        elif [[ $ICON_COLOR != blue ]]; then
+            for name in "${!ACCENT_OVERRIDES[@]}"; do ICON_OVERRIDES[$name]=1; done
+        fi
+        mapfile -t ICON_FILES < "$ROOT/extra/icons/$THEME/runtime-files.txt"
+        for name in "${ICON_FILES[@]}"; do
+            [[ $name =~ ^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*$ && /$name/ != *'/../'* && /$name/ != *'/./'* ]] || die 'Invalid folder icon runtime path.'
+        done
         icon_bases=()
         if ! $SYSTEM; then icon_bases+=("$DATA/icons" "$HOME/.icons"); fi
         IFS=: read -r -a data_dirs <<< "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
@@ -622,6 +690,7 @@ if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
 fi
 if $ICONS; then
     printf 'Folder icon theme: %s\n' "$ICON_TARGET"
+    if ! $REMOVE; then printf 'Folder icon color: %s (choice: %s)\n' "$ICON_COLOR" "$ICON_ACCENT"; fi
     if $REMOVE; then
         run rm -rf -- "$ICON_TARGET"
         printf 'Select another icon theme in Appearance settings if Adwaita-AMOLED is currently selected.\n'
@@ -646,6 +715,7 @@ fi
 if $LIBADWAITA || { $REMOVE && ! $SYSTEM && ((${#FLATPAKS[@]} == 0)); }; then gtk_links "$CONFIG/gtk-4.0" "$GTK_MODE"; fi
 
 extra_file() {
+    if $RECOLOR && [[ ! -f $2 ]]; then return; fi
     if $REMOVE; then run rm -f -- "$2"; else copy_file "$(accent_source "extra/$1")" "$2"; fi
 }
 for extra in "${EXTRAS[@]}"; do
@@ -700,6 +770,23 @@ if $ACTIVATE_ICONS; then
         run xfconf-query -c xsettings -p /Net/IconThemeName --create -t string -s "$THEME"
     else
         run gsettings set "$ICON_SETTING" icon-theme "$THEME"
+    fi
+fi
+# The selected name stays the same across accent updates. Cinnamon does not
+# reload CSS merely because those files changed, even after setting that name
+# again. Use its public reload method; never change an unrelated selected theme.
+if ! $SYSTEM && ! $REMOVE && [[ ${DESKTOP^^} == *CINNAMON* ]] && command -v gsettings >/dev/null; then
+    cinnamon_theme=$(gsettings get org.cinnamon.theme name 2>/dev/null) || cinnamon_theme=''
+    if [[ $cinnamon_theme == "'$THEME'" ]] || { $DRY_RUN && $ACTIVATE; }; then
+        if $DRY_RUN; then
+            printf '  Reload the selected Cinnamon desktop theme after updating its colors.\n'
+        elif [[ -n ${DBUS_SESSION_BUS_ADDRESS:-} ]] && command -v gdbus >/dev/null &&
+            gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon \
+                --method org.Cinnamon.ReloadTheme --timeout 10 >/dev/null 2>&1; then
+            printf 'Cinnamon desktop theme reloaded with the installed accent.\n'
+        else
+            printf 'Cinnamon theme files updated. Reselect the desktop theme in Themes, or log out/in, to refresh its colors.\n' >&2
+        fi
     fi
 fi
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
