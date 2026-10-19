@@ -167,8 +167,17 @@ def main():
                 image.savev(str(output / "navigation-failure.png"), "png", [], [])
                 raise AssertionError("Could not navigate to Documents")
             time.sleep(0.1)
-        run(["xdotool", "key", "alt+Left"])
         time.sleep(0.4)
+        run(["xdotool", "windowfocus", "--sync", window])
+        run(["xdotool", "key", "alt+Left"])
+        deadline = time.monotonic() + 10
+        while "Browse" not in run(["xdotool", "getwindowname", window]).stdout:
+            if time.monotonic() > deadline:
+                raise AssertionError("Could not navigate back to Browse")
+            time.sleep(0.1)
+        time.sleep(0.6)
+        run(["xdotool", "mousemove", "800", "650", "click", "1"])
+        time.sleep(0.2)
         _, returned_count = capture("returned")
         assert "Theme pars" not in (output / "application.log").read_text(), "GTK CSS parser errors; see application.log"
         report = {"app": args.app, "accent": args.accent, "status": "passed",
