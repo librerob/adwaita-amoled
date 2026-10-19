@@ -56,7 +56,20 @@ jobs:
       - name: Check folder icons and inherited icons in GTK and Qt
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/icons
-        run: xvfb-run -a python3 tests/test_icon_lookup.py
+        run: |
+          log="$RUNNER_TEMP/icon-lookup.log"
+          status=0
+          xvfb-run -a python3 tests/test_icon_lookup.py >"$log" 2>&1 || status=$?
+          cat "$log"
+          if (( status != 0 )); then
+            python3 - "$log" <<'PY'
+          import pathlib, sys
+          text = pathlib.Path(sys.argv[1]).read_text()[-12000:]
+          text = text.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::error title=Native icon lookup failure::' + text)
+          PY
+          fi
+          exit "$status"
       - name: Check native parsing and rendering
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output
