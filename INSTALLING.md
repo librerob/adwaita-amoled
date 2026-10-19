@@ -360,6 +360,8 @@ Adwaita must already be installed in a standard icon search path. Setup stops
 before copying if it cannot find it; install your distribution's
 `adwaita-icon-theme` package, or leave this optional component unchecked.
 Other GTK desktops do not necessarily include Adwaita by default.
+GTK2/GTK3 also need the GdkPixbuf SVG loader (`librsvg2-common` on Debian/Ubuntu).
+Without it, those applications can fall back to stock blue Adwaita PNG folders.
 Qt applications also need their SVG icon engine to render these vector icons
 instead of falling back to inherited PNGs. On Debian/Ubuntu/Mint the packages
 are `libqt5svg5` for Qt5, and `qt6-svg-plugins` for recent Qt6 releases
