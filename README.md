@@ -20,9 +20,9 @@
 </p>
 <p align="center">
   <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Terminals-Kitty_%7C_Alacritty-252525" alt="Kitty and Alacritty themes"></a>
-  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Editors-Neovim_%7C_Airline_%7C_bat-252525" alt="Neovim, Airline and bat themes"></a>
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Editor-Neovim_%7C_Airline-252525" alt="Neovim and Airline themes"></a>
   <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Shell-Zsh-252525" alt="Zsh prompt and plugin colors"></a>
-  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Launcher-Rofi-252525" alt="Rofi launcher theme"></a>
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Tools-bat_%7C_Rofi-252525" alt="bat syntax and Rofi launcher themes"></a>
   <a href="extra/wallpaper/blackmount.png"><img src="https://img.shields.io/badge/Wallpaper-included-252525" alt="Matching wallpaper"></a>
 </p>
 <p align="center">
