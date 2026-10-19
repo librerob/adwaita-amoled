@@ -7,7 +7,7 @@
   A coordinated AMOLED theme for your desktop and favorite applications.
 </p>
 <p align="center">
-  <a href="https://github.com/librerob/adwaita-amoled/releases/latest"><img src="https://img.shields.io/github/v/release/librerob/adwaita-amoled?style=for-the-badge&amp;label=Download&amp;color=2d6be0" alt="Download latest release"></a>
+  <a href="https://github.com/librerob/adwaita-amoled/releases/latest"><img src="https://img.shields.io/github/v/release/librerob/adwaita-amoled?style=for-the-badge&amp;label=Download&amp;color=2d6be0&amp;cacheSeconds=300" alt="Download latest release"></a>
   <a href="#installation"><img src="https://img.shields.io/badge/Install-Bash-252525?style=for-the-badge" alt="Install with Bash"></a>
   <a href="ACCENT_COLORS.md"><img src="https://img.shields.io/badge/Accents-8-252525?style=for-the-badge" alt="Explore eight accent colors"></a>
 </p>
@@ -16,6 +16,14 @@
   <a href="INSTALLING.md#gtk4-and-libadwaita-overrides"><img src="https://img.shields.io/badge/libadwaita-optional-252525" alt="Optional libadwaita overrides"></a>
   <a href="gnome-shell/README.md"><img src="https://img.shields.io/badge/GNOME_Shell-46_%7C_51-252525" alt="GNOME Shell 46 and 51 guide"></a>
   <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Qt-5ct_%7C_6ct-252525" alt="Qt5ct and Qt6ct setup"></a>
+  <a href="INSTALLING.md#folder-icon-theme"><img src="https://img.shields.io/badge/Icons-8_folder_accents-252525" alt="Optional Adwaita folder icons in eight accents"></a>
+</p>
+<p align="center">
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Terminals-Kitty_%7C_Alacritty-252525" alt="Kitty and Alacritty themes"></a>
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Editor-Neovim_%7C_Airline-252525" alt="Neovim and Airline themes"></a>
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Shell-Zsh-252525" alt="Zsh prompt and plugin colors"></a>
+  <a href="INSTALLING.md#every-extra-and-destination"><img src="https://img.shields.io/badge/Tools-bat_%7C_Rofi-252525" alt="bat syntax and Rofi launcher themes"></a>
+  <a href="extra/wallpaper/blackmount.png"><img src="https://img.shields.io/badge/Wallpaper-included-252525" alt="Matching wallpaper"></a>
 </p>
 <p align="center">
   <a href="#features">Features</a> ·
@@ -47,7 +55,8 @@ These screenshots show the theme's appearance; application icons and panel layou
 - GTK2, GTK3 and GTK4 styling, plus optional libadwaita user CSS overrides
 - Cinnamon and Xfce styling, Openbox themes, and Metacity/Muffin/Marco window decorations
 - Matching GNOME Shell themes for **46.x and 51.x**
-- Coordinated Qt palettes, application extras and wallpaper
+- Coordinated Qt5ct/Qt6ct palettes
+- Matching Kitty, Alacritty, Neovim/Airline, bat, Rofi and Zsh themes, plus wallpaper
 - Optional [accent-colored Adwaita folder icons](INSTALLING.md#folder-icon-theme)
 
 Accents use light text/focus colors and darker filled buttons with white labels.
@@ -80,7 +89,7 @@ or additional menu package is required.
 
 Choose **Accent color** if you want a different preset, then **Install/update
 for this user**. Guided setup offers GTK4/libadwaita styling, desktop selection,
-matching supported GNOME Shell styling and optional app themes. Review the
+matching supported GNOME Shell styling, optional app themes and folder icons. Review the
 changes, then choose **Apply**, **Cancel** or **Preview**.
 
 Selecting GTK4/libadwaita setup replaces existing CSS/assets overrides **without
