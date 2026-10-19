@@ -597,6 +597,9 @@ for schema in "${DARK_SETTINGS[@]}"; do
     fi
 done
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
+if ! $DRY_RUN && ! $REMOVE; then
+    printf 'File locations and app setup: %s/INSTALLING.md (Every extra and destination).\n' "$TARGET"
+fi
 if (("${#EXTRAS[@]}")) && ! $DRY_RUN; then
     if $REMOVE; then printf 'Selected app theme files removed. Existing app settings were not rewritten.\n'
     else printf 'App theme files copied. Select them in each app; see INSTALLING.md. Existing app settings were not rewritten.\n'; fi
