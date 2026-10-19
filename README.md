@@ -166,6 +166,7 @@ for tested versions and coverage limits.
 
 - [Installation, updates, removal and manual configuration](INSTALLING.md)
 - [Accent choices and contrast](ACCENT_COLORS.md)
+- [Monthly upstream watch and compatibility maintenance](https://github.com/librerob/adwaita-amoled/blob/main/maintenance/README.md)
 - [Development, building and testing](https://github.com/librerob/adwaita-amoled/blob/main/CONTRIBUTING.md)
 - Detailed color reviews: [readability](COLOR_READABILITY.md) and
   [compound states and file coverage](COLOR_COMPLETENESS.md)
