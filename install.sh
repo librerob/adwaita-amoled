@@ -496,6 +496,18 @@ if $ACTIVATE && ! $REMOVE; then
     fi
 fi
 
+if $LIBADWAITA && ! $REMOVE && ! $GUIDED; then
+    if $DRY_RUN; then
+        printf 'WARNING: Applying this command without --dry-run would replace these GTK4 override paths:\n' >&2
+    else
+        printf 'WARNING: This command will replace these GTK4 override paths:\n' >&2
+    fi
+    for name in gtk.css gtk-dark.css libadwaita-tweaks.css assets; do
+        printf '  %s/gtk-4.0/%s\n' "$CONFIG" "$name" >&2
+    done
+    printf 'Existing files and the entire assets directory are removed, including custom content. No backups are made.\nOmit -l/--libadwaita to keep existing GTK4 overrides.\n' >&2
+fi
+
 if $GUIDED; then guided_review; fi
 
 # Lock all selected theme parents before making any replacements. Removal does
