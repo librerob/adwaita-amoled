@@ -34,6 +34,22 @@ class UpstreamWatchTests(unittest.TestCase):
         shell = next(x for x in self.catalog['components'] if x['id'] == 'shell46')
         self.assertEqual(watch.inspect_component(shell, [tag('46.10', shell['baseline_commit']), tag('51.1')])['latest'], '46.10')
 
+    def test_icon_release_filter_and_pinned_source_changes(self):
+        icons = next(x for x in self.catalog['components'] if x['id'] == 'adwaita-icons')
+        tags = [tag('51.0', icons['baseline_commit']), tag('52.alpha'), tag('51.90'), tag('52.0')]
+        result = watch.inspect_component(icons, tags)
+        self.assertEqual(result['latest'], '52.0')
+        self.assertEqual(result['status'], 'review-needed')
+        self.assertFalse(result['baseline_commit_changed'])
+        result = watch.inspect_component(icons, [tag('51.0', 'b' * 40)])
+        self.assertTrue(result['baseline_commit_changed'])
+        self.assertIn(icons['baseline_commit'], result['compare_url'])
+
+    def test_nemo_ignores_development_series_and_branch_build_tags(self):
+        nemo = next(x for x in self.catalog['components'] if x['id'] == 'nemo')
+        tags = [tag(x) for x in ('6.6.4', '6.7.1', 'master.mint27', '6.8.0')]
+        self.assertEqual(watch.inspect_component(nemo, tags)['latest'], '6.8.0')
+
     def test_complete_pagination_does_not_assume_api_order(self):
         calls = []
         def fetch(repo, page):
