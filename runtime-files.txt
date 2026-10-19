@@ -114,6 +114,7 @@ gtk-4.0/assets/devel-symbolic.svg
 gtk-4.0/gtk-dark.css
 gtk-4.0/gtk.css
 gtk-4.0/gtk.gresource
+icon-accent
 index.theme
 install.sh
 metacity-1/metacity-theme-3.xml

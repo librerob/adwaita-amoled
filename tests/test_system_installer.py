@@ -12,6 +12,26 @@ class SystemInstallerTests(unittest.TestCase):
     setUp = base.InstallerTests.setUp
     run_cli = base.InstallerTests.run_cli
 
+    def test_shared_recolor_retains_independent_icons_without_user_files(self):
+        self.assertEqual(os.geteuid(), 0)
+        dest = self.base / "shared/themes"
+        icon_dest = self.base / "shared/icons"
+        common = ("--system", "--dest", str(dest), "--icon-dest", str(icon_dest))
+        self.run_cli(*common, "--icons", "--accent", "pink", "--icon-accent", "gold")
+        self.run_cli(*common, "--recolor", "--accent", "purple")
+        theme = dest / base.THEME
+        icons = icon_dest / base.THEME
+        self.assertEqual((theme / "accent-name").read_text(), "purple\n")
+        self.assertEqual((theme / "icon-accent").read_text(), "gold\n")
+        self.assertEqual((icons / "accent-name").read_text(), "gold\n")
+        self.run_cli(*common, "--recolor", "--icon-accent", "match")
+        self.assertEqual((icons / "accent-name").read_text(), "purple\n")
+        for root in (theme, icons):
+            for path in root.rglob("*"):
+                self.assertEqual(path.stat().st_uid, 0)
+                self.assertFalse(path.stat().st_mode & 0o022)
+        self.assertFalse(self.config.exists())
+
     def test_optional_shared_icons_are_root_owned_and_use_staged_paths(self):
         self.assertEqual(os.geteuid(), 0)
         dest = self.base / "shared/themes"

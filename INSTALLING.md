@@ -30,6 +30,11 @@ In a terminal this opens guided setup:
    and selected-app Flatpak configuration.
 4. **Accent color** chooses blue (default), yellow, gold, purple, green, red,
    orange or pink, then returns to the main menu. Continue with Install/update.
+5. **Folder icon color** independently chooses a folder preset; **Match theme**
+   is the default. Installation also offers these color choices directly.
+6. **Change installed colors** updates the installed theme and existing copied
+   app/icon themes without selecting all components again. It does not install
+   missing optional components or replace custom GTK4 CSS.
 
 Numbered choices need only Enter or a number. Setup shows destinations and
 existing GTK4 override paths before its final **Apply / Cancel / Preview**
@@ -110,9 +115,27 @@ and on the staged theme. The full collection of overlays is not installed.
 Rerunning from a newer download retains the valid installed `accent-name`
 marker unless `--accent` selects another color. Older installations without a
 marker use blue. To return to blue, run `./install.sh --accent blue`.
-Rerun with the same optional extras to refresh their copied app snippets;
+Use **Change installed colors** to refresh existing copied app snippets and
+installed folder icons together, or run:
+
+```bash
+./install.sh --recolor --accent pink
+./install.sh --recolor --accent purple --icon-accent green
+./install.sh --recolor --icon-accent match
+```
+
+For ordinary installation/update, select the optional extras again to update them;
 GTK4/Flatpak links already referencing this theme follow the changed theme files.
-Restart apps and reload Shell/Cinnamon as appropriate. Separate user and system
+Restart affected apps; GNOME Shell may need a session restart. Cinnamon's selected
+Adwaita-AMOLED theme reloads automatically through its public D-Bus API, including
+when its theme name stays unchanged. If the session bus or `gdbus` is unavailable,
+setup prints a manual reload/reselection hint. From the Cinnamon session, run:
+
+```bash
+gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon --method org.Cinnamon.ReloadTheme
+```
+
+Separate user and system
 installations each retain their own color. Shared-system guided setup also has
 an Accent color choice.
 
@@ -347,9 +370,16 @@ icon theme: our folder artwork uses the selected accent, while application,
 symbolic and other icons fall back to **Adwaita**, then **hicolor**.
 Your current application icons may therefore change too.
 
+Folders default to **Match theme accent**. Choose another folder color in the
+main menu or when selecting the icon component. This is independent of GTK,
+Qt and other app accents. The installed `icon-accent` marker remembers `match`
+or the explicit color; `accent-name` remembers the theme accent. No installer
+database is needed. Older installations default to matching.
+
 ```bash
 ./install.sh --icons                       # Copy without selecting
 ./install.sh --activate-icons --accent green  # Copy and select explicitly
+./install.sh --icons --accent pink --icon-accent gold  # Pink UI, gold folders
 ./install.sh --icons --remove              # Remove the optional icon component and GTK theme
 ```
 
@@ -373,8 +403,10 @@ If qt5ct/qt6ct manages your Qt appearance, select **Adwaita-AMOLED** in its
 
 GNOME/Budgie, Cinnamon, MATE and Xfce support explicit automatic selection.
 On other desktops, use Appearance settings. Copying icons alone never changes
-the selected icon theme. Rerun with **--icons** (or select the component again
-in the menus) to update its files and match a changed accent. Existing icon
+the selected icon theme. **Change installed colors** or `--recolor` refreshes
+installed icons, retaining an independent color or following the theme when
+set to **Match theme**. Normal updates use **--icons** or select the component
+again. Restart file managers if they cache old icons. Existing icon
 checkouts, symlink destinations and unlisted local files are preserved and
 reported as conflicts. A separate legacy `~/.icons/Adwaita-AMOLED` is reported
 if it could shadow the new installation.

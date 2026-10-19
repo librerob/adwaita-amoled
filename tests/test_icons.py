@@ -153,9 +153,9 @@ esac''')
         self.run_cli("--icons")
         root = self.icon_root()
         previous = (root / "scalable/places/folder.svg").read_bytes()
-        self.env["ICON_SOURCE"] = str(self.theme / PREFIX)
+        self.env["ICON_PARENT"] = str(root.parent)
         self.fake_program("cp", '''for value in "$@"; do
-[[ $value != "$ICON_SOURCE/." ]] || { echo 'simulated icon copy failure' >&2; exit 1; }
+[[ $value != "$ICON_PARENT/".Adwaita-AMOLED-install.*/new/*.svg ]] || { echo 'simulated icon copy failure' >&2; exit 1; }
 done
 exec /usr/bin/cp "$@"''')
         self.run_cli("--icons", "--accent", "red", success=False)

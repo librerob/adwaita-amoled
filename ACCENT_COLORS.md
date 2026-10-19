@@ -86,8 +86,10 @@ semantic mode/status colors and user-defined ANSI slots stay separate.
 
 The Bash installer combines the base runtime with one verified overlay. It
 installs no palette sources, compiler or other presets. Rerunning retains the
-installed color unless another is chosen. Rerun with the same optional extras
-to refresh copied app snippets; existing GTK4/Flatpak links follow the installed
+installed color unless another is chosen. **Change installed colors** (or
+`--recolor`) refreshes existing copied app snippets and installed folder icons.
+Folder icons default to matching but can use an independently selected preset.
+Existing GTK4/Flatpak links follow the installed
 theme. App themes still need selection in their own applications.
 
 Shell 46 and 51 use the selected theme preset for all eight colors, including

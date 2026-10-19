@@ -87,10 +87,13 @@ extract it, and open a terminal inside the **Adwaita-AMOLED** folder:
 Run user setup **without sudo**. The installer uses Bash; no Python, compiler
 or additional menu package is required.
 
-Choose **Accent color** if you want a different preset, then **Install/update
-for this user**. Guided setup offers GTK4/libadwaita styling, desktop selection,
+Choose **Install/update for this user**. Setup asks for a theme accent and offers GTK4/libadwaita styling, desktop selection,
 matching supported GNOME Shell styling, optional app themes and folder icons. Review the
 changes, then choose **Apply**, **Cancel** or **Preview**.
+
+Folder icons default to **Match theme**, or you can choose their color separately.
+Later, **Change installed colors** refreshes the theme and existing app/icon
+themes together. Cinnamon reloads its selected theme automatically.
 
 Selecting GTK4/libadwaita setup replaces existing CSS/assets overrides **without
 backups**; guided setup defaults to keeping existing overrides. App extras
