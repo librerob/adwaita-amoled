@@ -8,6 +8,11 @@ need your distribution's Murrine engine (`gtk2-engines-murrine` on Debian/Ubuntu
 
 ## Start here
 
+Before applying, setup lists the selected file destinations. At the review,
+enter **d** for optional explanations of how to use the selected extras; this
+does not apply any changes. After installation, a short message points to the
+installed copy of this guide, so the paths and app setup examples remain available.
+
 Extract the release archive or clone the repository, then run:
 
 ```bash

@@ -249,6 +249,30 @@ guided_gtk_mode() {
     case $MENU_NUMBER in 1) GTK_MODE=legacy ;; 2) GTK_MODE=modern ;; 0) LIBADWAITA=false ;; esac
 }
 
+guided_extra_help() {
+    local extra
+    if $REMOVE; then
+        printf '\nRemoval uses the destinations listed above. Personal app settings are not rewritten; remove any includes of deleted snippets yourself.\n'
+        printf 'Removal and configuration details: %s/INSTALLING.md\n\n' "$ROOT"
+        return
+    fi
+    printf '\nAbout the selected extras (destinations are listed above):\n'
+    for extra in "${EXTRAS[@]}"; do
+        case $extra in
+            qt) printf 'Qt: open qt5ct/qt6ct and select Adwaita-AMOLED under Appearance. The QSS scrollbar style is optional.\n' ;;
+            kitty) printf 'Kitty: include the installed themes/adwaita-amoled.conf file from your kitty.conf.\n' ;;
+            alacritty) printf 'Alacritty: add the installed theme file to [general].import in your active TOML config.\n' ;;
+            bat) printf 'bat: select with --theme=adwaita-amoled. The cache is rebuilt if bat is installed.\n' ;;
+            nvim) printf 'Neovim: select colorscheme adwaita-amoled in your init.lua/init.vim. The optional Airline theme is adwaita_amoled.\n' ;;
+            rofi) printf 'Rofi: use -theme with the installed file path, or import it from config.rasi.\n' ;;
+            zsh) printf 'Zsh: source the installed snippet from your existing .zshrc; review it first because it also changes the prompt.\n' ;;
+            wallpaper) printf 'Wallpaper: choose the copied blackmount.png in your desktop Background settings. It is not selected automatically.\n' ;;
+        esac
+    done
+    printf 'Missing folders are created. Extras do not install applications or rewrite personal app settings.\n'
+    printf 'Full paths and configuration examples: %s/INSTALLING.md (Every extra and destination).\n\n' "$ROOT"
+}
+
 guided_review() {
     local path extra directory executable
     printf '\nReview selected changes\n'
@@ -300,12 +324,13 @@ guided_review() {
     if ((${#EXTRAS[@]})); then printf 'Personal app settings stay unchanged; select/include installed snippets in each app.\n'; fi
     printf '\n'
     while true; do
-        menu_read 'Apply these changes? [y/N/p=preview]'
+        menu_read 'Apply these changes? [y/N/p=preview/d=details]'
         case ${MENU_REPLY,,} in
             y|yes) return ;;
             p|preview) DRY_RUN=true; return ;;
+            d|details) guided_extra_help ;;
             ''|n|no|0) printf 'Cancelled; no changes made.\n'; exit 0 ;;
-            *) printf 'Enter y to apply, n to cancel or p to preview without changes.\n' ;;
+            *) printf 'Enter y to apply, n to cancel, p to preview or d for setup details.\n' ;;
         esac
     done
 }

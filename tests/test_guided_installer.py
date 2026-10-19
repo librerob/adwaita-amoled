@@ -240,6 +240,32 @@ class GuidedInstallerTests(unittest.TestCase):
             self.assertIn("terminal" if len(args) == 1 else "by itself", result.stderr)
             self.assertFalse(self.theme.exists())
 
+    def test_optional_details_explain_selected_extras_without_applying(self):
+        t = self.terminal()
+        self.install_choices(t, extras="y")
+        for choice in ["9", "0"]:
+            t.answer("Choose [0]:", choice)
+        t.answer("Apply these changes?", "d")
+        t.expect("About the selected extras")
+        t.expect("Apply these changes?")
+        self.assertFalse(self.theme.exists())
+        self.assertFalse(self.config.exists())
+        for label in ["Qt:", "Kitty:", "Alacritty:", "bat:", "Neovim:", "Rofi:", "Zsh:", "Wallpaper:"]:
+            self.assertIn(label, t.output)
+        for path in [self.config / "qt5ct", self.config / "qt6ct",
+                     self.data / "backgrounds/Adwaita-AMOLED/blackmount.png"]:
+            self.assertIn(str(path), t.output)
+        t.send("details")
+        t.expect("Apply these changes?")
+        self.assertFalse(self.theme.exists())
+        t.send("y")
+        output = t.finish()
+        guide = self.theme / "INSTALLING.md"
+        self.assertIn(f"File locations and app setup: {guide}", output)
+        self.assertTrue(guide.is_file())
+        self.assertTrue((self.data / "backgrounds/Adwaita-AMOLED/blackmount.png").is_file())
+        self.assertTrue((self.config / "qt5ct/colors/Adwaita-AMOLED.conf").is_file())
+
     def test_selected_extras_create_folders_and_keep_personal_config(self):
         personal = self.config / "kitty/kitty.conf"
         personal.parent.mkdir(parents=True)
