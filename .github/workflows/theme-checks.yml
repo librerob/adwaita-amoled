@@ -20,7 +20,7 @@ jobs:
             libglib2.0-dev sassc rsync shellcheck zsh kitty neovim vim-airline \
             python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
             libmetacity3 xvfb xauth bat rofi flatpak xfconf libxfconf-0-3 dbus-x11 gsettings-desktop-schemas librsvg2-bin python3-pyqt5 python3-pyqt6 \
-            libgtk2.0-0t64 gtk2-engines-murrine xapps-common libqt5svg5 libqt6svg6
+            libgtk2.0-0t64 gtk2-engines-murrine xapps-common librsvg2-common libqt5svg5 libqt6svg6
       - name: Check shell syntax
         run: |
           shellcheck install.sh setup-menu.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh tests/gnome-shell/session46.sh
@@ -56,7 +56,20 @@ jobs:
       - name: Check folder icons and inherited icons in GTK and Qt
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/icons
-        run: xvfb-run -a python3 tests/test_icon_lookup.py
+        run: |
+          log="$RUNNER_TEMP/icon-lookup.log"
+          status=0
+          xvfb-run -a python3 tests/test_icon_lookup.py >"$log" 2>&1 || status=$?
+          cat "$log"
+          if (( status != 0 )); then
+            python3 - "$log" <<'PY'
+          import pathlib, sys
+          text = pathlib.Path(sys.argv[1]).read_text()[-12000:]
+          text = text.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::error title=Native icon lookup failure::' + text)
+          PY
+          fi
+          exit "$status"
       - name: Check native parsing and rendering
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output
@@ -97,7 +110,7 @@ jobs:
             git ca-certificates python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
             gir1.2-adw-1 libmetacity3 xvfb xauth libgtk2.0-0t64 gtk2-engines-murrine \
             libglib2.0-bin gsettings-desktop-schemas xapps-common \
-            python3-pyqt5 python3-pyqt6 libqt5svg5 libqt6svg6 qt6-svg-plugins
+            python3-pyqt5 python3-pyqt6 librsvg2-common libqt5svg5 libqt6svg6 qt6-svg-plugins
       - uses: actions/checkout@v7
       - name: Check guided administrator preview in isolated system paths
         run: python3 tests/test_guided_installer.py SystemMenuTests
