@@ -414,3 +414,10 @@ a real Cinnamon session, updates the selected theme without changing its name,
 checks seven resolved properties per state and saves actual menu/calendar
 screenshots. Its test-only inspection uses Cinnamon Eval; the installer uses
 only the public ReloadTheme API. Verified locally on Cinnamon 6.0.4 and 6.6.9.
+
+`test_accents.py` checks every Cinnamon CSS/SVG against the palette templates
+for all eight presets, rejects leftover blue accent values in other presets,
+and verifies each generated chooser preview. With Cinnamon Settings installed,
+`xvfb-run -a dbus-run-session -- python3 tests/cinnamon_theme_previews.py /tmp/chooser`
+tests its actual thumbnail lookup and native PictureChooserButton image loading
+for all three components and eight accents, saving chooser screenshots.

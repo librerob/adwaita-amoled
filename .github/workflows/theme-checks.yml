@@ -207,6 +207,8 @@ jobs:
       - uses: actions/checkout@v7
       - name: Check Cinnamon preference activation
         run: python3 tests/test_install_settings.py DesktopSettingTests.test_cinnamon_activation
+      - name: Check real Cinnamon Settings preview lookup for all accents
+        run: python3 tests/report.py xvfb-run -a dbus-run-session -- python3 tests/cinnamon_theme_previews.py /tmp/cinnamon-color-evidence/previews
       - name: Check native Cinnamon colors and task overlays
         env:
           LIBGL_ALWAYS_SOFTWARE: '1'

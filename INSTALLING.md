@@ -135,6 +135,12 @@ setup prints a manual reload/reselection hint. From the Cinnamon session, run:
 gdbus call --session --dest org.Cinnamon --object-path /org/Cinnamon --method org.Cinnamon.ReloadTheme
 ```
 
+Cinnamon/Mint Themes shows included previews for **Window borders**, **Controls**
+and **Desktop**. These are compact palette-based illustrations, not screenshots.
+Desktop and Controls previews follow the installed accent; window decorations
+use the same neutral preview across accents. Reopen Themes after an update if
+an already-open chooser still displays its earlier thumbnail.
+
 Separate user and system
 installations each retain their own color. Shared-system guided setup also has
 an Accent color choice.

@@ -66,7 +66,7 @@ def build(root):
             shutil.copytree(root / folder, work / folder, dirs_exist_ok=True)
         for name in ["build.sh", "gnome-shell/build.sh"]:
             shutil.copy2(root / name, work / name)
-        for name in ["shell_palette.py", "generate_palette.py", "generate_icons.py"]:
+        for name in ["shell_palette.py", "generate_palette.py", "generate_icons.py", "theme_previews.py"]:
             dest = work / "tools" / name
             dest.parent.mkdir(exist_ok=True)
             shutil.copy2(root / "tools" / name, dest)

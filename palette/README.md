@@ -39,6 +39,14 @@ CI checks generation and native/source/bundle tests. Changing
 a color still requires contrast and native rendering review; generation does
 not establish that a new palette is readable.
 
+`tools/theme_previews.py` generates three 247×100 PNG illustrations for Cinnamon
+Settings' `thumbnail.png` lookup in `cinnamon`, `gtk-3.0` and `metacity-1`.
+The palette generator writes the base previews; the accent builder includes
+changed previews in each sparse overlay. The neutral window-decoration preview
+is shared. Rendering uses only Python's standard library, with no font or image
+package dependencies; installers copy the prebuilt PNGs. These thumbnails are
+illustrations, separate from the native screenshot/rendering evidence.
+
 ## Token syntax and scope
 
 - `{{accent_text}}` emits `#8ab4f8`.
