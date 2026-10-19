@@ -62,6 +62,7 @@ init=signature(gtk,'gtk_init_check',C.c_int,[C.c_void_p,C.c_void_p])
 assert init(None,None)
 new=signature(gtk,'gtk_icon_theme_new',C.c_void_p,[])
 paths=signature(gtk,'gtk_icon_theme_set_search_path',None,[C.c_void_p,C.POINTER(C.c_char_p),C.c_int])
+get_paths=signature(gtk,'gtk_icon_theme_get_search_path',None,[C.c_void_p,C.POINTER(C.POINTER(C.c_char_p)),C.POINTER(C.c_int)])
 custom=signature(gtk,'gtk_icon_theme_set_custom_theme',None,[C.c_void_p,C.c_char_p])
 lookup=signature(gtk,'gtk_icon_theme_lookup_icon',C.c_void_p,[C.c_void_p,C.c_char_p,C.c_int,C.c_int])
 filename=signature(gtk,'gtk_icon_info_get_filename',C.c_char_p,[C.c_void_p])
@@ -70,6 +71,9 @@ free=signature(gtk,'gtk_icon_info_free',None,[C.c_void_p])
 unref=signature(obj,'g_object_unref',None,[C.c_void_p])
 width=signature(pix,'gdk_pixbuf_get_width',C.c_int,[C.c_void_p])
 theme=new();root=Path(os.environ['ICON_ROOT'])
+defaults=C.POINTER(C.c_char_p)();count=C.c_int()
+get_paths(theme,C.byref(defaults),C.byref(count))
+assert str(root.parent) in [defaults[i].decode() for i in range(count.value)]
 entries=[str(root.parent),'/usr/local/share/icons','/usr/share/icons','/usr/share/pixmaps']
 array=(C.c_char_p*len(entries))(*(x.encode() for x in entries))
 paths(theme,array,len(entries));custom(theme,b'Adwaita-AMOLED')
@@ -97,6 +101,7 @@ Gtk.init([]) if version == '3.0' else Gtk.init()
 root=Path(os.environ['ICON_ROOT'])
 paths=[str(root.parent),'/usr/local/share/icons','/usr/share/icons','/usr/share/pixmaps']
 theme=Gtk.IconTheme.new()
+assert str(root.parent) in theme.get_search_path(),theme.get_search_path()
 theme.set_search_path(paths)
 if version=='3.0': theme.set_custom_theme('Adwaita-AMOLED')
 else: theme.set_theme_name('Adwaita-AMOLED')
@@ -131,6 +136,11 @@ from pathlib import Path
 Gui=importlib.import_module('PyQt'+sys.argv[1]+'.QtGui')
 app=Gui.QGuiApplication([])
 root=Path(os.environ['ICON_ROOT'])
+# The offscreen test platform has no desktop theme plugin or search paths.
+# Supply the standard paths explicitly, while checking the XDG data location.
+Core=importlib.import_module('PyQt'+sys.argv[1]+'.QtCore')
+location=Core.QStandardPaths.StandardLocation.GenericDataLocation if sys.argv[1]=='6' else Core.QStandardPaths.GenericDataLocation
+assert str(root.parent.parent) in Core.QStandardPaths.standardLocations(location)
 Gui.QIcon.setThemeSearchPaths([str(root.parent),'/usr/local/share/icons','/usr/share/icons'])
 Gui.QIcon.setThemeName('Adwaita-AMOLED')
 for name in json.loads(os.environ['ICON_NAMES']):

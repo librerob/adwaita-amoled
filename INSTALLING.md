@@ -366,6 +366,8 @@ are `libqt5svg5` for Qt5, and `qt6-svg-plugins` for recent Qt6 releases
 (older releases bundle the plugin in `libqt6svg6`). Other distributions use
 their corresponding Qt SVG packages. This is separate from the qt5ct/qt6ct
 color palette plugin.
+If qt5ct/qt6ct manages your Qt appearance, select **Adwaita-AMOLED** in its
+**Icon Theme** tab too. Desktop activation does not rewrite qt5ct/qt6ct settings.
 
 GNOME/Budgie, Cinnamon, MATE and Xfce support explicit automatic selection.
 On other desktops, use Appearance settings. Copying icons alone never changes
@@ -385,6 +387,8 @@ The system icon parent is the sibling `icons` directory of the GTK theme
 parent: `/usr/local/share/icons` by default, or `/usr/share/icons` when using
 `--system --dest /usr/share/themes`. `--icon-dest /absolute/parent` overrides
 the icon parent. Shared setup does not select a personal icon theme.
+Custom destinations are intended for staging or an existing icon search path;
+copying there does not register an arbitrary directory with the desktop.
 
 Before removal, choose a different icon theme in Appearance settings; removal
 does not restore an earlier selection. No Flatpak permissions are added for
