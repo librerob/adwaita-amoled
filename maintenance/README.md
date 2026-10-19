@@ -86,3 +86,36 @@ GitHub can disable scheduled workflows on inactive public repositories after
 60 days. If reports stop appearing, check the Actions page for a re-enable
 banner. The watch does not detect unreleased branch changes, distribution-only
 patches, arbitrary application CSS or hardware-specific rendering problems.
+
+## Other repository maintenance
+
+Dependabot checks GitHub Actions dependencies monthly and groups updates into
+one pull request. Review the changes and passing checks before merging; automatic
+merging is not configured. This does not update theme imports or palettes.
+
+The [bug-report form](https://github.com/librerob/adwaita-amoled/issues/new?template=bug-report.yml)
+asks for the desktop, theme version, accent, installation method and reproduction
+steps, with space for screenshots. Blank issues remain available.
+
+Secret scanning and push protection are managed in repository **Settings →
+Advanced Security / Secret protection**. Keep both enabled. They detect supported
+credential patterns; they do not establish that code or an installer is safe.
+
+[Release verification](https://github.com/librerob/adwaita-amoled/actions/workflows/release-verification.yml)
+runs when a stable release is published, and when its verification code changes.
+To check an existing release, choose **Run workflow**, select `main` and enter
+its tag, or leave the tag blank for the latest stable release.
+
+The verifier downloads the uploaded `Adwaita-AMOLED-vX.Y.Z.tar.gz`, rebuilds the
+runtime archive from that tag's data using the current trusted packager, and
+requires a byte-for-byte match. It also checks the archive's file checksums and
+the included accent/icon checksum manifests. It never runs build scripts or the
+installer from the release tag. A packaging-format change may require updating
+the verifier to retain compatibility with older archives.
+
+Open the run's **Summary** for the result, commit, tree and archive SHA-256.
+The **release-verification-report** artifact retains Markdown and JSON reports
+for 90 days. Missing, corrupted or mismatched assets fail verification. This
+checks release integrity, not application rendering or desktop compatibility.
+It does not publish, repair or modify a release. If assets are uploaded after
+publication or replaced later, run verification again manually.

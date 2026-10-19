@@ -173,6 +173,6 @@ for tested versions and coverage limits.
 
 ## Feedback
 
-[Report a problem or contribute](https://github.com/librerob/adwaita-amoled/issues).
+[Report a problem](https://github.com/librerob/adwaita-amoled/issues/new?template=bug-report.yml) or [contribute](CONTRIBUTING.md).
 Include your distribution, desktop/version, application, selected accent and
 theme version so the problem can be reproduced.

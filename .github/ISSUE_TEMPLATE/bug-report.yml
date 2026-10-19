@@ -1,0 +1,76 @@
+name: Report a theme or installer problem
+description: Help reproduce a visual, application, icon or installation problem.
+title: '[Bug]: '
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part is affected?
+      options:
+        - GTK application styling
+        - GNOME Shell
+        - Cinnamon desktop / panel / menu
+        - Window decorations or another desktop
+        - Folder icons
+        - Qt or application extras
+        - Installer / update / removal
+        - Other / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Versions and environment
+      description: Unknown versions are fine—include what you know.
+      value: |
+        Distribution and version:
+        Desktop and version:
+        Theme version (release or commit):
+        Theme accent / folder color:
+        Application and version (or install.sh):
+        X11 or Wayland, if known:
+    validations:
+      required: true
+  - type: dropdown
+    id: installation
+    attributes:
+      label: How was the theme installed?
+      options:
+        - Guided installer from a release download
+        - Installer with command-line options
+        - Installer from a Git checkout
+        - Manual installation
+        - Other / unsure
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the installer command/options if relevant.
+      placeholder: '1. Open the application…'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+      description: Paste the exact error if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag images here for visual problems. Include the affected widget and surrounding window.
+  - type: textarea
+    id: details
+    attributes:
+      label: Relevant logs or customizations (optional)
+      description: Mention extensions, other GTK overrides or Flatpak packaging if relevant. Include only relevant logs; do not paste secrets or a full environment dump.
