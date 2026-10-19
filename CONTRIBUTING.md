@@ -23,6 +23,8 @@ sources retain their own definitions; this is not a global recoloring command.
 Folder icon derivatives use the same accent roles; see
 [pinned artwork and licensing](icons/UPSTREAM.md). Regenerate icons before
 building accent overlays. Original upstream files and their hashes stay unchanged.
+After rebuilding the presets, refresh the README graphic with
+`python3 tools/showcase_icons.py`; `--check` verifies it matches the committed icons.
 
 Developers editing GTK source need GLib's resource compiler. Ordinary
 installation does not require a build:

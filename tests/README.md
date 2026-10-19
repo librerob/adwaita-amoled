@@ -16,6 +16,7 @@ From the repository root:
 shellcheck install.sh setup-menu.sh build.sh
 python3 tools/generate_palette.py --check
 python3 tools/build_accents.py --check
+python3 tools/showcase_icons.py --check
 python3 tests/test_accents.py
 python3 tests/test_palette.py
 python3 tests/test_runtime_package.py
@@ -366,3 +367,28 @@ checks interactions and actual derived SVG focus-ring paint. Pinned originals
 remain checked by the source suites. These are headless software-rendered
 sessions. A repository owner also reports a successful real Brave-on-Wayland
 test; that manual result is separate from the reproducible automation.
+
+### Real file-manager folder icons
+
+`filemanager_icons.py` opens a real application window with the installed theme
+and checks the chosen folder color, selection, a background context menu and
+navigation into Documents and back. It saves PNG evidence and a JSON result.
+Caja intentionally tints selected icons; the test checks its exact preset face
+color before selection and after returning, and retains a check on untinted
+sidebar icons during selection.
+
+Run as an ordinary user in a disposable environment with the selected file
+manager, `csd-xsettings`, `xdotool`, GTK3 introspection and the normal installer
+dependencies. PCManFM-Qt additionally needs `qt5ct`, PyQt5 and the Qt SVG plugin.
+The fixture configures Qt5ct's icon theme and palette explicitly. It requires
+both wrappers below and refuses to operate on an existing desktop session:
+
+```bash
+dbus-run-session -- xvfb-run -a -s '-screen 0 1280x900x24' \
+  python3 tests/filemanager_icons.py nemo purple /tmp/amoled-nemo-purple
+```
+
+Other supported application arguments are `thunar`, `caja`, `nautilus` and
+`pcmanfm-qt`. Repeat with each of the eight accent names for the full matrix.
+These are isolated X11 application checks, not complete desktop login sessions
+or a guarantee about other applications, extensions or Wayland compositors.
