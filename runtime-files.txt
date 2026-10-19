@@ -178,3 +178,6 @@ extra/icons/Adwaita-AMOLED/scalable/places/user-bookmarks.svg
 extra/icons/Adwaita-AMOLED/scalable/places/user-desktop.svg
 extra/icons/Adwaita-AMOLED/scalable/places/user-home.svg
 extra/icons/Adwaita-AMOLED/COPYING_GPL
+cinnamon/thumbnail.png
+gtk-3.0/thumbnail.png
+metacity-1/thumbnail.png

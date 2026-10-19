@@ -39,6 +39,26 @@ class AccentTests(unittest.TestCase):
     run_cli = base.InstallerTests.run_cli
     fake_program = base.InstallerTests.fake_program
 
+    def test_every_cinnamon_css_svg_and_preview_matches_each_preset(self):
+        from theme_previews import render
+        sources = [p for p in (base.ROOT / 'cinnamon').rglob('*')
+                   if p.suffix in ('.css', '.svg')]
+        blue = palette.preset_colors(base.ROOT, 'blue')
+        blue_accents = {v for k, v in blue.items() if k.startswith('accent_')}
+        for accent in ('blue', *COLORS):
+            colors = palette.preset_colors(base.ROOT, accent)
+            for source in sources:
+                name = source.relative_to(base.ROOT)
+                template = base.ROOT / 'palette/templates' / (str(name) + '.in')
+                expected = palette.render(template.read_text(), colors) if template.is_file() else source.read_bytes()
+                actual = self.expected(accent, str(name)).read_bytes()
+                self.assertEqual(actual, expected, (accent, name))
+                if accent != 'blue':
+                    for old in blue_accents - set(colors.values()):
+                        self.assertNotIn(old.encode(), actual.lower(), (accent, name, old))
+            for name, expected in render(colors).items():
+                self.assertEqual(self.expected(accent, str(name)).read_bytes(), expected, (accent, name))
+
     def expected(self, accent, name):
         override = base.ROOT / "accents" / accent / name
         return override if accent != "blue" and override.is_file() else base.ROOT / name

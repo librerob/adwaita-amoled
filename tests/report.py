@@ -22,6 +22,6 @@ if __name__ == '__main__':
                             stderr=subprocess.STDOUT, text=True)
     print(result.stdout, end='', flush=True)
     if result.returncode and os.environ.get('GITHUB_ACTIONS') == 'true':
-        message = result.stdout[-15000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+        message = result.stdout[-3000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
         print(f'::error title=Native command exited {result.returncode}::{message}', flush=True)
     sys.exit(result.returncode if result.returncode >= 0 else 128 - result.returncode)

@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 import re
 
+import theme_previews
+
 ROOT = Path(__file__).resolve().parents[1]
 TOKEN = re.compile(r"\{\{([a-z][a-z0-9_]*)(?:\.(hex|upper|hex_upper|r|g|b))?\}\}")
 OUTPUT_ROOTS = {
@@ -121,6 +123,10 @@ def outputs(root, colors=None):
         rendered[name] = render(template.read_text(), colors)
     if not rendered:
         raise ValueError("no palette templates found")
+    for name, data in theme_previews.render(colors).items():
+        if not (root / name).resolve().is_relative_to(root.resolve()):
+            raise ValueError(f"palette output escapes checkout: {name}")
+        rendered[name] = data
     return rendered
 
 
