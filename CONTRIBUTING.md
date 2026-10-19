@@ -79,3 +79,10 @@ or app extra. This creates local files and does not publish a GitHub release.
 
 The repository's regression checks and their prerequisites are documented in
 [tests/README.md](tests/README.md). GitHub Actions runs them on pull requests.
+
+## Upstream compatibility maintenance
+
+The [monthly upstream watch](maintenance/README.md) reports new release tags and
+links to component-specific review/test guidance. It does not modify the theme
+or establish compatibility automatically. Update review baselines only after
+recording the relevant checks and limits in `COMPATIBILITY.md`.

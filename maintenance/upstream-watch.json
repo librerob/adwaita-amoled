@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "components": [
+    {
+      "id": "gtk3",
+      "name": "GTK3 / Adwaita",
+      "repo": "GNOME/gtk",
+      "baseline_tag": "3.24.52",
+      "path": "gtk/theme/Adwaita",
+      "focus": "Review Adwaita widget selectors, states and resource changes.",
+      "tests": "tests/test_runtime.py, tests/test_borders.py and GTK3 accent/native consumers.",
+      "even_minor": true,
+      "min_major": 3,
+      "prefixes": [
+        "",
+        "v"
+      ],
+      "max_major": 3
+    },
+    {
+      "id": "gtk",
+      "name": "GTK / Default (current and future majors)",
+      "repo": "GNOME/gtk",
+      "baseline_tag": "4.24.1",
+      "path": "gtk/theme/Default",
+      "focus": "Review default style imports, widget nodes and public CSS changes. A new major needs a separate compatibility decision.",
+      "tests": "tests/test_runtime.py, tests/border_native.py and tests/accent_native.py gtk on the new toolkit.",
+      "even_minor": true,
+      "min_major": 4,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "libadwaita",
+      "name": "libadwaita",
+      "repo": "GNOME/libadwaita",
+      "baseline_tag": "1.10.0",
+      "path": "src/stylesheet",
+      "focus": "Review named colors, CSS variables, light/dark derivation and new widget classes.",
+      "tests": "Modern and legacy overrides; tests/test_runtime.py and all-accent native GTK checks.",
+      "even_minor": true,
+      "min_major": 1,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "gnome",
+      "name": "GNOME desktop release",
+      "repo": "GNOME/gnome-build-meta",
+      "baseline_tag": "51.0",
+      "path": "elements",
+      "focus": "Review release NEWS and component versions; this does not establish a complete desktop/login-session test.",
+      "tests": "Targeted Shell/toolkit checks and a real desktop smoke test when available.",
+      "even_minor": false,
+      "min_major": 40,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "shell",
+      "name": "GNOME Shell (current and future majors)",
+      "repo": "GNOME/gnome-shell",
+      "baseline_tag": "51.1",
+      "path": "data/theme",
+      "focus": "Review Shell Sass, assets and menu/control structure. New majors remain unsupported until tested; do not overwrite pinned sources automatically.",
+      "tests": "tests/gnome-shell native pointer/Wayland fixtures and all-accent Shell checks.",
+      "even_minor": false,
+      "min_major": 40,
+      "prefixes": [
+        "",
+        "v"
+      ],
+      "baseline_commit": "33da06854e229c256afd5872fedd83c28cbfa176"
+    },
+    {
+      "id": "shell46",
+      "name": "GNOME Shell 46 maintenance",
+      "repo": "GNOME/gnome-shell",
+      "baseline_tag": "46.10",
+      "path": "data/theme",
+      "focus": "Review maintenance changes to the supported Shell 46 baseline.",
+      "tests": "GNOME Shell 46 build/source and native pointer/accent tests.",
+      "even_minor": false,
+      "min_major": 46,
+      "prefixes": [
+        "",
+        "v"
+      ],
+      "max_major": 46,
+      "baseline_commit": "49fa85b2fead489d5c1ce50ecaf28a114c831f1e"
+    },
+    {
+      "id": "cinnamon",
+      "name": "Cinnamon",
+      "repo": "linuxmint/cinnamon",
+      "baseline_tag": "6.6.9",
+      "path": "data/theme",
+      "focus": "Review shell selectors, menu/calendar/taskbar states and Settings preview lookup.",
+      "tests": "tests/cinnamon_colors.py, tests/cinnamon_accent_update.py and tests/cinnamon_theme_previews.py.",
+      "even_minor": true,
+      "min_major": 6,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "muffin",
+      "name": "Muffin",
+      "repo": "linuxmint/muffin",
+      "baseline_tag": "6.6.3",
+      "path": "src",
+      "focus": "Review decoration/theme-loader changes and window states.",
+      "tests": "Native Metacity/Muffin frame rendering and window-state checks.",
+      "even_minor": true,
+      "min_major": 6,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "xfce-panel",
+      "name": "Xfce panel",
+      "repo": "xfce-mirror/xfce4-panel",
+      "baseline_tag": "xfce4-panel-4.20.8",
+      "path": "plugins",
+      "focus": "Review GTK panel selectors and active/hover states.",
+      "tests": "Real panel, menu and task-button tests; GTK parsing and accent checks.",
+      "even_minor": true,
+      "min_major": 4,
+      "prefixes": [
+        "xfce4-panel-"
+      ]
+    },
+    {
+      "id": "xfwm",
+      "name": "Xfwm4 integration",
+      "repo": "xfce-mirror/xfwm4",
+      "baseline_tag": "xfwm4-4.20.0",
+      "path": "src",
+      "focus": "Review integration boundaries. This repository does not supply Xfwm4 decorations.",
+      "tests": "Xfce GTK/panel integration smoke test; do not claim new decoration support.",
+      "even_minor": true,
+      "min_major": 4,
+      "prefixes": [
+        "xfwm4-"
+      ]
+    },
+    {
+      "id": "mate",
+      "name": "MATE desktop",
+      "repo": "mate-desktop/mate-desktop",
+      "baseline_tag": "v1.28.0",
+      "path": "schemas",
+      "focus": "Review appearance/schema changes. The baseline records the reviewed stable series, not a complete MATE login-session certification.",
+      "tests": "MATE appearance preference checks and GTK application smoke tests.",
+      "even_minor": true,
+      "min_major": 1,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "marco",
+      "name": "Marco",
+      "repo": "mate-desktop/marco",
+      "baseline_tag": "v1.28.2",
+      "path": "src",
+      "focus": "Review Metacity decoration parsing, drawing and window states.",
+      "tests": "Native frame and Marco window-state tests.",
+      "even_minor": true,
+      "min_major": 1,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    },
+    {
+      "id": "budgie",
+      "name": "Budgie",
+      "repo": "BuddiesOfBudgie/budgie-desktop",
+      "baseline_tag": "v10.10.3",
+      "path": "src",
+      "focus": "Review GTK integration and panel/Raven behavior. No dedicated Budgie shell stylesheet is supplied.",
+      "tests": "Appearance preference checks and panel/Raven smoke tests.",
+      "even_minor": false,
+      "min_major": 10,
+      "prefixes": [
+        "",
+        "v"
+      ]
+    }
+  ]
+}
