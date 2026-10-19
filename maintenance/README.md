@@ -21,11 +21,11 @@ updates. API/configuration failures fail the workflow and must not be read as
 The catalog tracks GTK3, current/future GTK majors, libadwaita, GNOME desktop
 release manifests, current/future GNOME Shell majors, the supported Shell 46
 maintenance series, Cinnamon, Muffin, Xfce panel, Xfwm4 integration, MATE desktop,
-Marco and Budgie. It uses the projects' public upstream GitHub repositories or
+Marco, Budgie, Adwaita Icon Theme and Nemo. It uses the projects' public upstream GitHub repositories or
 mirrors. Primary GitLab releases may reach a mirror later.
 
 Baseline versions come from [the compatibility review](../COMPATIBILITY.md)
-and the pinned Shell metadata. A baseline records the last review point; it
+and the pinned Shell/icon metadata. A baseline records the last review point; it
 is not a claim that every desktop session or future point release is tested.
 The MATE desktop baseline is the beginning of the reviewed 1.28 series;
 Marco has its separate, specifically tested version.
@@ -37,9 +37,23 @@ libadwaita, Cinnamon/Muffin, Xfce and MATE/Marco use explicitly configured even
 minor series; Budgie and modern GNOME Shell do not. Minor versions 90 and above
 are excluded as development versions. These are conservative **tag rules**,
 not a substitute for reading official release announcements. A project changing
-its release scheme may require updating the rules. Pinned Shell tag commit
+its release scheme may require updating the rules. Pinned Shell/icon tag commit
 changes are flagged, and missing baseline tags or incomplete pagination produce
 errors rather than a green “no-new-tag” result.
+
+## Adwaita folder artwork
+
+The icon watch starts at the imported Adwaita Icon Theme 51.0 commit recorded
+in `icons/UPSTREAM.md`. Recoloring preserves the upstream shapes, so changes to
+folder SVG geometry, folder names/aliases and license notices can matter.
+Upstream inheritance or symbolic-icon changes can also affect icons inherited
+at runtime. An update confined to unrelated application artwork may need no
+local change. The watch does not import icons or change icon inheritance.
+
+Nemo is watched separately because our GTK3 theme includes custom rules for its
+desktop rename entries and icon-container states. Other application extras stay
+covered by their parser/rendering tests; every application release does not
+need to become a theme-maintenance alert.
 
 ## Reviewing an update
 
