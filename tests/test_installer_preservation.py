@@ -11,6 +11,35 @@ class PreservationTests(unittest.TestCase):
     setUp = base.InstallerTests.setUp
     run_cli = base.InstallerTests.run_cli
     write = base.InstallerTests.write
+    fake_program = base.InstallerTests.fake_program
+
+    def test_explicit_gtk4_replacement_warns_before_mutations_and_in_preview(self):
+        custom = self.config / "gtk-4.0/gtk.css"
+        asset = self.config / "gtk-4.0/assets/custom.txt"
+        self.write(custom, "custom CSS")
+        self.write(asset, "custom asset")
+        self.fake_program(
+            "mkdir", 'printf "MUTATION: mkdir\\n" >&2; exec /usr/bin/mkdir "$@"'
+        )
+        args = ("-l", "--gtk4-mode", "legacy")
+        preview = self.run_cli(*args, "--dry-run")
+        self.assertIn("without --dry-run would replace", preview.stderr)
+        self.assertNotIn("MUTATION:", preview.stderr)
+        self.assertEqual(custom.read_text(), "custom CSS")
+        self.assertEqual(asset.read_text(), "custom asset")
+        self.assertFalse(self.theme.exists())
+        result = self.run_cli(*args)
+        for output in (preview.stderr, result.stderr):
+            for name in ("gtk.css", "gtk-dark.css", "libadwaita-tweaks.css", "assets"):
+                self.assertIn(str(self.config / "gtk-4.0" / name), output)
+            self.assertIn("entire assets directory", output)
+            self.assertIn("No backups are made", output)
+            self.assertIn("Omit -l/--libadwaita", output)
+        self.assertLess(result.stderr.index("WARNING:"), result.stderr.index("MUTATION:"))
+        self.assertTrue(custom.is_symlink())
+        self.assertFalse(asset.exists())
+        for options in [("--dry-run",), ("--remove", "-l")]:
+            self.assertNotIn("WARNING:", self.run_cli(*options).stderr)
 
     def test_legacy_checkout_blocks_all_replacements_and_removal(self):
         self.run_cli()
