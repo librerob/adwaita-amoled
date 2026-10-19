@@ -40,10 +40,10 @@ menu_yes() {
 
 guided_extras() {
     local i mark key
-    local -a keys=(qt kitty alacritty bat nvim rofi zsh wallpaper) chosen=()
+    local -a keys=(qt kitty alacritty bat nvim rofi zsh wallpaper icons) chosen=()
     local -a labels=('Qt palettes (select in qt5ct/qt6ct)' 'Kitty terminal theme'
         'Alacritty terminal theme' 'bat syntax theme' 'Neovim and Airline themes'
-        'Rofi launcher theme' 'Zsh prompt/plugin colors' 'Wallpaper')
+        'Rofi launcher theme' 'Zsh prompt/plugin colors' 'Wallpaper' 'Accent-colored Adwaita folders (requires Adwaita)')
     local -A selected=()
     while true; do
         printf '\nOptional extras: choose a number to toggle it.\n'
@@ -51,11 +51,11 @@ guided_extras() {
             mark=' '; [[ ! ${selected[${keys[$i]}]+yes} ]] || mark=x
             printf '  %s. [%s] %s\n' "$((i+1))" "$mark" "${labels[$i]}"
         done
-        printf '  9. Select all\n  0. Done\n'
-        menu_number 9 0
+        printf '  10. Select all\n  0. Done\n'
+        menu_number 10 0
         case $MENU_NUMBER in
             0) break ;;
-            9) for key in "${keys[@]}"; do selected[$key]=1; done ;;
+            10) for key in "${keys[@]}"; do selected[$key]=1; done ;;
             *) key=${keys[$((MENU_NUMBER-1))]}
                 if [[ ${selected[$key]+yes} ]]; then unset 'selected[$key]'; else selected[$key]=1; fi ;;
         esac
@@ -67,6 +67,17 @@ guided_extras() {
         MENU_ARGS+=(--extras "$joined")
     fi
     printf 'Extras copy theme snippets; select/include them in each app afterward.\n'
+    if [[ ${selected[icons]+yes} && ${MENU_ARGS[0]} != --remove ]]; then
+        printf 'Selecting the icon theme also uses Adwaita application icons, with our colored folders.\n'
+        local can_select_icons=false
+        case ${DESKTOP^^} in
+            *XFCE*) command -v xfconf-query >/dev/null && can_select_icons=true ;;
+            *CINNAMON*|*MATE*|*GNOME*|*BUDGIE*) command -v gsettings >/dev/null && can_select_icons=true ;;
+        esac
+        if $can_select_icons; then
+            if menu_yes 'Select the Adwaita-AMOLED icon theme for this desktop now?' n; then MENU_ARGS+=(--activate-icons); fi
+        else printf 'Select Adwaita-AMOLED manually under Icons in your desktop Appearance settings.\n'; fi
+    fi
 }
 
 guided_flatpaks() {
@@ -137,6 +148,7 @@ guided_system() {
                MENU_ARGS+=(--link /usr/share/themes)
            fi ;;
     esac
+    if menu_yes 'Also manage the accent-colored folder icon theme for all users?' n; then MENU_ARGS+=(--icons); fi
 }
 
 guided_advanced() {
@@ -269,6 +281,10 @@ guided_extra_help() {
             wallpaper) printf 'Wallpaper: choose the copied blackmount.png in your desktop Background settings. It is not selected automatically.\n' ;;
         esac
     done
+    if $ICONS; then
+        printf 'Folder icons: %s. Select Adwaita-AMOLED under Icons in Appearance settings. Other icons inherit Adwaita; application icons may change too.\n' "$ICON_TARGET"
+        printf 'Qt applications need their Qt SVG icon engine for the colored folder artwork; see the guide for packages.\n'
+    fi
     printf 'Missing folders are created. Extras do not install applications or rewrite personal app settings.\n'
     printf 'Full paths and configuration examples: %s/INSTALLING.md (Every extra and destination).\n\n' "$ROOT"
 }
@@ -285,6 +301,10 @@ guided_review() {
     fi
     [[ -z $LINK_PATH ]] || printf 'Shared link: %s -> %s\n' "$LINK_PATH" "$TARGET"
     [[ -z $GTK2_LINK ]] || printf 'GTK2 compatibility link: %s -> %s\n' "$GTK2_LINK" "$TARGET"
+    if $ICONS; then
+        printf 'Folder icon theme (%s): %s (inherits Adwaita; other application icons may change)\n' "$ACCENT" "$ICON_TARGET"
+        if $ACTIVATE_ICONS; then printf 'Select the icon theme for: %s\n' "$DESKTOP"; fi
+    fi
     if $LIBADWAITA || { $REMOVE && ! $SYSTEM && ((${#FLATPAKS[@]} == 0)); }; then
         if $REMOVE; then printf 'Unlink only this theme\047s GTK4 overrides in %s/gtk-4.0\n' "$CONFIG"
         else

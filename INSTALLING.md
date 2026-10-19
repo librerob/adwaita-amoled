@@ -332,10 +332,66 @@ copied theme using the app's own settings or the manual examples below.
 | `rofi` | `CONFIG/rofi/themes/adwaita-amoled.rasi`. Select it with `rofi -theme PATH` or import it from your existing config.rasi. |
 | `zsh` | `CONFIG/zsh/adwaita-amoled.zsh`. Source it from your existing `$ZDOTDIR/.zshrc` or `~/.zshrc`; the script does not replace your shell config. |
 | `wallpaper` | `DATA/backgrounds/Adwaita-AMOLED/blackmount.png`. Select it in background settings. |
+| `icons` | `DATA/icons/Adwaita-AMOLED`. Optional folder icon theme inheriting Adwaita. Select it under Icons in Appearance settings, or explicitly request activation as described below. |
 
 Kitty's snippet includes cursor/tab settings and dimming. Zsh's snippet includes
 prompt/completion/title-hook and optional plugin colors. Read the snippet before
 sourcing it. Optional applications/plugins are not installed automatically.
+
+## Folder icon theme
+
+Choose **Accent-colored Adwaita folders** in the optional extras menu. Setup
+shows its destination and separately offers activation on supported desktops.
+It is off by default. Selecting the icon theme changes the desktop's complete
+icon theme: our folder artwork uses the selected accent, while application,
+symbolic and other icons fall back to **Adwaita**, then **hicolor**.
+Your current application icons may therefore change too.
+
+```bash
+./install.sh --icons                       # Copy without selecting
+./install.sh --activate-icons --accent green  # Copy and select explicitly
+./install.sh --icons --remove              # Remove the optional icon component and GTK theme
+```
+
+The default icon destination is
+`${XDG_DATA_HOME:-$HOME/.local/share}/icons/Adwaita-AMOLED`.
+`--extras icons` also selects this component; `--extras all` includes it.
+Adwaita must already be installed in a standard icon search path. Setup stops
+before copying if it cannot find it; install your distribution's
+`adwaita-icon-theme` package, or leave this optional component unchecked.
+Other GTK desktops do not necessarily include Adwaita by default.
+Qt applications also need their SVG icon engine to render these vector icons
+instead of falling back to inherited PNGs. On Debian/Ubuntu/Mint the packages
+are `libqt5svg5` for Qt5, and `qt6-svg-plugins` for recent Qt6 releases
+(older releases bundle the plugin in `libqt6svg6`). Other distributions use
+their corresponding Qt SVG packages. This is separate from the qt5ct/qt6ct
+color palette plugin.
+
+GNOME/Budgie, Cinnamon, MATE and Xfce support explicit automatic selection.
+On other desktops, use Appearance settings. Copying icons alone never changes
+the selected icon theme. Rerun with **--icons** (or select the component again
+in the menus) to update its files and match a changed accent. Existing icon
+checkouts, symlink destinations and unlisted local files are preserved and
+reported as conflicts. A separate legacy `~/.icons/Adwaita-AMOLED` is reported
+if it could shadow the new installation.
+
+For a root-owned shared copy, add `--icons` to system setup:
+
+```bash
+sudo ./install.sh --system --icons
+```
+
+The system icon parent is the sibling `icons` directory of the GTK theme
+parent: `/usr/local/share/icons` by default, or `/usr/share/icons` when using
+`--system --dest /usr/share/themes`. `--icon-dest /absolute/parent` overrides
+the icon parent. Shared setup does not select a personal icon theme.
+
+Before removal, choose a different icon theme in Appearance settings; removal
+does not restore an earlier selection. No Flatpak permissions are added for
+icons, and sandboxed or application-specific icons may not follow the host
+selection. The component recolors full-color folders, not symbolic controls
+or third-party application artwork. Upstream 51.0 provenance, modification
+notes and license texts accompany the icon files.
 
 ## Manual installation
 
@@ -460,7 +516,7 @@ vim.g.airline_theme = 'adwaita_amoled'
 Do not create a second init file alongside the one you already use.
 
 For Qt, copy the palettes and optional QSS, then select them through the matching
-Qt configuration app as explained in [Qt selection](#qt-selection):
+Qt configuration app as explained in [extra setup](#every-extra-and-destination):
 
 ```bash
 amoled_config="${XDG_CONFIG_HOME:-$HOME/.config}"

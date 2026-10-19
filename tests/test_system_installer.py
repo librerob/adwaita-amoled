@@ -12,6 +12,35 @@ class SystemInstallerTests(unittest.TestCase):
     setUp = base.InstallerTests.setUp
     run_cli = base.InstallerTests.run_cli
 
+    def test_optional_shared_icons_are_root_owned_and_use_staged_paths(self):
+        self.assertEqual(os.geteuid(), 0)
+        dest = self.base / "shared/themes"
+        icon_dest = self.base / "shared/icons"
+        args = ("--system", "--dest", str(dest), "--icons", "--icon-dest", str(icon_dest))
+        self.run_cli(*args, "--accent", "gold")
+        root = icon_dest / base.THEME
+        self.assertEqual((root / "accent-name").read_text(), "gold\n")
+        for path in root.rglob("*"):
+            self.assertEqual(path.stat().st_uid, 0)
+            self.assertFalse(path.stat().st_mode & 0o022)
+        self.run_cli(*args)
+        self.assertEqual((root / "accent-name").read_text(), "gold\n")
+        self.assertFalse(self.config.exists())
+        self.run_cli(*args, "--remove")
+        self.assertFalse(root.exists())
+
+    def test_shared_icons_refuse_an_unprotected_parent_before_any_copy(self):
+        self.assertEqual(os.geteuid(), 0)
+        dest = self.base / "shared/themes"
+        unsafe = self.base / "unsafe-icons"
+        unsafe.mkdir(mode=0o777)
+        unsafe.chmod(0o777)
+        result = self.run_cli("--system", "--dest", str(dest), "--icons",
+                              "--icon-dest", str(unsafe), success=False)
+        self.assertIn("Shared icon parent is writable", result.stderr)
+        self.assertFalse(dest.exists())
+        self.assertEqual(list(unsafe.iterdir()), [])
+
     def test_shared_accent_update_retains_color_and_root_owned_link(self):
         self.assertEqual(os.geteuid(), 0)
         dest = self.base / "shared/themes"
