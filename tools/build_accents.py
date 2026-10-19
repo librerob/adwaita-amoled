@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 
 import generate_palette as palette
+import generate_icons as icons
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMES = ("yellow", "gold", "purple", "green", "red", "orange", "pink")
@@ -61,11 +62,11 @@ def build(root):
             dest = work / name
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(root / name, dest)
-        for folder in ["src", "palette", "gnome-shell/sass"]:
+        for folder in ["src", "palette", "gnome-shell/sass", "icons"]:
             shutil.copytree(root / folder, work / folder, dirs_exist_ok=True)
         for name in ["build.sh", "gnome-shell/build.sh"]:
             shutil.copy2(root / name, work / name)
-        for name in ["shell_palette.py", "generate_palette.py"]:
+        for name in ["shell_palette.py", "generate_palette.py", "generate_icons.py"]:
             dest = work / "tools" / name
             dest.parent.mkdir(exist_ok=True)
             shutil.copy2(root / "tools" / name, dest)
@@ -75,6 +76,7 @@ def build(root):
                 json.dumps({"version": 1, "colors": colors}) + "\n"
             )
             palette.generate(work, colors=colors)
+            icons.generate(work, colors=colors, accent=accent)
             airline = work / "extra/nvim/autoload/airline/themes/adwaita_amoled.vim"
             airline.write_text(airline_preset(airline.read_text(), colors))
             for args in [

@@ -20,7 +20,7 @@ jobs:
             libglib2.0-dev sassc rsync shellcheck zsh kitty neovim vim-airline \
             python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 gir1.2-adw-1 \
             libmetacity3 xvfb xauth bat rofi flatpak xfconf libxfconf-0-3 dbus-x11 gsettings-desktop-schemas librsvg2-bin python3-pyqt5 python3-pyqt6 \
-            libgtk2.0-0t64 gtk2-engines-murrine xapps-common
+            libgtk2.0-0t64 gtk2-engines-murrine xapps-common libqt5svg5 libqt6svg6
       - name: Check shell syntax
         run: |
           shellcheck install.sh setup-menu.sh build.sh gnome-shell/build.sh tests/gnome-shell/session.sh tests/gnome-shell/session46.sh
@@ -28,6 +28,7 @@ jobs:
       - name: Check resources, installation and extras
         run: |
           python3 tools/generate_palette.py --check
+          python3 tools/generate_icons.py --check
           python3 tools/build_accents.py --check
           python3 tests/test_palette.py
           python3 tests/test_accents.py
@@ -36,6 +37,7 @@ jobs:
           python3 tests/test_installer.py
           python3 tests/test_installer_failures.py
           python3 tests/test_installer_preservation.py
+          python3 tests/test_icons.py
           python3 tests/test_flatpak_installer.py
           python3 tests/test_manual_installation.py
           python3 tests/test_theme.py
@@ -50,6 +52,10 @@ jobs:
         run: dbus-run-session -- python3 tests/test_install_settings.py DesktopSettingTests.test_gnome_and_budgie_activation DesktopSettingTests.test_xfce_activation DarkAppearanceTests
       - name: Check Bash-installed native applications
         run: xvfb-run -a -s '-screen 0 1600x1200x24' python3 tests/test_install_consumers.py
+      - name: Check folder icons and inherited icons in GTK and Qt
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output/icons
+        run: xvfb-run -a python3 tests/test_icon_lookup.py
       - name: Check native parsing and rendering
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output
@@ -89,7 +95,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             git ca-certificates python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtk-4.0 \
             gir1.2-adw-1 libmetacity3 xvfb xauth libgtk2.0-0t64 gtk2-engines-murrine \
-            libglib2.0-bin gsettings-desktop-schemas xapps-common
+            libglib2.0-bin gsettings-desktop-schemas xapps-common \
+            python3-pyqt5 python3-pyqt6 libqt5svg5 libqt6svg6 qt6-svg-plugins
       - uses: actions/checkout@v7
       - name: Check guided administrator preview in isolated system paths
         run: python3 tests/test_guided_installer.py SystemMenuTests
@@ -97,6 +104,10 @@ jobs:
         run: python3 tests/test_install_settings.py DarkAppearanceTests
       - name: Check native GTK2 discovery and automatic modern GTK4 links
         run: xvfb-run -a python3 tests/test_install_consumers.py InstalledConsumerTests.test_native_gtk2_discovers_default_user_installation InstalledConsumerTests.test_native_gtk4_automatic_loading_and_removal
+      - name: Check modern folder icons and inherited icons in GTK and Qt
+        env:
+          THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern/icons
+        run: xvfb-run -a python3 tests/test_icon_lookup.py
       - name: Check modern native parsing, rendering and text colors
         env:
           THEME_TEST_OUTPUT: ${{ runner.temp }}/theme-test-output-modern

@@ -11,6 +11,9 @@ DESKTOP=${XDG_CURRENT_DESKTOP:-}
 DEST=$DATA/themes
 LIBADWAITA=false ACTIVATE=false SHELL_THEME=false SYSTEM=false REMOVE=false DRY_RUN=false
 GUIDED=false
+ICONS=false ACTIVATE_ICONS=false
+ICON_DEST=$DATA/icons
+CUSTOM_ICON_DEST=false
 CUSTOM_DEST=false GTK_MODE=auto SHELL_VERSION=auto
 LINK_PARENT=''
 EXTRAS=() FLATPAKS=() TARGETS=()
@@ -38,8 +41,11 @@ Default destination: ${XDG_DATA_HOME:-$HOME/.local/share}/themes/Adwaita-AMOLED
       --accent COLOR        blue, yellow, gold, purple, green, red, orange, pink
                             Default: keep installed color, or blue for a new install
       --shell               Require a matching GNOME Shell theme (46 or 51)
+      --icons               Install the optional palette-matched folder icon theme
+      --activate-icons      Also select the icon theme for this desktop (implies --icons)
+      --icon-dest DIR       Icon parent directory (default: XDG data/icons)
       --extras LIST         Copy optional themes: qt,kitty,alacritty,bat,nvim,
-                            rofi,zsh,wallpaper or all (select them in each app)
+                            rofi,zsh,wallpaper,icons or all (select them in each app)
       --flatpak ID=MODE     Configure one app; MODE is legacy, modern or gtk3
       --gtk4-mode MODE      Native GTK4: auto, legacy (<4.16), modern (4.16+)
       --shell-version VER   auto, 46 or 51
@@ -139,6 +145,9 @@ while (($#)); do
         --accent) value "$@"; ACCENT=$2; shift ;;
         --prefer-dark) ;; # Accepted for v1.6.0 command compatibility; now the user-install default.
         --shell) SHELL_THEME=true ;;
+        --icons) ICONS=true ;;
+        --activate-icons) ICONS=true; ACTIVATE_ICONS=true ;;
+        --icon-dest) value "$@"; ICON_DEST=$2; CUSTOM_ICON_DEST=true; shift ;;
         --system) SYSTEM=true ;;
         --link) value "$@"; LINK_PARENT=$2; shift ;;
         -r|-u|--remove|--uninstall|uninstall) REMOVE=true ;;
@@ -155,6 +164,16 @@ while (($#)); do
     shift
 done
 
+selected_extras=()
+for extra in "${EXTRAS[@]}"; do
+    case $extra in
+        icons) ICONS=true ;;
+        all) ICONS=true; selected_extras+=(all) ;;
+        *) selected_extras+=("$extra") ;;
+    esac
+done
+EXTRAS=("${selected_extras[@]}")
+
 for tool in realpath rm mkdir cp ln chmod mv mktemp flock stat; do
     command -v "$tool" >/dev/null || die "Required Linux tool is missing: $tool"
 done
@@ -164,18 +183,24 @@ case $ACCENT in auto|blue|yellow|gold|purple|green|red|orange|pink) ;; *) die 'U
 if $SYSTEM; then
     ((EUID == 0)) || die 'Use sudo with --system.'
     $CUSTOM_DEST || DEST=/usr/local/share/themes
+    $CUSTOM_ICON_DEST || ICON_DEST=${DEST%/*}/icons
+    $ACTIVATE_ICONS && die '--system does not select a personal icon theme; select it in Appearance settings.'
     if $LIBADWAITA || $ACTIVATE || (("${#EXTRAS[@]}" || "${#FLATPAKS[@]}")); then
         die '--system copies only the shared theme. Run user configuration separately without sudo.'
     fi
 elif [[ -n ${SUDO_USER:-} ]]; then
     die 'Run user setup without sudo, or use --system for shared theme files.'
 fi
+$ACTIVATE_ICONS && $REMOVE && die 'Use --icons --remove without --activate-icons; choose another icon theme in Appearance settings first.'
+$CUSTOM_ICON_DEST && ! $ICONS && die '--icon-dest requires --icons.'
 [[ -z $LINK_PARENT ]] || $SYSTEM || die '--link requires --system; it must point to a root-owned copy, not a user theme.'
-for path in "$HOME" "$DATA" "$CONFIG" "$DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
+for path in "$HOME" "$DATA" "$CONFIG" "$DEST" "$ICON_DEST" ${LINK_PARENT:+"$LINK_PARENT"}; do
     [[ $path == /* && $path != / && $path != *$'\n'* ]] || die "Expected an absolute directory other than /: $path"
 done
 DEST=$(realpath -m -- "$DEST")
 TARGET=$DEST/$THEME
+ICON_DEST=$(realpath -m -- "$ICON_DEST")
+ICON_TARGET=$ICON_DEST/$THEME
 [[ $ACCENT != auto ]] || ACCENT=$(installed_accent "$TARGET")
 LINK_PATH=''
 GTK2_LINK=''
@@ -228,6 +253,24 @@ for target in "${TARGETS[@]}"; do
     [[ ! -L $target ]] || die "Theme destination is a symlink; select its real parent with --dest: $target"
 done
 
+if $ICONS; then
+    [[ ! -L $ICON_TARGET ]] || die "Icon destination is a symlink; keeping it unchanged: $ICON_TARGET"
+    for path in "$ROOT" "${TARGETS[@]}" ${GTK2_LINK:+"$GTK2_LINK"} ${LINK_PATH:+"$LINK_PATH"}; do
+        [[ $ICON_TARGET != "$path" && $ICON_TARGET != "$path/"* && $path != "$ICON_TARGET/"* ]] || die 'Icon destination overlaps the source or GTK theme destination.'
+    done
+    if $SYSTEM; then
+        parent=$ICON_DEST
+        while [[ $parent != / ]]; do
+            if [[ -e $parent ]]; then
+                [[ $(stat -c %u -- "$parent") == 0 ]] || die "Shared icon parent is not root-owned: $parent"
+                permissions=$(stat -c %a -- "$parent")
+                (( (8#$permissions & 0022) == 0 || (8#$permissions & 01000) != 0 )) || die "Shared icon parent is writable by other users: $parent"
+            fi
+            parent=${parent%/*}; parent=${parent:-/}
+        done
+    fi
+fi
+
 run() {
     if $DRY_RUN; then printf '  '; printf '%q ' "$@"; printf '\n'; else "$@"; fi
 }
@@ -246,13 +289,15 @@ remove_link() {
 # older release can still be refreshed/removed without blocking normal updates.
 check_existing_theme() (
     local target=$1 manifest name parent directory path relative
+    local source_manifest=${2:-$ROOT/runtime-files.txt}
     local -a pending=("$target")
     local -A known_paths=([ARCHIVE_CONTENTS.sha256]=1) known_directories=()
+    if [[ $# -gt 1 ]]; then known_paths[icon-theme.cache]=1; fi
     [[ -e $target ]] || return 0
     [[ -d $target ]] || die "Theme destination is not a directory: $target"
     [[ ! -e $target/.git && ! -L $target/.git ]] || die "Keeping Git checkout unchanged: $target. Move it outside the installation destination first."
-    [[ -f $ROOT/runtime-files.txt ]] || die 'Incomplete installer download: runtime-files.txt is missing.'
-    for manifest in "$ROOT/runtime-files.txt" "$target/runtime-files.txt"; do
+    [[ -f $source_manifest ]] || die 'Incomplete installer download: runtime-files.txt is missing.'
+    for manifest in "$source_manifest" "$target/runtime-files.txt"; do
         [[ ! -L $manifest ]] || die "Keeping linked runtime manifest unchanged: $manifest"
         [[ -f $manifest ]] || continue
         [[ -r $manifest ]] || die "Cannot read installed runtime manifest: $manifest"
@@ -350,6 +395,7 @@ accent_source() {
 # so an ordinary copy/promotion error or catchable signal can restore it.
 replace_theme() (
     target=$1
+    icon_copy=${2:-false}
     stage=''
     committed=false
     # ShellCheck 0.9/0.11 miss this nested function's indirect EXIT-trap call.
@@ -375,13 +421,18 @@ replace_theme() (
     fi
     stage=$(mktemp -d "${target%/*}/.Adwaita-AMOLED-install.XXXXXX")
     mkdir -- "$stage/new"
-    (cd -- "$ROOT" && cp -a --no-preserve=ownership --parents -- "${PAYLOAD[@]}" "$stage/new/")
-    validate_runtime "$stage/new"
-    if ((${#ACCENT_PAYLOAD[@]})); then
-        (cd -- "$ROOT/accents/$ACCENT" && cp -a --no-preserve=ownership --parents -- "${ACCENT_PAYLOAD[@]}" "$stage/new/")
-        (cd -- "$stage/new" && sha256sum --check --status "$ROOT/accents/$ACCENT/SHA256SUMS") || die 'Staged accent checksum verification failed.'
+    if $icon_copy; then
+        cp -a --no-preserve=ownership -- "$TARGET/extra/icons/$THEME/." "$stage/new/"
+        (cd -- "$stage/new" && sha256sum --check --status SHA256SUMS) || die 'Staged icon checksum verification failed.'
+    else
+        (cd -- "$ROOT" && cp -a --no-preserve=ownership --parents -- "${PAYLOAD[@]}" "$stage/new/")
+        validate_runtime "$stage/new"
+        if ((${#ACCENT_PAYLOAD[@]})); then
+            (cd -- "$ROOT/accents/$ACCENT" && cp -a --no-preserve=ownership --parents -- "${ACCENT_PAYLOAD[@]}" "$stage/new/")
+            (cd -- "$stage/new" && sha256sum --check --status "$ROOT/accents/$ACCENT/SHA256SUMS") || die 'Staged accent checksum verification failed.'
+        fi
+        cp --remove-destination -T -- "$stage/new/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
     fi
-    cp --remove-destination -T -- "$stage/new/gnome-shell/gnome-shell-$SHELL_VERSION.css" "$stage/new/gnome-shell/gnome-shell.css"
     chmod -R a+rX,go-w -- "$stage/new"
     if [[ -e $target ]]; then mv -T -- "$target" "$stage/previous"; fi
     mv -T -- "$stage/new" "$target"
@@ -459,6 +510,28 @@ if ! $REMOVE; then
     fi
 fi
 
+if $ICONS; then
+    check_existing_theme "$ICON_TARGET" "$ROOT/extra/icons/$THEME/runtime-files.txt"
+    if ! $REMOVE; then
+        command -v sha256sum >/dev/null || die 'sha256sum is required to verify folder icons.'
+        (cd -- "$ROOT/extra/icons/$THEME" && sha256sum --check --status SHA256SUMS) || die 'Folder icon checksum verification failed.'
+        icon_bases=()
+        if ! $SYSTEM; then icon_bases+=("$DATA/icons" "$HOME/.icons"); fi
+        IFS=: read -r -a data_dirs <<< "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+        for directory in "${data_dirs[@]}"; do
+            [[ $directory == /* ]] && icon_bases+=("$directory/icons")
+        done
+        adwaita_found=false
+        for directory in "${icon_bases[@]}"; do
+            if [[ -r $directory/Adwaita/index.theme ]]; then adwaita_found=true; break; fi
+        done
+        $adwaita_found || die 'Folder icons require Adwaita. Install adwaita-icon-theme using your distribution package manager, or omit --icons / the icons extra.'
+        if ! $SYSTEM && [[ -e $HOME/.icons/$THEME || -L $HOME/.icons/$THEME ]]; then
+            [[ $(realpath -m -- "$HOME/.icons/$THEME") == "$ICON_TARGET" ]] || die 'A legacy ~/.icons/Adwaita-AMOLED may shadow this icon theme. Move it aside or use --icon-dest ~/.icons.'
+        fi
+    fi
+fi
+
 if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
     for target in "${TARGETS[@]}"; do check_existing_theme "$target"; done
 fi
@@ -467,11 +540,26 @@ fi
 SETTINGS=()
 DARK_SETTINGS=()
 SCHEMA_ARGS=()
+ICON_SETTING=''
 if ! $SYSTEM && ! $REMOVE; then
     if dark_targets=$(dark_preference_settings); then
         while IFS= read -r schema; do DARK_SETTINGS+=("$schema"); done <<< "$dark_targets"
     else
         printf 'App appearance unchanged: no supported writable setting. Theme installation will continue.\n'
+    fi
+fi
+if $ACTIVATE_ICONS; then
+    case ${DESKTOP^^} in
+        *CINNAMON*) ICON_SETTING=org.cinnamon.desktop.interface ;;
+        *MATE*) ICON_SETTING=org.mate.interface ;;
+        *XFCE*) command -v xfconf-query >/dev/null || die 'Install xfconf or select the icon theme manually.'; ICON_SETTING=xfce ;;
+        *GNOME*|*BUDGIE*) ICON_SETTING=org.gnome.desktop.interface ;;
+        *) die 'Automatic icon selection supports GNOME, Budgie, Cinnamon, MATE and Xfce. Use --icons and select it manually on this desktop.' ;;
+    esac
+    if [[ $ICON_SETTING != xfce ]]; then
+        command -v gsettings >/dev/null || die 'gsettings is unavailable; use --icons and select the icon theme manually.'
+        gsettings get "$ICON_SETTING" icon-theme >/dev/null || die 'The desktop icon-theme setting is unavailable.'
+        [[ $(gsettings writable "$ICON_SETTING" icon-theme) == true ]] || die 'The desktop icon-theme setting is locked.'
     fi
 fi
 if $ACTIVATE && ! $REMOVE; then
@@ -513,7 +601,9 @@ if $GUIDED; then guided_review; fi
 # Lock all selected theme parents before making any replacements. Removal does
 # not create absent parents, and dry runs never acquire locks or create files.
 if ! $DRY_RUN; then
-    for target in "${TARGETS[@]}" ${GTK2_LINK:+"$GTK2_LINK"} ${LINK_PATH:+"$LINK_PATH"}; do
+    lock_targets=("${TARGETS[@]}" ${GTK2_LINK:+"$GTK2_LINK"} ${LINK_PATH:+"$LINK_PATH"})
+    if $ICONS; then lock_targets+=("$ICON_TARGET"); fi
+    for target in "${lock_targets[@]}"; do
         parent=${target%/*}
         if ! $REMOVE; then
             # Only the selected shared parent is made public; ancestor modes stay unchanged.
@@ -529,6 +619,15 @@ if ! $REMOVE || ((${#FLATPAKS[@]} == 0)); then
         printf 'Theme: %s\n' "$target"
         if $REMOVE; then run rm -rf -- "$target"; else replace_theme "$target"; fi
     done
+fi
+if $ICONS; then
+    printf 'Folder icon theme: %s\n' "$ICON_TARGET"
+    if $REMOVE; then
+        run rm -rf -- "$ICON_TARGET"
+        printf 'Select another icon theme in Appearance settings if Adwaita-AMOLED is currently selected.\n'
+    else
+        replace_theme "$ICON_TARGET" true
+    fi
 fi
 if [[ -n $GTK2_LINK ]]; then
     if $REMOVE; then
@@ -596,6 +695,13 @@ for schema in "${DARK_SETTINGS[@]}"; do
         printf 'Could not set dark appearance: %s color-scheme. Select dark appearance in desktop/app settings.\n' "$schema" >&2
     fi
 done
+if $ACTIVATE_ICONS; then
+    if [[ $ICON_SETTING == xfce ]]; then
+        run xfconf-query -c xsettings -p /Net/IconThemeName --create -t string -s "$THEME"
+    else
+        run gsettings set "$ICON_SETTING" icon-theme "$THEME"
+    fi
+fi
 if $DRY_RUN; then printf 'Dry run: nothing changed.\n'; else printf 'Done. Restart affected applications; reload GNOME Shell themes by logging out/in.\n'; fi
 if ! $DRY_RUN && ! $REMOVE; then
     printf 'File locations and app setup: %s/INSTALLING.md (Every extra and destination).\n' "$TARGET"

@@ -243,7 +243,7 @@ class GuidedInstallerTests(unittest.TestCase):
     def test_optional_details_explain_selected_extras_without_applying(self):
         t = self.terminal()
         self.install_choices(t, extras="y")
-        for choice in ["9", "0"]:
+        for choice in ["10", "0"]:
             t.answer("Choose [0]:", choice)
         t.answer("Apply these changes?", "d")
         t.expect("About the selected extras")
@@ -265,6 +265,33 @@ class GuidedInstallerTests(unittest.TestCase):
         self.assertTrue(guide.is_file())
         self.assertTrue((self.data / "backgrounds/Adwaita-AMOLED/blackmount.png").is_file())
         self.assertTrue((self.config / "qt5ct/colors/Adwaita-AMOLED.conf").is_file())
+
+    def test_icon_activation_is_offered_separately_and_preview_is_safe(self):
+        self.env["XDG_CURRENT_DESKTOP"] = "GNOME"
+        log = self.base / "icon-settings.log"
+        self.env["ICON_TEST_LOG"] = str(log)
+        self.fake("gsettings", '''case $1 in
+get) echo "'Adwaita'" ;;
+writable) echo true ;;
+range) echo s ;;
+set) printf '%s\\n' "$*" >> "$ICON_TEST_LOG" ;;
+esac''')
+        for reply in ("p", "y"):
+            t = self.terminal()
+            t.answer("Choose [1]:", "1")
+            t.answer("Apply the theme to native GTK4/libadwaita apps too?", "n")
+            t.answer("Select Adwaita-AMOLED for this desktop now?", "n")
+            t.answer("Copy optional application themes or wallpaper?", "y")
+            for choice in ("9", "0"):
+                t.answer("Choose [0]:", choice)
+            t.expect("also uses Adwaita application icons")
+            t.answer("Select the Adwaita-AMOLED icon theme for this desktop now?", "y")
+            t.answer("Apply these changes?", reply)
+            t.finish()
+            if reply == "p":
+                self.assertFalse(self.theme.exists())
+                self.assertFalse(log.exists())
+        self.assertEqual(log.read_text(), "set org.gnome.desktop.interface icon-theme Adwaita-AMOLED\n")
 
     def test_selected_extras_create_folders_and_keep_personal_config(self):
         personal = self.config / "kitty/kitty.conf"
@@ -609,6 +636,7 @@ class SystemMenuTests(unittest.TestCase):
         t.answer("Choose [0]:", "8")
         t.answer("Choose [0]:", "1")
         t.answer("Choose [1]:", "2")
+        t.answer("Also manage the accent-colored folder icon theme for all users?", "n")
         t.answer("Apply these changes?", "p")
         text = t.finish()
         self.assertIn("Accent color: pink", text)
@@ -628,6 +656,7 @@ class SystemMenuTests(unittest.TestCase):
             t.answer("Choose [0]:", "1")
             t.answer("Choose [1]:", "1")
             t.answer("Also manage a link under /usr/share/themes", "y")
+            t.answer("Also manage the accent-colored folder icon theme for all users?", "n")
             t.answer("Apply these changes?", answer)
             text = t.finish()
             self.assertIn("/usr/local/share/themes/Adwaita-AMOLED", text)

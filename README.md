@@ -48,6 +48,7 @@ These screenshots show the theme's appearance; application icons and panel layou
 - Cinnamon and Xfce styling, Openbox themes, and Metacity/Muffin/Marco window decorations
 - Matching GNOME Shell themes for **46.x and 51.x**
 - Coordinated Qt palettes, application extras and wallpaper
+- Optional [accent-colored Adwaita folder icons](INSTALLING.md#folder-icon-theme)
 
 Accents use light text/focus colors and darker filled buttons with white labels.
 All eight Shell presets match the selected theme accent independently of GNOME
@@ -125,7 +126,7 @@ For GNOME Shell, also follow the [version-specific installation instructions](gn
 ## Application extras
 
 Choose extras in setup for **Qt5ct/Qt6ct, Kitty, Alacritty, Neovim/Airline, bat,
-Rofi, Zsh and the wallpaper**. Then select or include the theme files in each
+Rofi, Zsh, wallpaper and folder icons**. Then select or include the theme files in each
 application. Optional applications and plugins are not installed automatically.
 
 See [app setup and file destinations](INSTALLING.md#every-extra-and-destination).
