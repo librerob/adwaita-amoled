@@ -170,6 +170,7 @@ def main():
         run(["xdotool", "key", "alt+Left"])
         time.sleep(0.4)
         _, returned_count = capture("returned")
+        assert "Theme pars" not in (output / "application.log").read_text(), "GTK CSS parser errors; see application.log"
         report = {"app": args.app, "accent": args.accent, "status": "passed",
                   "normal_pixels": normal_count, "selected_pixels": selected_count,
                   "menu_pixels": menu_count, "returned_pixels": returned_count,
