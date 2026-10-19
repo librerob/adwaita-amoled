@@ -86,3 +86,24 @@ The [monthly upstream watch](maintenance/README.md) reports new release tags and
 links to component-specific review/test guidance. It does not modify the theme
 or establish compatibility automatically. Update review baselines only after
 recording the relevant checks and limits in `COMPATIBILITY.md`.
+
+## Release integrity
+
+After publishing a stable release with its runtime archive attached, check the
+[Release verification workflow](https://github.com/librerob/adwaita-amoled/actions/workflows/release-verification.yml).
+Use **Run workflow** to verify an older release or an asset uploaded after
+publication. Verification is read-only; it does not publish releases.
+
+For local development, use Python 3.11+, authenticated GitHub CLI and a checkout
+with the requested release tag fetched:
+
+```bash
+python3 tests/test_release_verification.py
+git fetch origin tag v1.9.0
+python3 tools/verify_release.py --tag v1.9.0 --output /tmp/adwaita-release-report
+```
+
+The verifier uses this checkout's packager with tagged source as data. Preserve
+compatibility with existing archives when changing the packaging format, or
+extend verification deliberately. See [maintenance guidance](maintenance/README.md#other-repository-maintenance)
+for report details and the other repository automation.
